@@ -14,31 +14,29 @@ export interface Cardacaoprops {
 
 export default function Cardacao(props: Cardacaoprops) {
   return (
-    <div className="w-[400px] flex flex-col bg-white rounded-xl shadow p-[16px]">
-      <div className="text-[16px] font-bold text-black">{props.nomeacao}</div>
+    <div className="w-[400px] flex flex-col bg-white rounded-xl shadow p-4 font-sans text-[#1B2029]">
+      <div className="text-[16px] font-bold">{props.nomeacao}</div>
 
-      <div className="text-[12px] text-black mt-[7px]">{props.descricao}</div>
+      <div className="text-[12px] mt-[7px]">{props.descricao}</div>
 
       <div className="flex flex-wrap gap-[5px] mt-[10px]">
-        <div className="bg-[#C6CAFF] rounded-full text-black px-[10px] py-[2px] text-[12px]">
+        <div className="bg-[#C6CAFF] rounded-full px-[10px] py-[2px] text-[12px]">
           {props.ods1}
         </div>
-        <div className="bg-[#A5FFAA] rounded-full text-black px-[10px] py-[2px] text-[12px]">
+        <div className="bg-[#A5FFAA] rounded-full px-[10px] py-[2px] text-[12px]">
           {props.ods2}
         </div>
-        <div className="bg-[#FFD8AE] rounded-full text-black px-[10px] py-[2px] text-[12px]">
+        <div className="bg-[#FFD8AE] rounded-full px-[10px] py-[2px] text-[12px]">
           {props.ods3}
         </div>
-        <div className="bg-[#FFAED5] rounded-full text-black px-[10px] py-[2px] text-[12px]">
+        <div className="bg-[#FFAED5] rounded-full px-[10px] py-[2px] text-[12px]">
           {props.ods4}
         </div>
       </div>
 
       <div className="flex items-center mt-[16px]">
         <Image src={predio} alt="ícone prédio" />
-        <div className="text-[12px] text-black ml-[10px]">
-          {props.nomedaong}
-        </div>
+        <div className="text-[12px] ml-[10px]">{props.nomedaong}</div>
       </div>
 
       <div className="flex items-center mt-[16px]">
