@@ -15,3 +15,15 @@ export { fone };
 
 import maozinha from "./maozinha.svg";
 export { maozinha };
+
+import balao from "./balao.svg";
+export { balao };
+
+import emailpopup from "./emailpopup.svg";
+export { emailpopup };
+
+import balaopopup from "./balaopopup.svg";
+export { balaopopup };
+
+import confirma from "./confirma.svg";
+export { confirma };
