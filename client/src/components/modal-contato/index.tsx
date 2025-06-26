@@ -26,7 +26,7 @@ export default function Modalcontatos(props: propspopup) {
         <div className="font-bold">{props.nomeacao}</div>
       </div>
 
-      <div className="w-[400px] h-[64px] bg-white flex items-center border-[1px] mt-[5px] rounded-lg border-gray-200">
+      <div className="w-[400px] h-[64px] bg-white flex items-center border-[1px] mt-[5px] rounded-lg border-gray-200 hover:bg-[#F2F2F2EE] cursor-pointer">
         <Image src={emailpopup} alt="" className="ml-[10px]" />
 
         <div className="flex flex-col ml-[10px]">
@@ -36,7 +36,7 @@ export default function Modalcontatos(props: propspopup) {
           </div>
         </div>
       </div>
-      <div className="w-[400px] h-[64px] bg-white flex items-center border-[1px] mt-[10px] rounded-lg border-gray-200">
+      <div className="w-[400px] h-[64px] bg-white flex items-center border-[1px] mt-[10px] rounded-lg border-gray-200 hover:bg-[#F2F2F2EE] cursor-pointer">
         <Image src={balaopopup} alt="" className="ml-[10px]" />
 
         <div className="flex flex-col ml-[10px]">

@@ -42,7 +42,7 @@ export default function Cardcontatos(props: Cardcontatosprops) {
           cadastrar doação
         </div>
 
-        <div className="text-[12px] text-[#1D71B8] ml-auto mr-[12px] cursor-pointer flex items-center">
+        <div className="text-[12px] text-[#1D71B8] ml-auto mr-[12px] flex items-center">
           <Image src={maozinha} alt="ícone mão" className="mr-[5px]" />
           {props.qtdacoescadastradas} doações cadastradas
         </div>
