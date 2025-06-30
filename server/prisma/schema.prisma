@@ -10,3 +10,65 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model Usuario {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  senha    String
+  telefone String?
+  nome     String?
+
+  ongs     ONG[]
+  empresas Empresa[]
+}
+
+model ONG {
+  id           Int       @id @default(autoincrement())
+  nome     String?
+  causa        String
+  localizacao  String
+  apoio        String?
+  usuarioId    Int
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+  
+  acoes        Acao[]
+  projetos     Projeto[]
+}
+
+model Empresa {
+  id              Int       @id @default(autoincrement())
+  nome     String?
+  notaFiscalProj  String?
+  notaFiscalAcao  String?
+  usuarioId       Int
+  usuario         Usuario   @relation(fields: [usuarioId], references: [id])
+  
+  acoes           Acao[]    @relation("ApoioEmpresaAcao")
+  projetos        Projeto[] @relation("ApoioEmpresaProjeto")
+  selos           Selo[]
+}
+
+model Acao {
+  id          Int      @id @default(autoincrement())
+  nome     String?
+  notaFiscal  String?
+  ongId       Int
+  ong         ONG      @relation(fields: [ongId], references: [id])
+  empresas    Empresa[] @relation("ApoioEmpresaAcao")
+}
+
+model Projeto {
+  id          Int       @id @default(autoincrement())
+  nome        String?
+  ongId       Int
+  ong         ONG       @relation(fields: [ongId], references: [id])
+  empresas    Empresa[] @relation("ApoioEmpresaProjeto")
+}
+
+model Selo {
+  id         Int     @id @default(autoincrement())
+  tipo       String
+  tier       Int
+  empresaId  Int
+  empresa    Empresa @relation(fields: [empresaId], references: [id])
+}
