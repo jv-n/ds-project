@@ -27,3 +27,12 @@ export { balaopopup };
 
 import confirma from "./confirma.svg";
 export { confirma };
+
+import Ouro from "./ouro.svg";
+export { Ouro };
+
+import Prata from "./prata.svg";
+export { Prata };
+
+import Bronze from "./bronze.svg";
+export { Bronze };
