@@ -16,10 +16,10 @@ export default function Header() {
                 </Image>
                 </div>
 
-                    <div className='flex flex-col items-center justify-center text-center'>
-                        <div className = 'flex flex-row items-center justify-center'>
-                            <div className='text-[8px] text-[#009FE3]'>
-                                <div className={segoeUI.className} style={{ fontWeight: '700' }}>
+                <div className='flex flex-col items-center justify-center text-center'>
+                    <div className = 'flex flex-row items-center justify-center'>
+                         <div className='text-[8px] text-[#009FE3]'>
+                               <div className={segoeUI.className} style={{ fontWeight: '700' }}>
                                     PORTAL BORA IMPACTAR
                                 </div>
                             </div>
@@ -34,18 +34,18 @@ export default function Header() {
                         </div>
 
                     <div>
-                                <div className='text-[7px] text-[#4A5565] flex flex-row items-center justify-center'>
-                                    <div className={segoeUI.className} style={{ fontWeight: '700' }}>
-                                        GOVERNO MUNICIPAL DE RECIFE
-                                    </div>
-                                    <div className='ml-1 mr-1'>|</div>
-                                    <div className={segoeUI.className} style={{ fontWeight: '700' }}>
-                                        RESPONSABILIDADE SOCIAL EMPRESARIAL
-                                    </div>
-                                </div>
-
+                        <div className='text-[7px] text-[#4A5565] flex flex-row items-center justify-center'>
+                            <div className={segoeUI.className} style={{ fontWeight: '700' }}>
+                                GOVERNO MUNICIPAL DE RECIFE
+                            </div>
+                            <div className='ml-1 mr-1'>|</div>
+                            <div className={segoeUI.className} style={{ fontWeight: '700' }}>
+                                RESPONSABILIDADE SOCIAL EMPRESARIAL
                             </div>
                         </div>
+
+                    </div>
+                </div>
 
                          <div className='flex flex-col items-center justify-center text-center'>
                             <div className='h-[30px] w-[30px] bg-[#009FE3] rounded-full flex items-center justify-center'>

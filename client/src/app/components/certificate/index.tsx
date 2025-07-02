@@ -1,9 +1,11 @@
 "use client";
 // This file is a placeholder for the certificate component.
 import * as React from 'react';
-import Image from 'next/image';
 import localFont from 'next/font/local';
 import Header from './certificate_comps/header';
+import { Separator } from '@/components/ui/separator';
+
+import Signature from './certificate_comps/signature';
 // import { useRouter } from 'next/navigation';
 
 export const segoeUI = localFont({
@@ -40,6 +42,19 @@ export interface CertificateProps {
 }
 
 export default function Certificate(props: CertificateProps) {
+
+    function levelColor(): string {
+        if( props.level === 'prata') {
+            return '#C0C0C0';
+        }
+        if( props.level === 'ouro') {
+            return '#FFD700';
+        }
+        if( props.level === 'bronze') {
+            return '#CD7F32';
+        } else return '#009FE3';
+    }
+
     return(
         <div className='w-[720px] h-[516px] bg-white mt-60 p-[10px] shadow-lg flex items-center justify-center'>
             <div className='w-full h-full flex flex-col items-center justify-center gap-4 border-4 border-[#009FE3] p-[2px]'>
@@ -49,17 +64,72 @@ export default function Certificate(props: CertificateProps) {
                         <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '14px', color: '#4A5565' }}>
                             CERTIFICADO DE IMPACTO SOCIAL
                         </div>
-                        <div>
-
+                        <div className=''>
+                            <Separator className='my-1' orientation='horizontal'/>
                         </div>
                         <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
                             SELO DE RESPONSABILIDADE SOCIAL EMPRESARIAL
-                        </div>    
+                        </div>
+                        <div className='w-full h-[108px] bg-[#f9fafb] mt-2 flex items-center justify-center border-1 border-[#f0f0f0] p-2 rounded-[9px]'>
+                            <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '24px', color: levelColor() }}>
+                                Selo Nivel {props.level.toUpperCase()}
+                            </div>
+                        </div>
+                        <div className='w-full mt-4 flex items-center justify-center flex-col gap-2'>
+                            <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '12px', color: '#4A5565' }}>
+                                Certificamos que a empresa
+                            </div>
+                            <div className = 'w-full flex items-center justify-center gap-2 bg-sky-500/5 p-2 rounded-[4px] border-l-4 border-[#009FE3]'>
+                                <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '16px', color: '#4A5565' }}>
+                                    {props.empresa}
+                                </div>
+                            </div>
+                            <div className='flex items-center justify-center text-center w-3/4'>
+                                 <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '12px', color: '#4A5565' }}>
+                                     alcançou o <span className='font-bold' style={{color: levelColor()}}>Nivel {props.level.toUpperCase()}</span> em responsabilidade social empresarial, demonstrando compromisso genuíno com o impacto social e desenvolvimento sustentável da cidade do Recife.
+                                </div>
+                            </div>
+                            <div className='flex flex-col mt-2 items-center justify-center text-center w-full h-[81px] mb-0 pb-0'>
+                                <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
+                                    AUTORIDADES RESPONSAVEIS
+                                </div>
+                                <div className='w-full h-[81px] flex flex-row items-center justify-between gap-6 p-8'>
+                                    <div className='flex flex-col items-center justify-center w-1/3 '>
+                                        <span>Signature</span>
+                                        <Signature orgao='Portal Bora Impactar' cargo='Coordenacao Tecnica' />
+                                    </div>
+                                    <div className='flex flex-col items-center justify-center w-1/3'>
+                                        <span>Signature</span>
+                                        <Signature orgao='Prefeitura do Recife' cargo='Secretário de Desenvolvimento Social' />
+                                    </div>
+                                    <div className='flex flex-col items-center justify-center w-1/3'>
+                                        <span>Signature</span>
+                                        <Signature orgao='Prefeitura do Recife' cargo='Secretário de Desenvolvimento Social' />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='w-full flex flex-row items-center justify-between rounded-[4px] bg-[#f9fafb] border-1 border-[#D1D5DC] p-1 h-1/4 mb-1'>
+                                <div className='w-4/5 flex flex-col items-start justify-center text-center ml-2'>
+                                    <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
+                                        Certificado pode ser verificado em: <a href='https://portal.boraimpactar.recife.pe.gov.br/verificar' style={{ color: '#4A5565', fontFamily: 'monospace'}}>portal.boraimpactar.recife.pe.gov.br/verificar</a> 
+                                    </div>
+                                    <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '7px', color: '#4A5565' }}>
+                                        Este documento possui validade digital e reconhecimento oficial da Prefeitura do Recife • Emitido conforme Lei Municipal de Responsabilidade Social Empresarial
+                                    </div>
+                                </div>
+                                <div className='w-1/5 flex flex-col text-right items-end justify-center'>
+                                    <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '6px', color: '#4A5565' }}>
+                                        ID: {props.id} 
+                                    </div>
+                                     <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '6px', color: '#4A5565' }}>
+                                        Data de Emissão: {props.data_emissao}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-
         </div>
     )
 }
