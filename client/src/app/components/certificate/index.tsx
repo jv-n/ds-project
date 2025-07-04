@@ -4,6 +4,7 @@ import * as React from 'react';
 import localFont from 'next/font/local';
 import Header from './certificate_comps/header';
 import { Separator } from '@/components/ui/separator';
+import Image from 'next/image';
 
 import Signature from './certificate_comps/signature';
 // import { useRouter } from 'next/navigation';
@@ -44,15 +45,27 @@ export interface CertificateProps {
 export default function Certificate(props: CertificateProps) {
 
     function levelColor(): string {
-        if( props.level === 'prata') {
+        if( props.level.toLowerCase() === 'prata') {
             return '#C0C0C0';
         }
-        if( props.level === 'ouro') {
+        if( props.level.toLowerCase() === 'ouro') {
             return '#FFD700';
         }
-        if( props.level === 'bronze') {
+        if( props.level.toLowerCase() === 'bronze') {
             return '#CD7F32';
         } else return '#009FE3';
+    }
+
+    function getBadge():string {
+        if( props.level.toLowerCase() === 'prata'){
+            return '/images/silver.png';
+        }
+        if( props.level.toLowerCase() === 'ouro') {
+            return '/images/gold.png';
+        }
+        if( props.level.toLowerCase() === 'bronze') {
+            return '/images/bronze.png';
+        } else return '/images/silver.png';
     }
 
     return(
@@ -70,9 +83,10 @@ export default function Certificate(props: CertificateProps) {
                         <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
                             SELO DE RESPONSABILIDADE SOCIAL EMPRESARIAL
                         </div>
-                        <div className='w-full h-[108px] bg-[#f9fafb] mt-2 flex items-center justify-center border-1 border-[#f0f0f0] p-2 rounded-[9px]'>
-                            <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '24px', color: levelColor() }}>
-                                Selo Nivel {props.level.toUpperCase()}
+                        <div className='w-full h-[108px] bg-[#f9fafb] mt-2 flex flex-col items-center justify-center border-1 border-[#f0f0f0] p-2 rounded-[9px]'>
+                            <Image src={getBadge()} alt='Logo' width={54} height={54} className='w-[54px] h-[54px] mb-2' />
+                            <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '12px', color: levelColor() }}>
+                                Nivel {props.level}
                             </div>
                         </div>
                         <div className='w-full mt-4 flex items-center justify-center flex-col gap-2'>
@@ -95,15 +109,15 @@ export default function Certificate(props: CertificateProps) {
                                 </div>
                                 <div className='w-full h-[81px] flex flex-row items-center justify-between gap-6 p-8'>
                                     <div className='flex flex-col items-center justify-center w-1/3 '>
-                                        <span>Signature</span>
+                                        <Image src='/images/signature.png' alt='signature' width={41} height={15} className='w-[41px] h-[15px] mb-1' />
                                         <Signature orgao='Portal Bora Impactar' cargo='Coordenacao Tecnica' />
                                     </div>
                                     <div className='flex flex-col items-center justify-center w-1/3'>
-                                        <span>Signature</span>
+                                        <Image src='/images/signature.png' alt='signature' width={41} height={15} className='w-[41px] h-[15px] mb-1' />
                                         <Signature orgao='Prefeitura do Recife' cargo='Secretário de Desenvolvimento Social' />
                                     </div>
                                     <div className='flex flex-col items-center justify-center w-1/3'>
-                                        <span>Signature</span>
+                                        <Image src='/images/signature.png' alt='signature' width={41} height={15} className='w-[41px] h-[15px] mb-1' />
                                         <Signature orgao='Prefeitura do Recife' cargo='Secretário de Desenvolvimento Social' />
                                     </div>
                                 </div>
