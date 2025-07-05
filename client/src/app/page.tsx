@@ -1,107 +1,78 @@
+"use client";
 import Image from "next/image";
-import bronzemedal from '../../assets/bronzemedal.svg';
-import silvermedal from '../../assets/silvermedal.svg';
-import goldenmedal from '../../assets/goldenmedal.svg';
-import CardMedalhaBronze from '../components/card-medalha-bronze';
-import CardMedalhaPrata from "@/components/card-medalha-prata";
-import CardMedalhaOuro from "@/components/card-medalha-ouro";
-
+import Navbar from "@/components/navbar";
+import Rodape from "@/components/rodape";
+import Cardacao from "@/components/card-de-acao";
+import Cardcontatos from "@/components/card-cadastrar-doacao";
+import { useState } from "react";
+import Cardcadastrado from "@/components/card-acao-cadastrada";
+import Modalcontatos from "@/components/modal-contato";
+import Modalcriterios from "@/components/modal-criterios";
 
 export default function Home() {
+  const [ativo, setAtivo] = useState("acoes");
+  const [ativocontato, setAtivoContato] = useState("acoes");
+  const [mostrarModal, setMostrarModal] = useState(false);
 
-  const CardMedalhaBronzeProps = {
-    categoria: "Nível Bronze",
-    pontuacao: "5 a 45 pontos",
-    descricao: "Empresas em fase inicial ou com nível básico de engajamento social.",
-    criterios: "Ver critérios"
-    }
-
-  const CardMedalhaPrataProps = {
-    categoria: "Nível Prata",
-    pontuacao: "46 a 74 pontos",
-    descricao:"Empresas com bom nível de engajamento e programas sociais consistentes.",
-    criterios: "Ver critérios"
+  function abrirModal() {
+    setMostrarModal(true);
   }
 
-  const CardMedalhaOuroProps = {
-    categoria: "Nível Ouro",
-    pontuacao: "75 a 100 pontos",
-    descricao: "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
-    criterios: "Ver critérios"
+  function fecharModal() {
+    setMostrarModal(false);
   }
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <CardMedalhaBronze
-          categoria={CardMedalhaBronzeProps.categoria}
-          pontuacao={CardMedalhaBronzeProps.pontuacao}
-          descricao={CardMedalhaBronzeProps.descricao}
-          criterios={CardMedalhaBronzeProps.criterios}
+    <div className="flex flex-col min-h-screen">
+      <Navbar ativo={ativo} setAtivo={setAtivo} />
+
+      <div className="flex-grow flex justify-center items-center">
+        <Modalcriterios nivel="Ouro" />
+
+        {/* <Cardacao
+          nomeacao="Projeto Esperança"
+          descricao="A ONG atua com comunidades vulneráveis promovendo educação e saúde."
+          ods1="mulheres"
+          ods2="combate a fome"
+          ods3="animais"
+          ods4="ODS"
+          nomedaong="Instituto Viver Bem"
+          onEntrarContato={abrirModal}
         />
 
-        <CardMedalhaPrata
-          categoria={CardMedalhaPrataProps.categoria}
-          pontuacao={CardMedalhaPrataProps.pontuacao}
-          descricao={CardMedalhaPrataProps.descricao}
-          criterios={CardMedalhaPrataProps.criterios}
+        <Cardcontatos
+          nomeacao="Campanha Inverno Solidário"
+          descricao="Ajude famílias em situação de vulnerabilidade com roupas e cobertores."
+          email="contato@ongsocial.org"
+          fone="(41) 99999-0000"
+          qtdacoescadastradas="12"
+          nomedaong="ONG Social Brasil"
+          ativocontato={ativocontato}
         />
 
-        <CardMedalhaOuro 
-          categoria={CardMedalhaOuroProps.categoria}
-          pontuacao={CardMedalhaOuroProps.pontuacao}
-          descricao={CardMedalhaOuroProps.descricao}
-          criterios={CardMedalhaOuroProps.criterios}
+        <Cardcadastrado
+          nomeacao="Campanha Inverno Solidário"
+          descricao="Ajude famílias com roupas e cobertores durante o inverno."
+          email="contato@ongsocial.org"
+          fone="(41) 99999-0000"
+          qtdacoescadastradas="12"
+          nomedaong="ONG Social Brasil"
         />
 
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        {mostrarModal && (
+          <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
+            <Modalcontatos
+              nomedaong="Instituto Viver Bem"
+              nomeacao="Projeto Esperança"
+              emailong="contato@viverbem.org"
+              numeroong="(41) 99999-9999"
+              onEntrarContato={fecharModal}
+            />
+          </div>
+        )} */}
+      </div>
+
+      <Rodape />
     </div>
   );
 }
