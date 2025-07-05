@@ -9,6 +9,7 @@ import Cardcadastrado from "@/components/card-acao-cadastrada";
 import Modalcontatos from "@/components/modal-contato";
 import Modalcriterios from "@/components/modal-criterios";
 
+
 export default function Home() {
   const [ativo, setAtivo] = useState("acoes");
   const [ativocontato, setAtivoContato] = useState("acoes");
@@ -71,6 +72,7 @@ export default function Home() {
           </div>
         )} */}
       </div>
+      
 
       <Rodape />
     </div>
