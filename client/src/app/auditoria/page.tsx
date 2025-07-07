@@ -1,7 +1,11 @@
 "use client";
+import { useState } from "react";
 import RowAuditoria, { type RowAuditoriaProps } from "@/components/row-auditoria";
+// 1. Importe o seu novo componente de modal
+import ModalRevisao from "@/components/modal-revisao";
 
-const auditoriasFicticias: RowAuditoriaProps[] = [
+// Assumindo que a interface RowAuditoriaProps já foi atualizada para incluir 'acao'
+const minhasAuditorias: (RowAuditoriaProps & { acao: string; })[] = [
   {
     id: 'aud1',
     nomeEmpresa: 'Empresa ABC Construções Recife',
@@ -11,7 +15,15 @@ const auditoriasFicticias: RowAuditoriaProps[] = [
     valorDoacao: '500Kg',
     dataDoacao: '2025-06-10T10:00:00Z',
     status: 'aguardando',
-    onClick: () => alert('Revisando doação da Empresa ABC'),
+    documentos: [
+      { id: 'doc1_1', nome: 'Nota_Fiscal_Compra.pdf', tipo: 'PDF', dataEnvio: '2025-06-10T10:00:00Z', url: '#' },
+      { id: 'doc1_2', nome: 'Comprovante_Entrega.pdf', tipo: 'PDF', dataEnvio: '2025-06-10T10:00:00Z', url: '#' },
+      { id: 'doc1_3', nome: 'Nota_Fiscal_Compra.pdf', tipo: 'PDF', dataEnvio: '2025-06-10T10:00:00Z', url: '#' },
+      { id: 'doc1_4', nome: 'Comprovante_Entrega.pdf', tipo: 'PDF', dataEnvio: '2025-06-10T10:00:00Z', url: '#' },
+      { id: 'doc1_5', nome: 'Nota_Fiscal_Compra.pdf', tipo: 'PDF', dataEnvio: '2025-06-10T10:00:00Z', url: '#' },
+      { id: 'doc1_6', nome: 'Comprovante_Entrega.pdf', tipo: 'PDF', dataEnvio: '2025-06-10T10:00:00Z', url: '#' },
+    ],
+    acao: "Doação de Alimentos",
   },
   {
     id: 'aud2',
@@ -22,7 +34,10 @@ const auditoriasFicticias: RowAuditoriaProps[] = [
     valorDoacao: '15 Monitores',
     dataDoacao: '2025-06-09T15:30:00Z',
     status: 'aprovada',
-    onClick: () => alert('Revisando doação da Tec Avançada'),
+    documentos: [
+      { id: 'doc2_1', nome: 'Nota_Fiscal_Monitores.pdf', tipo: 'PDF', dataEnvio: '2025-06-09T15:30:00Z', url: '#' },
+    ],
+    acao: "Doação de Equipamentos",
   },
   {
     id: 'aud3',
@@ -33,24 +48,49 @@ const auditoriasFicticias: RowAuditoriaProps[] = [
     valorDoacao: '200 Unidades',
     dataDoacao: '2025-06-08T11:00:00Z',
     status: 'reprovada',
-    onClick: () => alert('Revisando doação do Comércio Varejista'),
+    documentos: [
+      { id: 'doc3_1', nome: 'Declaracao_Doacao.pdf', tipo: 'PDF', dataEnvio: '2025-06-08T11:00:00Z', url: '#' },
+      { id: 'doc3_2', nome: 'Relacao_Itens.pdf', tipo: 'PDF', dataEnvio: '2025-06-08T11:00:00Z', url: '#' },
+      { id: 'doc3_3', nome: 'Comprovante_Coleta.pdf', tipo: 'PDF', dataEnvio: '2025-06-08T11:00:00Z', url: '#' },
+    ],
+    acao: "Doação de Roupas",
   },
 ];
 
 export default function AuditoriaPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAuditoria, setSelectedAuditoria] = useState<(RowAuditoriaProps & { acao?: string; }) | null>(null);
+
+  function openModal(auditoria: RowAuditoriaProps & { acao?: string; }) {
+    setSelectedAuditoria(auditoria);
+    setIsModalOpen(true);
+  }
+
+  function closeModal() {
+    setIsModalOpen(false);
+  }
+
   return (
     <main className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-2xl font-bold mb-6 text-gray-900">
         Painel de Auditoria
       </h1>
       <div className="flex flex-col overflow-hidden rounded-lg shadow">
-        {auditoriasFicticias.map((auditoria) => (
+        {minhasAuditorias.map((auditoria) => (
           <RowAuditoria
             key={auditoria.id}
             {...auditoria}
+            onClick={() => openModal(auditoria)}
           />
         ))}
       </div>
+
+      {/* 2. Renderize o modal aqui, passando os estados e funções como props */}
+      <ModalRevisao 
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        auditoria={selectedAuditoria}
+      />
     </main>
   );
 }

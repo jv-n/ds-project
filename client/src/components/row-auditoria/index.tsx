@@ -2,6 +2,14 @@ import { format } from 'date-fns';
 import Chip from '@/components/chip-status';
 import Button from '@/components/button';
 
+export interface Documento {
+    id: string;
+    nome: string;
+    tipo: string;
+    dataEnvio: string;
+    url: string;
+}
+
 export interface RowAuditoriaProps {
    id: string; 
    nomeEmpresa: string;
@@ -11,7 +19,9 @@ export interface RowAuditoriaProps {
    valorDoacao: string;
    dataDoacao: string;
    status: 'aguardando' | 'aprovada' | 'reprovada';
-   onClick: () => void;
+   onClick?: () => void;
+   documentos: Documento[];
+   acao: string;
 }   
 
 export default function RowAuditoria(props: RowAuditoriaProps) {
@@ -33,7 +43,18 @@ export default function RowAuditoria(props: RowAuditoriaProps) {
             <Chip status={props.status} />
         </div>
         <div className='w-auto'>
-            <Button variant="secondary" onClick={props.onClick}>
+            <Button 
+                variant="secondary" 
+                onClick={(event) => {
+                    // Impede que o clique no botão também acione o clique da linha inteira
+                    event.stopPropagation();
+
+                    // Chama a função que veio das props, se ela existir
+                    if (props.onClick) {
+                        props.onClick();
+                    }
+                }}
+            >
                 Revisar
             </Button>
         </div>
