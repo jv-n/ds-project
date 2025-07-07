@@ -9,6 +9,7 @@ import { useState } from "react";
 import Cardcadastrado from "@/components/card-acao-cadastrada";
 import Modalcontatos from "@/components/modal-contato";
 import Modalcriterios from "@/components/modal-criterios";
+import SelosPage from "./selospage";
 
 export default function Home() {
   const [ativo, setAtivo] = useState("acoes");
@@ -28,7 +29,6 @@ export default function Home() {
       <Navbar ativo={ativo} setAtivo={setAtivo} />
 
       <div className="flex-grow flex justify-center items-center">
-        <Modalcriterios nivel="Ouro" />
 
         {/* <Cardacao
           nomeacao="Projeto Esperança"
@@ -71,6 +71,12 @@ export default function Home() {
             />
           </div>
         )} */}
+          {ativo === "acoes" && (
+            <Modalcriterios nivel="Ouro" />
+          )}
+         {ativo === "selos" && (
+            <SelosPage />
+          )}
       </div>
 
       <Rodape />

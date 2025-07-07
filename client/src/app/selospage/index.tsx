@@ -1,11 +1,14 @@
 import Image from "next/image";
 import { logoamassada } from "@/assets"; 
 
-import DetalhesPontuacao from "./DetalhesPontuacao";
-import NivelSeloCard from "./NivelSeloCard";
+import DetalhesPontuacao from "@/components/accordion-detalhes-pontuacao";
+import CardMedalhaBronze from "@/components/card-medalha-bronze";
+import CardMedalhaPrata from "@/components/card-medalha-prata";
+import CardMedalhaOuro from "@/components/card-medalha-ouro";
 
 
-import { selobronze, seloprata, seloouro } from "@/assets"; 
+
+import { Bronze, Prata, Ouro } from "@/assets"; 
 export default function SelosPage() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-8">
@@ -20,7 +23,7 @@ export default function SelosPage() {
         <div className="flex flex-col md:flex-row items-center justify-between mt-8">
           <div className="flex flex-col items-center md:items-start">
             {/* Ícone do Selo Prata*/}
-            <Image src={seloprata} alt="Ícone Nível Prata" width={50} height={50} className="mb-2" />
+            <Image src={Prata} alt="Ícone Nível Prata" width={50} height={50} className="mb-2" />
             <h2 className="text-2xl font-bold text-[#1B2029]">Nível Prata</h2>
             <p className="text-gray-600">Pontuação Atual: 68 pontos</p>
             <p className="text-gray-600 text-sm mt-1">
@@ -54,23 +57,23 @@ export default function SelosPage() {
       <div className="w-full max-w-4xl mt-8">
         <h2 className="text-2xl font-bold text-[#1B2029] mb-6">Níveis de Selo</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <NivelSeloCard
-            icon={selobronze} 
-            nivel="Nível Bronze"
-            pontos="5 a 45 pontos"
+          <CardMedalhaBronze
+            categoria="Nível Bronze"
+            pontuacao="5 a 45 pontos"
             descricao="Empresas em fase inicial ou com nível básico de engajamento social."
+            criterios="Ver Criterios"
           />
-          <NivelSeloCard
-            icon={seloprata} 
-            nivel="Nível Prata"
-            pontos="46 a 74 pontos"
+          <CardMedalhaPrata
+            categoria="Nível Prata"
+            pontuacao="46 a 74 pontos"
             descricao="Empresas com bom nível de engajamento e programas sociais consistentes."
+            criterios="Ver Criterios"
           />
-          <NivelSeloCard
-            icon={seloouro} 
-            nivel="Nível Ouro"
-            pontos="75 a 100 pontos"
+          <CardMedalhaOuro
+            categoria="Nível Ouro"
+            pontuacao="75 a 100 pontos"
             descricao="Empresas líderes em responsabilidade social com impacto significativo e cultura de engajamento enraizada."
+            criterios="Ver Criterios"
           />
         </div>
       </div>
