@@ -10,6 +10,7 @@ export interface Cardacaoprops {
   ods3: string;
   ods4: string;
   nomedaong: string;
+  onEntrarContato: () => void;
 }
 
 export default function Cardacao(props: Cardacaoprops) {
@@ -40,7 +41,10 @@ export default function Cardacao(props: Cardacaoprops) {
       </div>
 
       <div className="flex items-center mt-[16px]">
-        <div className="h-[32px] w-[144px] bg-[#294BB6] flex justify-center items-center rounded-sm text-white text-sm cursor-pointer">
+        <div
+          className="h-[32px] w-[144px] bg-[#294BB6] flex justify-center items-center rounded-sm text-white text-sm cursor-pointer"
+          onClick={props.onEntrarContato}
+        >
           Entrar em contato
         </div>
         <div className="text-[12px] text-[#0B236D] ml-auto mr-[12px] cursor-pointer">

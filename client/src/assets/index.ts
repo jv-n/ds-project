@@ -7,11 +7,32 @@ export { logoamassada };
 import predio from "./predio.svg";
 export { predio };
 
-import selobronze from "./selobronze.svg";
-export { selobronze };
+import mail from "./email.svg";
+export { mail };
 
-import seloprata from "./seloprata.svg";
-export { seloprata };
+import fone from "./fone.svg";
+export { fone };
 
-import seloouro from "./seloouro.svg";
-export { seloouro };
+import maozinha from "./maozinha.svg";
+export { maozinha };
+
+import balao from "./balao.svg";
+export { balao };
+
+import emailpopup from "./emailpopup.svg";
+export { emailpopup };
+
+import balaopopup from "./balaopopup.svg";
+export { balaopopup };
+
+import confirma from "./confirma.svg";
+export { confirma };
+
+import Ouro from "./ouro.svg";
+export { Ouro };
+
+import Prata from "./prata.svg";
+export { Prata };
+
+import Bronze from "./bronze.svg";
+export { Bronze };

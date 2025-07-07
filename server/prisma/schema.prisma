@@ -10,14 +10,80 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-generator dbml {
-  provider = "prisma-dbml-generator"
+
+model Usuario {
+  id         Int        @id @default(autoincrement())
+  cnpj       String     @unique
+  email      String     @unique
+  senha      String
+  telefone   String?
+
+  ong        ONG?
+  empresa    Empresa?
+  prefeitura Prefeitura?
 }
 
-model User {
-  id       String  @id @default(uuid())
-  name     String
-  phone    String?
-  email    String  @unique
-  password String
+model ONG {
+  id             Int       @id @default(autoincrement())
+  ods            String?
+  
+  usuarioId      Int       @unique
+  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
+
+  apoiosRecebidos Apoio[]
+}
+
+model Empresa {
+  id         Int       @id @default(autoincrement())
+  
+  usuarioId  Int       @unique
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+
+  apoios     Apoio[]
+  criterios  Criterio[]
+}
+
+model Prefeitura {
+  id         Int       @id @default(autoincrement())
+  nome       String
+  usuarioId  Int       @unique
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+
+  apoios     Apoio[]
+}
+
+model Apoio {
+  id           Int        @id @default(autoincrement())
+  data         DateTime
+  valor        Float
+  tipoAjuda    String
+  documentacao String
+
+  empresaId    Int
+  ongId        Int
+  prefeituraId Int?
+
+  empresa      Empresa    @relation(fields: [empresaId], references: [id])
+  ong          ONG        @relation(fields: [ongId], references: [id])
+  prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
+}
+
+model Criterio {
+  id         Int      @id @default(autoincrement())
+  tipo       String
+  pontuacao  Int
+
+  empresaId  Int
+  seloId     Int
+
+  empresa    Empresa  @relation(fields: [empresaId], references: [id])
+  selo       Selo     @relation(fields: [seloId], references: [id])
+}
+
+model Selo {
+  id         Int        @id @default(autoincrement())
+  tipo       String
+  tier       String
+
+  criterios  Criterio[]
 }
