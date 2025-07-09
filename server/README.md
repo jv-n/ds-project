@@ -4,23 +4,18 @@
 
 1. Assegure-se de ter o **docker/docker-compose**, bem como o gerenciador de pacotes **pnpm** instalados em sua máquina.
 
-2. Clone o repositório:
 
-```bash
-git clone https://github.com/CITi-UFPE/node-boilerplate.git
-```
-
-3. Instale as dependências:
+2. Instale as dependências:
 
 ```bash
 pnpm install
 ```
 
-4. Crie um arquivo **.env** na raiz do projeto, com as seguintes variáveis de ambiente:
+3. Crie um arquivo **.env** na raiz do projeto, com as seguintes variáveis de ambiente:
 
 ```dotenv
 # ###### GENERAL SETTINGS #######
-PROJECT_NAME=boilerplate
+PROJECT_NAME=dessoft
 
 # ###### SERVER SETTINGS #######
 SERVER_PORT=3001
@@ -46,29 +41,19 @@ DATABASE_URL=${DATABASE_TYPE}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE
 # ###### JWT SETTINGS FOR AUTHENTICATION #######
 JWT_ACCESS_SECRET=0551c0ed-6389-46b1-839e-2e28fc191c89 # token for 30sec
 JWT_REFRESH_SECRET=92fba49f6912d14733332bb9ebaac1562f51ee685594acf103d71f685f70868b # token for 7 days
-
-# ###### S3 SETTINGS FOR FILE UPLOADS #######
-S3_ENDPOINT=XXXXXX.digitaloceanspaces.com
-S3_BUCKET=exemplo-bucket
-S3_KEY=
-S3_SECRET=
 ```
 
-5. Para rodar o servidor, execute:
+4. Para rodar o servidor, execute:
 
 ```bash
 docker-compose up
 ```
 
-_**NOTE**: existem diversas variações do comando docker-compose. Algumas usam hífen, algumas não. Alguma precisam de sudo, outras não. Verifique o que funciona no seu caso e tome de exemplo para as demais instruções._
-
-6. Para rodar as migrations, execute com o servidor rodando em outro terminal:
+5. Para rodar as migrations, execute com o servidor rodando em outro terminal:
 
 ```bash
 pnpm migration
 ```
-
-7. Voilá! O servidor está rodando.
 
 ## Funcionalidades pré-implementadas:
 
@@ -127,7 +112,7 @@ pnpm migration
 
 ### Erro ao rodar `pnpm migration`:
 
-Em caso de erros ao rodar pnpm migrations, siga o seguinte modelo mental:
+Em caso de erros ao rodar pnpm migration, siga o seguinte modelo mental:
 
 1. **Verifique se o container está rodando.** Se não estiver, rode `docker-compose up` e tente novamente em outro terminal.
 2. **Delete a pasta de migrations e tente novamente.** Isso é uma medida aparentemente extrema, mas não há nada de errado nela a não ser que o projeto já tenha sido deployado em produção. Nesse caso, siga as instruções um pouco mais avançadas [neste link](https://www.prisma.io/docs/guides/migrate/production-troubleshooting), preferencialmente acompanhado de alguém com um pouco mais de conhecimento em SQL.
