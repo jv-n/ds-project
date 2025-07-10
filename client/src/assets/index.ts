@@ -28,11 +28,14 @@ export { balaopopup };
 import confirma from "./confirma.svg";
 export { confirma };
 
-import Ouro from "./ouro.svg";
-export { Ouro };
+import Goldenmedal from "./goldenmedal.svg";
+export { Goldenmedal };
 
-import Prata from "./prata.svg";
-export { Prata };
+import Silvermedal from "./silvermedal.svg";
+export { Silvermedal };
 
-import Bronze from "./bronze.svg";
-export { Bronze };
+import Bronzemedal from "./bronzemedal.svg";
+export { Bronzemedal };
+
+import xsair from "./xsair.svg";
+export { xsair };

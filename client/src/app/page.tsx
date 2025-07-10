@@ -8,11 +8,14 @@ import { useState } from "react";
 import Cardcadastrado from "@/components/card-acao-cadastrada";
 import Modalcontatos from "@/components/modal-contato";
 import Modalcriterios from "@/components/modal-criterios";
+import CardMedalhaBronze from "@/components/card-medalha-bronze";
+import { Bronzemedal } from "@/assets";
 
 export default function Home() {
   const [ativo, setAtivo] = useState("acoes");
   const [ativocontato, setAtivoContato] = useState("acoes");
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarcriterios, Setcriterios] = useState("off");
 
   function abrirModal() {
     setMostrarModal(true);
@@ -27,7 +30,13 @@ export default function Home() {
       <Navbar ativo={ativo} setAtivo={setAtivo} />
 
       <div className="flex-grow flex justify-center items-center">
-        <Modalcriterios nivel="Ouro" />
+        <CardMedalhaBronze abrirModal={Setcriterios} />
+
+        {mostrarcriterios == "Bronzemedal" && (
+          <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
+            <Modalcriterios nivel="Bronzemedal" fecharmodal={Setcriterios} />
+          </div>
+        )}
 
         {/* <Cardacao
           nomeacao="Projeto Esperança"

@@ -12,7 +12,7 @@ export interface propspopup {
 }
 
 export default function Modalcontatos(props: propspopup) {
-  return (
+  return (<div>
     <div className="w-[450px] h-[300px] flex flex-col bg-white rounded-lg shadow p-[22px] font-sans text-[#1B2029]">
       <div className="flex">
         <Image src={balao} alt="" className="" />
@@ -61,6 +61,6 @@ export default function Modalcontatos(props: propspopup) {
           Confirmar contato
         </div>
       </div>
-    </div>
+    </div></div>
   );
 }

@@ -1,39 +1,42 @@
 import Image from "next/image";
-import { Ouro, Prata, Bronze } from "@/assets";
+import { Goldenmedal, Silvermedal, Bronzemedal, xsair } from "@/assets";
 
 export interface Criteriosprops {
-  nivel: "Ouro" | "Prata" | "Bronze";
+  nivel: "Goldenmedal" | "Silvermedal" | "Bronzemedal";
+  fecharmodal: (nivel: string) => void;
 }
 
 const imagensPorNivel = {
-  Ouro,
-  Prata,
-  Bronze,
+  Goldenmedal,
+  Silvermedal,
+  Bronzemedal,
 };
 
 const coresPorNivel = {
-  Ouro: "#F5B800",
-  Prata: "#757575",
-  Bronze: "#A56424",
+  Goldenmedal: "#F5B800",
+  Silvermedal: "#757575",
+  Bronzemedal: "#A56424",
 };
 
 const cordescricaopornivel = {
-  Ouro: "#FFF8DC",
-  Prata: "#F8F8FF",
-  Bronze: "#FDF5E6",
+  Goldenmedal: "#FFF8DC",
+  Silvermedal: "#F8F8FF",
+  Bronzemedal: "#FDF5E6",
 };
 
 const pontosPorNivel = {
-  Bronze: "5 a 45 pontos",
-  Prata: "46 a 74 pontos",
-  Ouro: "75 a 100 pontos",
+  Bronzemedal: "5 a 45 pontos",
+  Silvermedal: "46 a 74 pontos",
+  Goldenmedal: "75 a 100 pontos",
 };
 
 const descricao = {
-  Bronze: "Empresas em fase inicial ou com nível básico de engajamento social.",
-  Prata:
+  Bronzemedal:
+    "Empresas em fase inicial ou com nível básico de engajamento social.",
+  Silvermedal:
     "Empresas com bom nível de engajamento e programas sociais consistentes.",
-  Ouro: "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
+  Goldenmedal:
+    "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
 };
 
 export default function Modalcriterios(props: Criteriosprops) {
@@ -47,11 +50,19 @@ export default function Modalcriterios(props: Criteriosprops) {
         />
 
         <div className="ml-[5px]">
-          <div
-            style={{ color: coresPorNivel[props.nivel] }}
-            className="font-bold text-[20px]"
-          >
-            Nível {props.nivel}
+          <div className="flex">
+            <div
+              style={{ color: coresPorNivel[props.nivel] }}
+              className="font-bold text-[20px]"
+            >
+              Nível {props.nivel}
+            </div>
+            <Image
+              onClick={() => props.fecharmodal("off")}
+              src={xsair}
+              alt=""
+              className="ml-[425px] cursor-pointer"
+            />
           </div>
           <div className="text-[#4A5565] mt-[-5px]">
             {" "}

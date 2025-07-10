@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import goldenmedal from '../../assets/goldenmedal.svg';
+import { Goldenmedal } from "@/assets";
 
 export interface CardMedalhaOuroProps {
     categoria: string;
@@ -13,7 +13,7 @@ export default function CardMedalhaOuro(props: CardMedalhaOuroProps){
     return(
         <div className="w-[308px] h-[250.25px] flex flex-col bg-[#FFF8DC] rounded-xl shadow p-4 font-sans items-center ml-8">
             <div className="flex justify-center">
-                <Image src={goldenmedal} alt="Ícone medalha de ouro" />
+                <Image src={Goldenmedal} alt="Ícone medalha de ouro" />
             </div>
             
             <div className= "text-[15.8px] text-[#F5B800] font-bold mt-[10px]">{props.categoria}</div>
