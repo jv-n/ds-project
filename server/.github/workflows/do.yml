@@ -1,0 +1,79 @@
+on: create
+jobs:
+  setup-digitalocean:
+    if: ${{ startsWith(github.ref, 'refs/heads/main') }}
+    runs-on: ubuntu-latest
+    env:
+      CLIENT_DOMAIN: ${{ secrets.CLIENT_DOMAIN }}
+      PUBLIC_KEY: ${{ secrets.CITI_PUBLIC_KEY }}
+      FINGERPRINT: ${{ secrets.CITI_FINGERPRINT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Prepare user_data script
+        run: |
+          PASSWORD=$(openssl rand -base64 33 | tr -d '+/=' | cut -c1-32)
+          sed -i "s/PASSWORD_PLACEHOLDER/$PASSWORD/" .github/user_data.sh
+          echo "DOKKU_PASSWORD=$PASSWORD"
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_TOKEN }}
+      - name: Create Project
+        run: |
+          doctl projects create --name ${{github.event.repository.name}} --purpose "Web Application" | awk 'NR==2{print $1}' > project_id.txt
+      - name: Create Droplet
+        run: |
+          doctl compute droplet create ${{github.event.repository.name}} --user-data-file .github/user_data.sh --image dokku-20-04 --region nyc1 --size s-1vcpu-1gb --ssh-keys $FINGERPRINT --wait | tee >(awk 'NR==2{print $1}' > droplet_id.txt) >(awk 'NR==2{print $3}' > droplet_ip.txt)
+      - name: Assign Droplet to Project
+        run: |
+          doctl projects resources assign $(cat project_id.txt) --resource do:droplet:$(cat droplet_id.txt)
+      - name: Add SSH key with Fibonacci retries
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p /home/runner/.ssh
+
+          # Fibonacci retry logic
+          fib_a=2
+          fib_b=3
+          for i in {1..8}; do
+            if ssh-keyscan -T 10 $(cat droplet_ip.txt) >> /home/runner/.ssh/known_hosts; then
+              echo "SSH keyscan successful on attempt $i"
+              break
+            else
+              echo "SSH keyscan failed on attempt $i, retrying in $fib_a seconds..."
+              sleep $fib_a
+              # Fibonacci sequence logic
+              fib_next=$((fib_a + fib_b))
+              fib_a=$fib_b
+              fib_b=$fib_next
+            fi
+          done
+
+          echo "${{ secrets.CITI_PRIVATE_KEY }}" > /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add /home/runner/.ssh/github_actions
+
+      - name: Setup Dokku
+        run: |
+          ssh -i /home/runner/.ssh/github_actions -o StrictHostKeyChecking=no root@$(cat droplet_ip.txt) "CLIENT_DOMAIN='${{ env.CLIENT_DOMAIN }}' PUBLIC_KEY='${{ env.PUBLIC_KEY }}' bash -s" < .github/setup-dokku.sh
+      - name: Commit droplet IP to repo
+        run: |
+          git config --global user.email "citi@cin.ufpe.br"
+          git config --global user.name "citiufpe"
+          git add droplet_ip.txt
+          git commit -m "Add droplet IP"
+          git push origin main
+      - name: Setup droplet ip
+        run: |
+          echo "DROPLET_IP=$(cat droplet_ip.txt)" >> $GITHUB_ENV
+      - name: Dokku deploy
+        uses: vitalyliber/dokku-github-action@v7.1
+        env:
+          PRIVATE_KEY: ${{ secrets.CITI_PRIVATE_KEY }}
+          HOST: ${{ env.DROPLET_IP }}
+          PROJECT: server
+          BRANCH: main

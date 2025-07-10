@@ -1,0 +1,72 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Usuario {
+  id Int [pk, increment]
+  email String [unique, not null]
+  senha String [not null]
+  telefone String
+  nome String
+  ongs ONG [not null]
+  empresas Empresa [not null]
+}
+
+Table ONG {
+  id Int [pk, increment]
+  nome String
+  causa String [not null]
+  localizacao String [not null]
+  apoio String
+  usuarioId Int [not null]
+  usuario Usuario [not null]
+  acoes Acao [not null]
+  projetos Projeto [not null]
+}
+
+Table Empresa {
+  id Int [pk, increment]
+  nome String
+  notaFiscalProj String
+  notaFiscalAcao String
+  usuarioId Int [not null]
+  usuario Usuario [not null]
+  acoes Acao [not null]
+  projetos Projeto [not null]
+  selos Selo [not null]
+}
+
+Table Acao {
+  id Int [pk, increment]
+  nome String
+  notaFiscal String
+  ongId Int [not null]
+  ong ONG [not null]
+  empresas Empresa [not null]
+}
+
+Table Projeto {
+  id Int [pk, increment]
+  nome String
+  ongId Int [not null]
+  ong ONG [not null]
+  empresas Empresa [not null]
+}
+
+Table Selo {
+  id Int [pk, increment]
+  tipo String [not null]
+  tier Int [not null]
+  empresaId Int [not null]
+  empresa Empresa [not null]
+}
+
+Ref: ONG.usuarioId > Usuario.id
+
+Ref: Empresa.usuarioId > Usuario.id
+
+Ref: Acao.ongId > ONG.id
+
+Ref: Projeto.ongId > ONG.id
+
+Ref: Selo.empresaId > Empresa.id
