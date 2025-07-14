@@ -4,69 +4,82 @@
 
 Table Usuario {
   id Int [pk, increment]
+  cnpj String [unique, not null]
   email String [unique, not null]
   senha String [not null]
   telefone String
-  nome String
-  ongs ONG [not null]
-  empresas Empresa [not null]
+  ong ONG
+  empresa Empresa
+  prefeitura Prefeitura
 }
 
 Table ONG {
   id Int [pk, increment]
-  nome String
-  causa String [not null]
-  localizacao String [not null]
-  apoio String
-  usuarioId Int [not null]
+  ods String
+  usuarioId Int [unique, not null]
   usuario Usuario [not null]
-  acoes Acao [not null]
-  projetos Projeto [not null]
+  apoiosRecebidos Apoio [not null]
 }
 
 Table Empresa {
   id Int [pk, increment]
-  nome String
-  notaFiscalProj String
-  notaFiscalAcao String
-  usuarioId Int [not null]
+  usuarioId Int [unique, not null]
   usuario Usuario [not null]
-  acoes Acao [not null]
-  projetos Projeto [not null]
-  selos Selo [not null]
+  apoios Apoio [not null]
+  criterios Criterio [not null]
 }
 
-Table Acao {
+Table Prefeitura {
   id Int [pk, increment]
-  nome String
-  notaFiscal String
-  ongId Int [not null]
-  ong ONG [not null]
-  empresas Empresa [not null]
+  nome String [not null]
+  usuarioId Int [unique, not null]
+  usuario Usuario [not null]
+  apoios Apoio [not null]
 }
 
-Table Projeto {
+Table Apoio {
   id Int [pk, increment]
-  nome String
+  data DateTime [not null]
+  valor Float [not null]
+  tipoAjuda String [not null]
+  documentacao String [not null]
+  empresaId Int [not null]
   ongId Int [not null]
+  prefeituraId Int
+  empresa Empresa [not null]
   ong ONG [not null]
-  empresas Empresa [not null]
+  prefeitura Prefeitura
+}
+
+Table Criterio {
+  id Int [pk, increment]
+  tipo String [not null]
+  pontuacao Int [not null]
+  empresaId Int [not null]
+  seloId Int [not null]
+  empresa Empresa [not null]
+  selo Selo [not null]
 }
 
 Table Selo {
   id Int [pk, increment]
   tipo String [not null]
-  tier Int [not null]
-  empresaId Int [not null]
-  empresa Empresa [not null]
+  tier String [not null]
+  criterios Criterio [not null]
 }
 
-Ref: ONG.usuarioId > Usuario.id
+Ref: ONG.usuarioId - Usuario.id
 
-Ref: Empresa.usuarioId > Usuario.id
+Ref: Empresa.usuarioId - Usuario.id
 
-Ref: Acao.ongId > ONG.id
+Ref: Prefeitura.usuarioId - Usuario.id
 
-Ref: Projeto.ongId > ONG.id
+Ref: Apoio.empresaId > Empresa.id
 
-Ref: Selo.empresaId > Empresa.id
+Ref: Apoio.ongId > ONG.id
+
+Ref: Apoio.prefeituraId > Prefeitura.id
+
+Ref: Criterio.empresaId > Empresa.id
+
+Ref: Criterio.seloId > Selo.id
