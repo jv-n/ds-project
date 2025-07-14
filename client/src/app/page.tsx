@@ -29,7 +29,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Navbar ativo={ativo} setAtivo={setAtivo} />
 
-      <div className="flex-grow flex justify-center items-center">
+      <div className="flex-grow flex flex-col items-center">
         <div className="flex justify-center mt-6">
           <Link href="/formulario-empresas">
             <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
