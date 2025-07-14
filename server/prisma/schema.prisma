@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -11,64 +11,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  senha    String
-  telefone String?
-  nome     String?
-
-  ongs     ONG[]
-  empresas Empresa[]
-}
-
-model ONG {
-  id           Int       @id @default(autoincrement())
-  nome     String?
-  causa        String
-  localizacao  String
-  apoio        String?
-  usuarioId    Int
-  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
-  
-  acoes        Acao[]
-  projetos     Projeto[]
-}
-
 model Empresa {
   id              Int       @id @default(autoincrement())
-  nome     String?
-  notaFiscalProj  String?
-  notaFiscalAcao  String?
-  usuarioId       Int
-  usuario         Usuario   @relation(fields: [usuarioId], references: [id])
-  
+  nome            String?
+  cnpj            String?
+  email           String?
+  senha           String?
+  colaboradores   Int?
+
   acoes           Acao[]    @relation("ApoioEmpresaAcao")
-  projetos        Projeto[] @relation("ApoioEmpresaProjeto")
-  selos           Selo[]
+  pontos          Int?        @default(0)
+  selo            String?
+  ods             EmpresaODS[]     
+}
+
+model ODS {
+  id        Int          @id @default(autoincrement())
+  titulo    String        @unique
+  empresas  EmpresaODS[]
+}
+
+model EmpresaODS {
+  empresaId Int
+  odsId     Int
+
+  empresa Empresa @relation(fields: [empresaId], references: [id])
+  ods     ODS     @relation(fields: [odsId], references: [id])
+
+  @@id([empresaId, odsId])
 }
 
 model Acao {
   id          Int      @id @default(autoincrement())
-  nome     String?
-  notaFiscal  String?
-  ongId       Int
-  ong         ONG      @relation(fields: [ongId], references: [id])
-  empresas    Empresa[] @relation("ApoioEmpresaAcao")
-}
-
-model Projeto {
-  id          Int       @id @default(autoincrement())
   nome        String?
-  ongId       Int
-  ong         ONG       @relation(fields: [ongId], references: [id])
-  empresas    Empresa[] @relation("ApoioEmpresaProjeto")
-}
-
-model Selo {
-  id         Int     @id @default(autoincrement())
-  tipo       String
-  tier       Int
-  empresaId  Int
-  empresa    Empresa @relation(fields: [empresaId], references: [id])
+  notaFiscal  String?
+  ong         String
+  empresas    Empresa[] @relation("ApoioEmpresaAcao")
 }
