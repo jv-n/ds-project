@@ -1,5 +1,6 @@
 // page.tsx
 "use client";
+import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
@@ -10,7 +11,6 @@ import Cardcadastrado from "@/components/card-acao-cadastrada";
 import Modalcontatos from "@/components/modal-contato";
 import Modalcriterios from "@/components/modal-criterios";
 import SelosPage from "./selospage";
-
 
 export default function Home() {
   const [ativo, setAtivo] = useState("acoes");
@@ -29,8 +29,14 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Navbar ativo={ativo} setAtivo={setAtivo} />
 
-      <div className="flex-grow flex justify-center items-center">
-
+      <div className="flex-grow flex flex-col items-center">
+        <div className="flex justify-center mt-6">
+          <Link href="/formulario-empresas">
+            <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+              Ir para o Formulário de Empresas
+            </button>
+          </Link>
+        </div>
         {/* <Cardacao
           nomeacao="Projeto Esperança"
           descricao="A ONG atua com comunidades vulneráveis promovendo educação e saúde."
@@ -72,14 +78,9 @@ export default function Home() {
             />
           </div>
         )} */}
-          {ativo === "acoes" && (
-            <Modalcriterios nivel="Ouro" />
-          )}
-         {ativo === "selos" && (
-            <SelosPage />
-          )}
+        {ativo === "acoes" && <Modalcriterios nivel="Ouro" />}
+        {ativo === "selos" && <SelosPage />}
       </div>
-      
 
       <Rodape />
     </div>
