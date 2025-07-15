@@ -1,41 +1,33 @@
 import Image from "next/image";
-import { logoamassada } from "@/assets";
+import { logoamassada } from "@/assets"; 
 
 import DetalhesPontuacao from "@/components/accordion-detalhes-pontuacao";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 
-import { Bronze, Prata, Ouro } from "@/assets";
+
+
+import { Bronze, Prata, Ouro } from "@/assets"; 
 export default function SelosPage() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-8">
       {/* Cabeçalho do Selo */}
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8 mb-8">
-        <h1 className="text-3xl font-bold text-[#1B2029]">
-          Selo de Impacto Social
-        </h1>
+        <h1 className="text-3xl font-bold text-[#1B2029]">Selo de Impacto Social</h1>
         <p className="text-gray-600 mt-2">
-          Avalie o nível de responsabilidade social da sua empresa e veja os
-          critérios para cada nível do selo
+          Avalie o nível de responsabilidade social da sua empresa e veja os critérios para cada nível do selo
         </p>
 
         {/* Nível Atual e Botão */}
         <div className="flex flex-col md:flex-row items-center justify-between mt-8">
           <div className="flex flex-col items-center md:items-start">
             {/* Ícone do Selo Prata*/}
-            <Image
-              src={Prata}
-              alt="Ícone Nível Prata"
-              width={50}
-              height={50}
-              className="mb-2"
-            />
+            <Image src={Prata} alt="Ícone Nível Prata" width={50} height={50} className="mb-2" />
             <h2 className="text-2xl font-bold text-[#1B2029]">Nível Prata</h2>
             <p className="text-gray-600">Pontuação Atual: 68 pontos</p>
             <p className="text-gray-600 text-sm mt-1">
-              Empresas com bom nível de engajamento e programas sociais
-              consistentes.
+              Empresas com bom nível de engajamento e programas sociais consistentes.
             </p>
           </div>
           <button className="bg-[#009FE3] text-white px-6 py-3 rounded-lg flex items-center gap-2 mt-4 md:mt-0">
@@ -63,9 +55,7 @@ export default function SelosPage() {
 
       {/* Níveis de Selo */}
       <div className="w-full max-w-4xl mt-8">
-        <h2 className="text-2xl font-bold text-[#1B2029] mb-6">
-          Níveis de Selo
-        </h2>
+        <h2 className="text-2xl font-bold text-[#1B2029] mb-6">Níveis de Selo</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <CardMedalhaBronze
             categoria="Nível Bronze"
