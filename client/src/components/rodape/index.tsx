@@ -10,13 +10,6 @@ export default function Rodape() {
         <div className="text-xl">A união que transforma </div>
         <div className="text-xl">vidas</div>
       </div>
-
-      <div className="flex-col ml-[100px] mb-[10px]">
-        <div className="text-xl font-bold">Portal</div>
-        <div className="text-xl mt-[10px]">Ações</div>
-        <div className="text-xl mt-[10px]">Minhas doações</div>
-        <div className="text-xl mt-[10px]">Selos</div>
-      </div>
     </div>
   );
 }
