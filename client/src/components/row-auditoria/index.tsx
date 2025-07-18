@@ -22,6 +22,7 @@ export interface RowAuditoriaProps {
    onClick?: () => void;
    documentos: Documento[];
    acao: string;
+   motivoReprovacao?: string;
 }   
 
 export default function RowAuditoria(props: RowAuditoriaProps) {
@@ -42,20 +43,19 @@ export default function RowAuditoria(props: RowAuditoriaProps) {
         <div className='w-[146px] flex justify-start'>
             <Chip status={props.status} />
         </div>
-        <div className='w-auto'>
+        <div className='w-[125px]'>
             <Button 
                 variant="secondary" 
                 onClick={(event) => {
-                    // Impede que o clique no botão também acione o clique da linha inteira
+                    
                     event.stopPropagation();
 
-                    // Chama a função que veio das props, se ela existir
                     if (props.onClick) {
                         props.onClick();
                     }
                 }}
             >
-                Revisar
+                {props.status === 'aguardando' ? 'Revisar' : 'Ver Detalhes'}
             </Button>
         </div>
     </div>

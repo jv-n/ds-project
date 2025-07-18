@@ -55,6 +55,7 @@ const minhasAuditorias: (RowAuditoriaProps & { acao: string; })[] = [
       { id: 'doc3_3', nome: 'Comprovante_Coleta.pdf', tipo: 'PDF', dataEnvio: '2025-06-08T11:00:00Z', url: '#' },
     ],
     acao: "Doação de Roupas",
+    motivoReprovacao: 'A nota fiscal apresentada não corresponde aos itens listados na declaração de doação. Por favor, envie o documento correto para uma nova análise.'
   },
 ];
 
@@ -188,7 +189,7 @@ export default function AuditoriaPage() {
                 <span className="font-sans text-[12px] font-semibold text-[#6A7282]">STATUS</span>
             </div>
 
-            <div className="w-[90px]">
+            <div className="w-[125px]">
                 <span className="font-sans text-[12px] font-semibold text-[#6A7282]">AÇÃO</span>
             </div>
           </div>
