@@ -30,54 +30,21 @@ export default function Home() {
       <Navbar ativo={ativo} setAtivo={setAtivo} />
 
       <div className="flex-grow flex flex-col items-center">
-        <div className="flex justify-center mt-6">
+        <div className="flex flex-col sm:flex-row justify-center mt-6 gap-4 p-4">
           <Link href="/formulario-empresas">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-              Ir para o Formulário de Empresas
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto text-center">
+              Formulário de Empresas
+            </button>
+          </Link>
+          
+          {/* Botão único para entrar */}
+          <Link href="/entrar">
+            <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition w-full sm:w-auto text-center">
+              Entrar
             </button>
           </Link>
         </div>
-        {/* <Cardacao
-          nomeacao="Projeto Esperança"
-          descricao="A ONG atua com comunidades vulneráveis promovendo educação e saúde."
-          ods1="mulheres"
-          ods2="combate a fome"
-          ods3="animais"
-          ods4="ODS"
-          nomedaong="Instituto Viver Bem"
-          onEntrarContato={abrirModal}
-        />
-
-        <Cardcontatos
-          nomeacao="Campanha Inverno Solidário"
-          descricao="Ajude famílias em situação de vulnerabilidade com roupas e cobertores."
-          email="contato@ongsocial.org"
-          fone="(41) 99999-0000"
-          qtdacoescadastradas="12"
-          nomedaong="ONG Social Brasil"
-          ativocontato={ativocontato}
-        />
-
-        <Cardcadastrado
-          nomeacao="Campanha Inverno Solidário"
-          descricao="Ajude famílias com roupas e cobertores durante o inverno."
-          email="contato@ongsocial.org"
-          fone="(41) 99999-0000"
-          qtdacoescadastradas="12"
-          nomedaong="ONG Social Brasil"
-        />
-
-        {mostrarModal && (
-          <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
-            <Modalcontatos
-              nomedaong="Instituto Viver Bem"
-              nomeacao="Projeto Esperança"
-              emailong="contato@viverbem.org"
-              numeroong="(41) 99999-9999"
-              onEntrarContato={fecharModal}
-            />
-          </div>
-        )} */}
+        
         {ativo === "acoes" && <Modalcriterios nivel="Ouro" />}
         {ativo === "selos" && <SelosPage />}
       </div>
