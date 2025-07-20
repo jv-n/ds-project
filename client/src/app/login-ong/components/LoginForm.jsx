@@ -1,6 +1,7 @@
 // src/app/login-ong/components/LoginForm.jsx
 'use client';
 
+//import { loginOng } from '@/auth/authService';
 import React, { useState } from 'react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -42,6 +43,7 @@ const LoginFormOng = () => {
     return isValid;
   };
 
+  //função de teste. Trocar pela de baixo quando o bd estiver pronto
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
@@ -49,6 +51,20 @@ const LoginFormOng = () => {
       alert('Login simulado para ONG');
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!validate()) return; // Se a validação falhar, não prossegue
+
+  //   try {
+  //     const ongData = await loginOng(formData.cnpj, formData.password);
+  //     console.log('Login bem-sucedido:', ongData);
+  //     // Redirecionar ou armazenar o token (ex: localStorage, context, etc.)
+  //   } catch (error) {
+  //     console.error('Erro no login:', error);
+  //     setErrors({ ...errors, password: 'CNPJ ou senha incorretos' }); // Mostra erro genérico
+  //   }
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,7 +95,7 @@ const LoginFormOng = () => {
       />
       
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex pl-9 items-center">
           <input
             id="remember-me"
             name="remember-me"
@@ -91,19 +107,19 @@ const LoginFormOng = () => {
           </label>
         </div>
         
-        <div className="text-sm">
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+        <div className="text-sm pr-8">
+          <a href="/recovery/send-email" className="font-medium text-blue-600 hover:text-blue-500">
             Esqueceu sua senha?
           </a>
         </div>
       </div>
       
-      <div className="pt-4">
-        <Button
-          type="submit"
-          variant="primary"
-          className="w-full py-3 text-base"
-        >
+      <div className="pt-4 text-center">
+            <Button
+              type="submit"
+              variant="primary"
+              className=" w-95 py-3 text-base"
+            >
           Entrar como ONG
         </Button>
       </div>

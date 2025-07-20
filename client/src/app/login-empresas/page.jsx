@@ -1,4 +1,4 @@
-import AuthHeader from "@/components/auth/AuthHeader";
+import AuthHeader from "@/app/auth/AuthHeader";
 import LoginFormEmpresa from "./components/LoginForm";
 import { Card } from "@/components/ui/Card";
 

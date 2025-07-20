@@ -93,7 +93,7 @@ const LoginFormEmpresa = () => {
         </div>
         
         <div className="text-sm pr-8">
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+          <a href="/recovery/send-email" className="font-medium text-blue-600 hover:text-blue-500">
             Esqueceu sua senha?
           </a>
         </div>

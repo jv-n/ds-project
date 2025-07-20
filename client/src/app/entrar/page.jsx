@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
-import AuthHeader from '@/components/auth/AuthHeader';
+import AuthHeader from '@/app/auth/AuthHeader';
 
 export default function EntrarPage() {
   return (

@@ -1,22 +1,21 @@
-import AuthHeader from "@/components/auth/AuthHeader";
+import AuthHeader from "@/app/auth/AuthHeader";
 import LoginFormOng from "./components/LoginForm";
 import { Card } from "@/components/ui/Card";
 
 export default function LoginOngPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-blue-100 flex flex-col justify-center py-12 sm:px-40 lg:px-140">
+      <Card variant="elevated" className="py-27">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <AuthHeader 
-          title="Login para ONGs" 
-          description="Acesse sua conta de organização" 
+          title="Entrar" 
         />
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Card variant="elevated" className="py-8 px-4 sm:px-10">
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <LoginFormOng />
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 }
