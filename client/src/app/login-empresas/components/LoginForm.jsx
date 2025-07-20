@@ -80,7 +80,7 @@ const LoginFormEmpresa = () => {
       />
       
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex pl-9 items-center">
           <input
             id="remember-me"
             name="remember-me"
@@ -92,32 +92,32 @@ const LoginFormEmpresa = () => {
           </label>
         </div>
         
-        <div className="text-sm">
+        <div className="text-sm pr-8">
           <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
             Esqueceu sua senha?
           </a>
         </div>
       </div>
       
-      <div className="pt-4">
+      <div className="pt-4 text-center">
         <Button
           type="submit"
-          variant="secondary"
-          className="w-full py-3 text-base"
+          variant="primary"
+          className=" w-95 py-3 text-base"
         >
           Entrar como Empresa
         </Button>
       </div>
 
       {/* Seção de cadastro para empresas */}
-      <div className="mt-6 text-center">
+      <div className="mt-20 text-center">
         <p className="text-sm text-gray-600">
           Não possui cadastro?
         </p>
         <Link href="/formulario-empresas" className="inline-block mt-2">
           <Button
             variant="outline"
-            className="px-6 py-2 text-base"
+            className="px-24 py-2 text-base"
           >
             Criar conta para empresa
           </Button>

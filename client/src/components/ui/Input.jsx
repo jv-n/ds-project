@@ -44,7 +44,7 @@ const Input = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full px-9">
       {label && (
         <label className="block text-sm font-medium text-gray-700 mb-1">
           {label}

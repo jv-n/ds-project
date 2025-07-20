@@ -5,8 +5,7 @@ const AuthHeader = ({ title, description, logo = true }) => {
   return (
     <div className="text-center">
       {logo && (
-        <div className="flex justify-center mb-4">
-          {/* Substitua pelo logo do seu projeto */}
+        <div className="flex justify-center mb-8">
           <Image 
             src="/images/RECIFEDOBEM.svg" 
             alt="Logo Recife do Bem" 
@@ -17,7 +16,7 @@ const AuthHeader = ({ title, description, logo = true }) => {
         </div>
       )}
       <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-      <p className="mt-2 text-gray-600">{description}</p>
+      <p className="mt-10 text-gray-600">{description}</p>
     </div>
   );
 };
