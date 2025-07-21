@@ -1,4 +1,3 @@
-// src/components/ui/Input.jsx
 "use client"
 import React, { useState, useEffect } from 'react';
 
@@ -6,13 +5,13 @@ const Input = ({
   label, 
   error, 
   mask,
-  type = 'text', // Adicionamos type como prop padrão (sem quebrar o comportamento existente)
+  type = 'text',
   className = '',
   value,
   ...props 
 }) => {
   const [displayValue, setDisplayValue] = useState(value || '');
-  const [emailError, setEmailError] = useState(''); // Estado apenas para e-mail
+  const [emailError, setEmailError] = useState(''); 
 
 
   useEffect(() => {
@@ -53,7 +52,7 @@ const Input = ({
         </label>
       )}
       <input
-        type={type} // Usamos a prop type aqui (sem afetar outros usos)
+        type={type} 
         className={`w-full px-3 py-2 border ${
           (error || emailError) ? 'border-red-500' : 'border-gray-300'
         } rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${className}`}

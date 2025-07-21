@@ -1,4 +1,3 @@
-// src/app/login-empresa/components/LoginForm.jsx
 'use client';
 
 import React, { useState } from 'react';

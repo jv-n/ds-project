@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import AuthHeader from "@/app/auth/AuthHeader";
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal'; // Importe o Modal
+import Modal from '@/components/ui/Modal'; 
 import { Card } from "@/components/ui/Card";
 
 
 export default function SendEmailPage() {
   const [formData, setFormData] = useState({ email: '' });
   const [errors, setErrors] = useState({ email: '' });
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,15 +24,15 @@ export default function SendEmailPage() {
     if (!formData.email.trim()) {
       newErrors.email = 'E-mail é obrigatório';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'E-mail inválido';
+      newErrors.email = 'Formato aceitável: "julia@gmail.com"';
     }
 
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
       console.log('E-mail para recuperação enviado:', formData.email);
-      // Aqui você chamaria a API para enviar o e-mail
-      setIsModalOpen(true); // Abre o modal após o envio
+      // Aqui deve chamar a API para validação do email
+      setIsModalOpen(true); 
     }
   };
 
@@ -47,7 +47,7 @@ export default function SendEmailPage() {
         </div>
 
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-center px-14 space-y-9 my-4">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col items-center px-14 space-y-9 my-4">
 
               <Input
                 label="E-mail"
@@ -65,7 +65,6 @@ export default function SendEmailPage() {
           
         </form>
 
-        {/* Modal de confirmação */}
         <Modal isOpen={isModalOpen} >
           <div className="sm:mx-auto px-10 sm:w-full sm:max-w-md">
             <AuthHeader 
