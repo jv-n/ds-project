@@ -3,8 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
-import Cardacao from "@/components/card-de-acao"; // Importado mas não usado no snippet atual
-import Cardcontatos from "@/components/card-cadastrar-doacao"; // Importado mas não usado no snippet atual
+import Cardacao from "@/components/card-de-acao"; 
+import Cardcontatos from "@/components/card-cadastrar-doacao"; 
 import { useState } from "react";
 import Cardcadastrado from "@/components/card-acao-cadastrada"; 
 import Modalcontatos from "@/components/modal-contato"; 
