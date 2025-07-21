@@ -13,15 +13,6 @@ const Input = ({
   const [displayValue, setDisplayValue] = useState(value || '');
   const [emailError, setEmailError] = useState(''); 
 
-
-  useEffect(() => {
-    if (mask && value) {
-      setDisplayValue(mask(value));
-    } else {
-      setDisplayValue(value || '');
-    }
-  }, [value, mask]);
-
   const handleChange = (e) => {
     let newValue = e.target.value;
     

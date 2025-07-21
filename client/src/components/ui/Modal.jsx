@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import { Card } from "@/components/ui/Card";
 
 
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, children }) => {
   const router = useRouter();
   if (!isOpen) return null;
 

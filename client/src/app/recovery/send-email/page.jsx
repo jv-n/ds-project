@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import AuthHeader from "@/app/auth/AuthHeader";
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import Link from 'next/link';
 import Modal from '@/components/ui/Modal'; 
 import { Card } from "@/components/ui/Card";
 
@@ -11,6 +12,7 @@ export default function SendEmailPage() {
   const [formData, setFormData] = useState({ email: '' });
   const [errors, setErrors] = useState({ email: '' });
   const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isNewPasswordOpen, setIsNewPasswordOpen] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +34,7 @@ export default function SendEmailPage() {
     if (Object.keys(newErrors).length === 0) {
       console.log('E-mail para recuperação enviado:', formData.email);
       // Aqui deve chamar a API para validação do email
+
       setIsModalOpen(true); 
     }
   };
@@ -62,6 +65,11 @@ export default function SendEmailPage() {
               <Button type="submit" variant="primary" className="w-95 py-3 text-base">
                 Enviar e-mail de recuperação
               </Button>
+              <Link href="@/recovery/new-password">
+                <Button type="submit" variant="secundary" classNam="w-95 py-3 text-base">
+                    Ir à página new password
+                </Button>
+              </Link>
           
         </form>
 
