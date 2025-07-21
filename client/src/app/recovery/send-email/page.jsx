@@ -66,13 +66,12 @@ export default function SendEmailPage() {
         </form>
 
         {/* Modal de confirmação */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-2">E-mail enviado!</h2>
-            <p className="text-gray-600">
-              Enviamos um link de recuperação para o e-mail cadastrado. 
-              Verifique sua caixa de entrada e siga as instruções.
-            </p>
+        <Modal isOpen={isModalOpen} >
+          <div className="sm:mx-auto px-10 sm:w-full sm:max-w-md">
+            <AuthHeader 
+              title="E-mail enviado!" 
+              description="Confira sua caixa de entrada e acesse o link para criar uma nova senha."
+            />
           </div>
         </Modal>
         </Card>
