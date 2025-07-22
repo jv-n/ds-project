@@ -42,9 +42,9 @@ export default function ModalCertificado({ certificado, isOpen, onClose }: Modal
                     <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 </Transition.Child>
                 <div className={dm_sans.className}>
-                    <div className="fixed inset-0 flex items-center justify-center p-4">
-                        <Dialog.Panel className="mx-auto w-[90%] h-[90%] rounded bg-[#F3F4F6] shadow-lg flex items-center justify-center">
-                            <div className="flex flex-col overflow-scroll w-full items-center justify-start gap-2 h-full">
+                    <div className="fixed inset-0 flex items-center justify-center p-4 rounded-lg">
+                        <Dialog.Panel className="mx-auto w-[90%] h-[100%] rounded-md bg-[#F3F4F6] shadow-lg flex items-center justify-center overflow-auto">
+                            <div className="rounded-md flex flex-col w-full items-center justify-start gap-2 h-full">
                                 <div className="flex flex-col w-full pt-[1rem] pb-[1rem] pr-[1.5rem] pl-[1.5rem] items-start justify-start bg-white color-black mb-2">
                                     <div className='flex flex-row items-center justify-between w-full mb-2'>
                                         <div className='flex flex-row items-center justify-start gap-2'>
