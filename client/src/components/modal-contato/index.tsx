@@ -4,10 +4,10 @@ import Image from "next/image";
 import { balao, balaopopup, confirma, emailpopup } from "@/assets";
 
 export interface propspopup {
-  nomedaong: String;
-  nomeacao: String;
-  emailong: String;
-  numeroong: String;
+  nomedaong: string;
+  nomeacao: string;
+  emailong: string;
+  numeroong: string;
   onEntrarContato: () => void;
 }
 

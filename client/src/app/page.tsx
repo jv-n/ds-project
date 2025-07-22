@@ -10,7 +10,7 @@ import Cardcadastrado from "@/components/card-acao-cadastrada";
 import Modalcontatos from "@/components/modal-contato"; 
 import Modalcriterios from "@/components/modal-criterios";
 import SelosPage from "./selospage/page";
-import DoacoesPage from "./doacoespage";
+import DoacoesPage from "./doacoespage/page";
 
 
 export default function Home() {
