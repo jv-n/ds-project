@@ -1,11 +1,9 @@
-// src/utils/cnpjUtils.js
 export const formatCNPJ = (value) => {
     if (!value) return '';
     
     // Remove tudo que não é dígito
     const nums = value.replace(/\D/g, "");
     
-    // Aplica formatação passo a passo
     if (nums.length <= 2) return nums;
     if (nums.length <= 5) return `${nums.slice(0, 2)}.${nums.slice(2)}`;
     if (nums.length <= 8) return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5)}`;
@@ -15,7 +13,6 @@ export const formatCNPJ = (value) => {
   };
   
   export const validateCNPJ = (cnpj) => {
-    // Remove caracteres não numéricos
     cnpj = cnpj.replace(/[^\d]+/g, '');
     
     if (cnpj.length !== 14 || 
@@ -29,6 +26,7 @@ export const formatCNPJ = (value) => {
         cnpj === "77777777777777" || 
         cnpj === "88888888888888" || 
         cnpj === "99999999999999") {
+          //dá para adicionar outras validações, tipo do dígito verificador
       return false;
     }
     return true;

@@ -1,12 +1,12 @@
 'use client';
 
-//import { loginOng } from '@/auth/authService';
 import React, { useState } from 'react';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import { formatCNPJ, validateCNPJ } from '@/utils/cnpjUtils';
+import Input from '@/app/recovery/components/ui/Input';
+import Button from '@/app/recovery/components/ui/Button';
+import { formatCNPJ, validateCNPJ } from '@/app/recovery/utils/cnpjUtils';
+import Link from 'next/link';
 
-const LoginFormOng = () => {
+const LoginFormEmpresa = () => {
   const [formData, setFormData] = useState({
     cnpj: '',
     password: '',
@@ -42,28 +42,13 @@ const LoginFormOng = () => {
     return isValid;
   };
 
-  //função de teste. Trocar pela de baixo quando o bd estiver pronto
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log('Login válido para ONG:', formData);
-      alert('Login simulado para ONG');
+      console.log('Login válido para Empresa:', formData);
+      alert('Login simulado para Empresa');
     }
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (!validate()) return; // Se a validação falhar, não prossegue
-
-  //   try {
-  //     const ongData = await loginOng(formData.cnpj, formData.password);
-  //     console.log('Login bem-sucedido:', ongData);
-  //     // Redirecionar ou armazenar o token (ex: localStorage, context, etc.)
-  //   } catch (error) {
-  //     console.error('Erro no login:', error);
-  //     setErrors({ ...errors, password: 'CNPJ ou senha incorretos' }); // Mostra erro genérico
-  //   }
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -114,16 +99,31 @@ const LoginFormOng = () => {
       </div>
       
       <div className="pt-4 text-center">
-            <Button
-              type="submit"
-              variant="primary"
-              className=" w-95 py-3 text-base"
-            >
-          Entrar como ONG
+        <Button
+          type="submit"
+          variant="primary"
+          className=" w-95 py-3 text-base"
+        >
+          Entrar como Empresa
         </Button>
+      </div>
+
+      {/* Seção de cadastro para empresas */}
+      <div className="mt-20 text-center">
+        <p className="text-sm text-gray-600">
+          Não possui cadastro?
+        </p>
+        <Link href="/formulario-empresas" className="inline-block mt-2">
+          <Button
+            variant="outline"
+            className="px-24 py-2 text-base"
+          >
+            Criar conta para empresa
+          </Button>
+        </Link>
       </div>
     </form>
   );
 };
 
-export default LoginFormOng;
+export default LoginFormEmpresa;

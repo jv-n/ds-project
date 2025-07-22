@@ -1,5 +1,5 @@
-"use client"
-import React, { useState, useEffect } from 'react';
+"use client";
+import React from 'react';
 
 const Input = ({ 
   label, 
@@ -8,30 +8,27 @@ const Input = ({
   type = 'text',
   className = '',
   value,
+  onChange,
   ...props 
 }) => {
-  const [displayValue, setDisplayValue] = useState(value || '');
-  const [emailError, setEmailError] = useState(''); 
-
   const handleChange = (e) => {
     let newValue = e.target.value;
     
     if (mask) {
-      newValue = newValue.replace(/\D/g, '');
-      setDisplayValue(mask(newValue));
-    } else {
-      setDisplayValue(newValue);
+      newValue = mask(newValue.replace(/\D/g, ''));
     }
 
-    if (props.onChange) {
+    // Chama onChange do pai com o valor formatado
+    if (onChange) {
       const event = {
         ...e,
         target: {
           ...e.target,
-          value: newValue
+          value: newValue,
+          name: props.name // Garante que o nome seja passado
         }
       };
-      props.onChange(event);
+      onChange(event);
     }
   };
 
@@ -43,16 +40,16 @@ const Input = ({
         </label>
       )}
       <input
-        type={type} 
+        type={type}
         className={`w-full px-3 py-2 border ${
-          (error || emailError) ? 'border-red-500' : 'border-gray-300'
+          error ? 'border-red-500' : 'border-gray-300'
         } rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${className}`}
-        value={displayValue}
+        value={value || ''} // Usa o valor controlado pelo pai
         onChange={handleChange}
         {...props}
       />
-      {(error || emailError) && (
-        <p className="mt-1 text-sm text-red-600">{error || emailError}</p>
+      {error && (
+        <p className="mt-1 text-sm text-red-600">{error}</p>
       )}
     </div>
   );

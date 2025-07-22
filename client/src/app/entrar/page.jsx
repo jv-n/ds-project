@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/app/recovery/components/ui/Card';
 import AuthHeader from '@/app/auth/AuthHeader';
 
 export default function EntrarPage() {
@@ -17,12 +17,12 @@ export default function EntrarPage() {
             <div className="mt-1 flex sm:mx-auto sm:h-full sm:w-full sm:max-w-md">
                 <div className="py-10 px-4 sm:px-10">
                 <div className="flex gap-4">
-                    <Link href="/login-ong">
+                    <Link href="/auth/pages/login-ong">
                     <button className="w-full bg-[#294BB6] text-white py-14 px-4 rounded-md border-2 hover:bg-blue-700 transition font-medium text-lg">
                         Sou uma ONG/projeto
                     </button>
                     </Link>
-                    <Link href="/login-empresas">
+                    <Link href="/auth/pages/login-empresas">
                     <button className="w-full bg-white text-blue-600 py-14 px-5.5 rounded-md border-2 hover:bg-gray-50 transition font-medium text-lg">
                         Sou uma Empresa
                     </button>

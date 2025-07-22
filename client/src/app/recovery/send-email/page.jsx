@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from 'react';
 import AuthHeader from "@/app/auth/AuthHeader";
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import Input from '@/app/recovery/components/ui/Input';
+import Button from '@/app/recovery/components/ui/Button';
 import Link from 'next/link';
-import Modal from '@/components/ui/Modal'; 
-import { Card } from "@/components/ui/Card";
+import Modal from '@/app/recovery/components/ui/Modal'; 
+import { Card } from "@/app/recovery/components/ui/Card";
 
 
 export default function SendEmailPage() {
@@ -21,6 +21,7 @@ export default function SendEmailPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // turnOn = false;
     
     const newErrors = {};
     if (!formData.email.trim()) {
@@ -28,12 +29,17 @@ export default function SendEmailPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Formato aceitável: "julia@gmail.com"';
     }
-
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
-      console.log('E-mail para recuperação enviado:', formData.email);
       // Aqui deve chamar a API para validação do email
+      //seta o retorno da api para turnon para aparecer o erro indicado
+      // turnOn = false;
+      // if (Object.keys(newErrors).length != 0) {
+      //   newErrors.email = "Email não encontrado"
+      // }
+      
+      console.log('E-mail para recuperação enviado:', formData.email);
 
       setIsModalOpen(true); 
     }
@@ -66,7 +72,7 @@ export default function SendEmailPage() {
                 Enviar e-mail de recuperação
               </Button>
               <Link href="/recovery/new-password">
-                <Button type="submit" variant="secundary" className="w-95 py-3 text-base">
+                <Button type="submit" variant="secondary" className="w-95 py-3 text-base">
                     Ir à página new password
                 </Button>
               </Link>
