@@ -37,11 +37,13 @@ model ONG {
 
 model Empresa {
   id         Int       @id @default(autoincrement())
+  nome       String
   
   usuarioId  Int       @unique
   usuario    Usuario   @relation(fields: [usuarioId], references: [id])
 
   apoios     Apoio[]
+  pontos     Int       @default(0)
   criterios  Criterio[]
 }
 
