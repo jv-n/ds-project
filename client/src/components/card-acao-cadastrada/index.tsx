@@ -14,7 +14,7 @@ export interface Cardcontatosprops {
 
 export default function Cardcadastrado(props: Cardcontatosprops) {
   return (
-    <div className="w-[400px] flex flex-col bg-white rounded-xl shadow p-4 font-sans text-[#1B2029] ml-8">
+    <div className="w-[360px] h-[255px] flex flex-col bg-white rounded-md shadow p-4 font-sans text-[#1B2029]">
       <div className="text-[16px] font-bold">{props.nomeacao}</div>
 
       <div className="text-[12px] mt-[7px]">{props.descricao}</div>
