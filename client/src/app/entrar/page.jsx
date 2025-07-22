@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Card } from '@/app/recovery/components/ui/Card';
+import { Card } from '@/app/auth/components/ui/Card';
 import AuthHeader from '@/app/auth/AuthHeader';
 
 export default function EntrarPage() {

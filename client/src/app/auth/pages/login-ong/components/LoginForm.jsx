@@ -2,9 +2,9 @@
 
 //import { loginOng } from '@/auth/authService';
 import React, { useState } from 'react';
-import Input from '@/app/recovery/components/ui/Input';
-import Button from '@/app/recovery/components/ui/Button';
-import { formatCNPJ, validateCNPJ } from '@/app/recovery/utils/cnpjUtils';
+import Input from '@/app/auth/components/ui/Input';
+import Button from '@/app/auth/components/ui/Button';
+import { formatCNPJ, validateCNPJ } from '@/app/auth/utils/cnpjUtils';
 
 const LoginFormOng = () => {
   const [formData, setFormData] = useState({
@@ -107,7 +107,7 @@ const LoginFormOng = () => {
         </div>
         
         <div className="text-sm pr-8">
-          <a href="/recovery/send-email" className="font-medium text-blue-600 hover:text-blue-500">
+          <a href="/auth/pages/send-email" className="font-medium text-blue-600 hover:text-blue-500">
             Esqueceu sua senha?
           </a>
         </div>

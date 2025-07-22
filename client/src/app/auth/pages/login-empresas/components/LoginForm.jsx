@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Input from '@/app/recovery/components/ui/Input';
-import Button from '@/app/recovery/components/ui/Button';
-import { formatCNPJ, validateCNPJ } from '@/app/recovery/utils/cnpjUtils';
+import Input from '@/app/auth/components/ui/Input';
+import Button from '@/app/auth/components/ui/Button';
+import { formatCNPJ, validateCNPJ } from '@/app/auth/utils/cnpjUtils';
 import Link from 'next/link';
 
 const LoginFormEmpresa = () => {
@@ -92,7 +92,7 @@ const LoginFormEmpresa = () => {
         </div>
         
         <div className="text-sm pr-8">
-          <a href="/recovery/send-email" className="font-medium text-blue-600 hover:text-blue-500">
+          <a href="/auth/pages/send-email" className="font-medium text-blue-600 hover:text-blue-500">
             Esqueceu sua senha?
           </a>
         </div>
@@ -113,7 +113,7 @@ const LoginFormEmpresa = () => {
         <p className="text-sm text-gray-600">
           Não possui cadastro?
         </p>
-        <Link href="/formulario-empresas" className="inline-block mt-2">
+        <Link href="/auth/pages/formulario-empresas" className="inline-block mt-2">
           <Button
             variant="outline"
             className="px-24 py-2 text-base"

@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from 'react';
 import AuthHeader from "@/app/auth/AuthHeader";
-import Input from '@/app/recovery/components/ui/Input';
-import Button from '@/app/recovery/components/ui/Button';
-import Modal from '@/app/recovery/components/ui/Modal'; 
-import { Card } from "@/app/recovery/components/ui/Card";
+import Input from '@/app/auth/components/ui/Input';
+import Button from '@/app/auth/components/ui/Button';
+import Modal from '@/app/auth/components/ui/Modal'; 
+import { Card } from "@/app/auth/components/ui/Card";
 import { useRouter } from 'next/navigation';
 
 export default function NewPassword(){

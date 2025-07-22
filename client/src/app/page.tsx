@@ -31,7 +31,7 @@ export default function Home() {
 
       <div className="flex-grow flex flex-col items-center">
         <div className="flex flex-col sm:flex-row justify-center mt-6 gap-4 p-4">
-          <Link href="/formulario-empresas">
+          <Link href="/auth/pages/formulario-empresas">
             <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto text-center">
               Formulário de Empresas
             </button>

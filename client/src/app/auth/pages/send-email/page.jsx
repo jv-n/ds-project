@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from 'react';
 import AuthHeader from "@/app/auth/AuthHeader";
-import Input from '@/app/recovery/components/ui/Input';
-import Button from '@/app/recovery/components/ui/Button';
+import Input from '@/app/auth/components/ui/Input';
+import Button from '@/app/auth/components/ui/Button';
 import Link from 'next/link';
-import Modal from '@/app/recovery/components/ui/Modal'; 
-import { Card } from "@/app/recovery/components/ui/Card";
+import Modal from '@/app/auth/components/ui/Modal'; 
+import { Card } from "@/app/auth/components/ui/Card";
 
 
 export default function SendEmailPage() {
@@ -71,7 +71,7 @@ export default function SendEmailPage() {
               <Button type="submit" variant="primary" className="w-95 py-3 text-base">
                 Enviar e-mail de recuperação
               </Button>
-              <Link href="/recovery/new-password">
+              <Link href="/auth/pages/new-password">
                 <Button type="submit" variant="secondary" className="w-95 py-3 text-base">
                     Ir à página new password
                 </Button>

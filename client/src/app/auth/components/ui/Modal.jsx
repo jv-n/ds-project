@@ -3,8 +3,8 @@
 import {useRouter} from 'next/navigation'
 import React from 'react';
 import AuthHeader from "@/app/auth/AuthHeader";
-import Button from '@/app/recovery/components/ui/Button';
-import { Card } from "@/app/recovery/components/ui/Card";
+import Button from '@/app/auth/components/ui/Button';
+import { Card } from "@/app/auth/components/ui/Card";
 
 
 const Modal = ({ isOpen, children }) => {

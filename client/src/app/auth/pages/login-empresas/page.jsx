@@ -1,6 +1,6 @@
 import AuthHeader from "@/app/auth/AuthHeader";
 import LoginFormEmpresa from "./components/LoginForm";
-import { Card } from "@/app/recovery/components/ui/Card";
+import { Card } from "@/app/auth/components/ui/Card";
 
 export default function LoginEmpresaPage() {
   return (
