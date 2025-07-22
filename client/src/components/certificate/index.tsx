@@ -3,8 +3,8 @@
 import * as React from 'react';
 import localFont from 'next/font/local';
 import Header from './certificate_comps/header';
-import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
+import {Prata, Ouro, Bronze} from '@/assets';
 
 import Signature from './certificate_comps/signature';
 // import { useRouter } from 'next/navigation';
@@ -58,18 +58,18 @@ export default function Certificate(props: CertificateProps) {
 
     function getBadge():string {
         if( props.level.toLowerCase() === 'prata'){
-            return '/images/silver.png';
+            return Prata;
         }
         if( props.level.toLowerCase() === 'ouro') {
-            return '/images/gold.png';
+            return Ouro;
         }
         if( props.level.toLowerCase() === 'bronze') {
-            return '/images/bronze.png';
-        } else return '/images/silver.png';
+            return Bronze;
+        } else return Prata;
     }
 
     return(
-        <div className='w-[720px] h-[516px] bg-white mt-60 p-[10px] shadow-lg flex items-center justify-center'>
+        <div className='w-[45rem] h-[32rem] bg-white p-[10px] shadow-lg flex items-center justify-center'>
             <div className='w-full h-full flex flex-col items-center justify-center gap-4 border-4 border-[#009FE3] p-[2px]'>
                 <div className='w-full h-full flex items-center justify-start bg-[#FFFFFF] border-1 border-[#D1D5DC] flex flex-col p-[1px]'>
                     <Header />
@@ -77,13 +77,11 @@ export default function Certificate(props: CertificateProps) {
                         <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '14px', color: '#4A5565' }}>
                             CERTIFICADO DE IMPACTO SOCIAL
                         </div>
-                        <div className=''>
-                            <Separator className='my-1' orientation='horizontal'/>
-                        </div>
+                        
                         <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
                             SELO DE RESPONSABILIDADE SOCIAL EMPRESARIAL
                         </div>
-                        <div className='w-full h-[108px] bg-[#f9fafb] mt-2 flex flex-col items-center justify-center border-1 border-[#f0f0f0] p-2 rounded-[9px]'>
+                        <div className='w-full h-[7rem] bg-[#f9fafb] mt-2 flex flex-col items-center justify-center border-1 border-[#f0f0f0] p-2 rounded-[9px]'>
                             <Image src={getBadge()} alt='Logo' width={54} height={54} className='w-[54px] h-[54px] mb-2' />
                             <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '12px', color: levelColor() }}>
                                 Nivel {props.level}
@@ -122,7 +120,7 @@ export default function Certificate(props: CertificateProps) {
                                     </div>
                                 </div>
                             </div>
-                            <div className='w-full flex flex-row items-center justify-between rounded-[4px] bg-[#f9fafb] border-1 border-[#D1D5DC] p-1 h-1/4 mb-1'>
+                            <div className='w-full static flex flex-row items-center justify-between rounded-[4px] bg-[#f9fafb] border-1 border-[#D1D5DC] p-1 h-1/4 mb-1'>
                                 <div className='w-4/5 flex flex-col items-start justify-center text-center ml-2'>
                                     <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
                                         Certificado pode ser verificado em: <a href='https://portal.boraimpactar.recife.pe.gov.br/verificar' style={{ color: '#4A5565', fontFamily: 'monospace'}}>portal.boraimpactar.recife.pe.gov.br/verificar</a> 

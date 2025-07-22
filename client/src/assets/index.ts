@@ -36,3 +36,12 @@ export { Prata };
 
 import Bronze from "./bronze.svg";
 export { Bronze };
+
+import Fechar from "./fechar.svg";
+export { Fechar };
+
+import Olho from "./olho.svg";
+export { Olho };
+
+import Download from "./download.svg";
+export { Download };
