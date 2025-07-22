@@ -20,14 +20,12 @@ const dm_sans = DM_Sans({
 });
 
 export function downloadCertificate(certificado: CertificateProps) {
-    // Implement the download logic here
-    // This could involve creating a PDF or image of the certificate and triggering a download
-    console.log(`Downloading certificate for ${certificado.empresa} with ID ${certificado.id}`);
+    console.log(`Baixando certificado da empresa: ${certificado.empresa}`);
 }
 
 export default function ModalCertificado({ certificado, isOpen, onClose }: ModalCertificadoProps) {
     if (!certificado || !certificado.id) {
-        return null; // Return null if certificado is not provided or id is missing
+        return null; 
     }
     return (
         <Transition appear show={isOpen} as={React.Fragment}>
