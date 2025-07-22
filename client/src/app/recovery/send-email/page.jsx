@@ -65,8 +65,8 @@ export default function SendEmailPage() {
               <Button type="submit" variant="primary" className="w-95 py-3 text-base">
                 Enviar e-mail de recuperação
               </Button>
-              <Link href="@/recovery/new-password">
-                <Button type="submit" variant="secundary" classNam="w-95 py-3 text-base">
+              <Link href="/recovery/new-password">
+                <Button type="submit" variant="secundary" className="w-95 py-3 text-base">
                     Ir à página new password
                 </Button>
               </Link>
