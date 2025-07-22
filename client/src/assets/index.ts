@@ -45,3 +45,25 @@ export { Olho };
 
 import Download from "./download.svg";
 export { Download };
+
+import paperclip from "./paperclip.svg";
+export { paperclip };
+
+import cloudupload from "./cloudupload.svg";
+export { cloudupload };
+
+import ok from "./ok.svg";
+export { ok };
+
+import problem from "./problem.svg";
+export { problem };
+
+import loading from "./loading.svg";
+export { loading };
+
+import close from "./close.svg";
+export { close };
+
+import lupa from "./lupa.svg";
+export { lupa };
+
