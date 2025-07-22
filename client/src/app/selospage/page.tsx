@@ -1,15 +1,34 @@
-import Image from "next/image";
-import { logoamassada } from "@/assets"; 
+'use client';
 
+import Image from "next/image";
+import { useState } from "react";
+import { logoamassada } from "@/assets"; 
 import DetalhesPontuacao from "@/components/accordion-detalhes-pontuacao";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
-
-
-
 import { Bronze, Prata, Ouro } from "@/assets"; 
+import ModalCertificado from "@/components/modal-certificado";
+import { CertificateProps } from "@/components/certificate";
+
 export default function SelosPage() {
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  function abrirModal() {
+    setIsModalOpen(true);  
+  }
+  function fecharModal() {
+    setIsModalOpen(false);
+  }
+
+  const certificado: CertificateProps = {
+    id: "certificado-123",
+    level: "Prata",
+    data_emissao: "10/06/2025",
+    empresa: "Construções Recife",
+  };
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-8">
       {/* Cabeçalho do Selo */}
@@ -30,7 +49,7 @@ export default function SelosPage() {
               Empresas com bom nível de engajamento e programas sociais consistentes.
             </p>
           </div>
-          <button className="bg-[#009FE3] text-white px-6 py-3 rounded-lg flex items-center gap-2 mt-4 md:mt-0">
+          <button onClick={abrirModal} className="bg-[#009FE3] text-white px-6 py-3 rounded-lg flex items-center gap-2 mt-4 md:mt-0 hover:bg-[#007BB5] transition-colors duration-200 hover:cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -77,6 +96,11 @@ export default function SelosPage() {
           />
         </div>
       </div>
+      <ModalCertificado
+          certificado={certificado}
+          isOpen={isModalOpen}
+          onClose={fecharModal}
+      />
     </div>
   );
 }
