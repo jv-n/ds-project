@@ -1,39 +1,48 @@
 import Image from "next/image";
-import { Ouro, Prata, Bronze } from "@/assets";
+import { goldenmedal, silvermedal, bronzemedal, xsair } from "@/assets";
 
 export interface Criteriosprops {
-  nivel: "Ouro" | "Prata" | "Bronze";
+  nivel: "goldenmedal" | "silvermedal" | "bronzemedal";
+  fecharmodal: (nivel: string) => void;
 }
 
 const imagensPorNivel = {
-  Ouro,
-  Prata,
-  Bronze,
+  goldenmedal,
+  silvermedal,
+  bronzemedal,
+};
+
+const nomesPorNivel = {
+  goldenmedal: "ouro",
+  silvermedal: "prata",
+  bronzemedal: "bronze",
 };
 
 const coresPorNivel = {
-  Ouro: "#F5B800",
-  Prata: "#757575",
-  Bronze: "#A56424",
+  goldenmedal: "#F5B800",
+  silvermedal: "#757575",
+  bronzemedal: "#A56424",
 };
 
 const cordescricaopornivel = {
-  Ouro: "#FFF8DC",
-  Prata: "#F8F8FF",
-  Bronze: "#FDF5E6",
+  goldenmedal: "#FFF8DC",
+  silvermedal: "#F8F8FF",
+  bronzemedal: "#FDF5E6",
 };
 
 const pontosPorNivel = {
-  Bronze: "5 a 45 pontos",
-  Prata: "46 a 74 pontos",
-  Ouro: "75 a 100 pontos",
+  bronzemedal: "5 a 45 pontos",
+  silvermedal: "46 a 74 pontos",
+  goldenmedal: "75 a 100 pontos",
 };
 
 const descricao = {
-  Bronze: "Empresas em fase inicial ou com nível básico de engajamento social.",
-  Prata:
+  bronzemedal:
+    "Empresas em fase inicial ou com nível básico de engajamento social.",
+  silvermedal:
     "Empresas com bom nível de engajamento e programas sociais consistentes.",
-  Ouro: "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
+  goldenmedal:
+    "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
 };
 
 export default function Modalcriterios(props: Criteriosprops) {
@@ -47,11 +56,19 @@ export default function Modalcriterios(props: Criteriosprops) {
         />
 
         <div className="ml-[5px]">
-          <div
-            style={{ color: coresPorNivel[props.nivel] }}
-            className="font-bold text-[20px]"
-          >
-            Nível {props.nivel}
+          <div className="flex">
+            <div
+              style={{ color: coresPorNivel[props.nivel] }}
+              className="font-bold text-[20px]"
+            >
+              Nível {nomesPorNivel[props.nivel]}
+            </div>
+            <Image
+              onClick={() => props.fecharmodal("off")}
+              src={xsair}
+              alt=""
+              className="ml-[485px]   cursor-pointer"
+            />
           </div>
           <div className="text-[#4A5565] mt-[-5px]">
             {" "}
@@ -97,7 +114,7 @@ export default function Modalcriterios(props: Criteriosprops) {
               <div className="ml-[5px] flex w-full">
                 Mais de 6 ações{" "}
                 <div className="ml-auto mr-[5px]">
-                  <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                  <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                     30pts
                   </div>
                 </div>
@@ -107,7 +124,7 @@ export default function Modalcriterios(props: Criteriosprops) {
               <div className="ml-[5px] flex w-full">
                 Até 5 ações
                 <div className="ml-auto mr-[5px]">
-                  <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                  <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                     25pts
                   </div>
                 </div>
@@ -116,7 +133,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 Até 2 ações
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   7pts
                 </div>
               </div>
@@ -153,7 +170,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 Mais de 9 ODSs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   25pts
                 </div>
               </div>
@@ -162,7 +179,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 7 a 8 ODSs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   20pts
                 </div>
               </div>
@@ -171,7 +188,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 4 a 6 ODSs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   15pts
                 </div>
               </div>
@@ -180,7 +197,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 1 a 3 ODSs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   10pts
                 </div>
               </div>
@@ -219,7 +236,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 7 ou mais ONGs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   20pts
                 </div>
               </div>
@@ -228,7 +245,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 5 a 6 ONGs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   15pts
                 </div>
               </div>
@@ -237,7 +254,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 3 a 4 ONGs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   10pts
                 </div>
               </div>
@@ -246,7 +263,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 1 a 2 ONGs
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   5pts
                 </div>
               </div>
@@ -284,7 +301,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 30% ou mais dos colaboradores
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   15pts
                 </div>
               </div>
@@ -293,7 +310,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 21% a 29% dos colaboradores
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   12pts
                 </div>
               </div>
@@ -302,7 +319,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 11% a 20% dos colaboradores
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   9pts
                 </div>
               </div>
@@ -311,7 +328,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 6% a 10% dos colaboradores
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   6pts
                 </div>
               </div>
@@ -320,7 +337,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 1% a 5% dos colaboradores
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   2pts
                 </div>
               </div>
@@ -359,7 +376,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 Acima de 0.3% do orçamento
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   10pts
                 </div>
               </div>
@@ -368,7 +385,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 0.21% a 0.3%
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   8pts
                 </div>
               </div>
@@ -377,7 +394,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 0.11% a 0.2%
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   5pts
                 </div>
               </div>
@@ -386,7 +403,7 @@ export default function Modalcriterios(props: Criteriosprops) {
             <div className="h-[40px] w-[650px] bg-[#F9FAFB] mt-[10px] rounded-lg flex items-center">
               <div className="ml-[5px] flex w-full">
                 Maior que 0% e menor ou igual a 0.1% do orçamento
-                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[2px] border-gray-400 bg-white rounded-md flex justify-center items-center">
+                <div className="ml-auto mr-[5px] w-[53px] h-[20px] border-[1px] border-gray-400 bg-white rounded-md flex justify-center items-center">
                   2pts
                 </div>
               </div>
