@@ -8,52 +8,72 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-
 generator dbml {
   provider = "prisma-dbml-generator"
 }
 
-model Usuario {
-  id         Int        @id @default(autoincrement())
-  cnpj       String     @unique
-  email      String     @unique
-  senha      String
-  telefone   String?
+enum StatusApoio {
+  CONTATO_INICIAL
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
 
-  ong        ONG?
-  empresa    Empresa?
-  prefeitura Prefeitura?
+model Usuario {
+  id          String       @id @default(uuid()) // CORRIGIDO: ID agora é String (UUID)
+  cnpj        String       @unique
+  email       String       @unique
+  senha       String
+  telefone    String?
+
+  ong         ONG?
+  empresa     Empresa?
+  prefeitura  Prefeitura?
 }
 
 model ONG {
-  id             Int       @id @default(autoincrement())
-  ods            String?
-  
-  usuarioId      Int       @unique
-  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
+  id              Int     @id @default(autoincrement())
+  ods             String?
+  causa           String
+  nome            String
+
+  usuarioId       String  @unique // CORRIGIDO: usuarioId agora é String
+  usuario         Usuario @relation(fields: [usuarioId], references: [id])
 
   apoiosRecebidos Apoio[]
+  acoes           Acao[]
+}
+
+model Acao {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  descricao   String
+
+  ongId       Int
+  ong         ONG      @relation(fields: [ongId], references: [id])
+
+  apoios      Apoio[]
 }
 
 model Empresa {
-  id         Int       @id @default(autoincrement())
-  nome       String
-  
-  usuarioId  Int       @unique
-  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+  id          Int      @id @default(autoincrement())
+  nome        String
 
-  apoios     Apoio[]
-  pontos     Int       @default(0)
-  criterios  Criterio[]
+  usuarioId   String   @unique // CORRIGIDO: usuarioId agora é String
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+
+  apoios      Apoio[]
+  pontos      Int      @default(0)
+  criterios   Criterio[]
 }
 
 model Prefeitura {
-  id         Int       @id @default(autoincrement())
-  nome       String
-  usuarioId  Int       @unique
-  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+  id          Int      @id @default(autoincrement())
+  nome        String
+  usuarioId   String   @unique // CORRIGIDO: usuarioId agora é String
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
 
-  apoios     Apoio[]
+  apoios      Apoio[]
 }
 
 model Apoio {
@@ -63,31 +83,35 @@ model Apoio {
   tipoAjuda    String
   documentacao String
 
+  status       StatusApoio @default(CONTATO_INICIAL)
+
   empresaId    Int
   ongId        Int
+  acaoId       Int
   prefeituraId Int?
 
   empresa      Empresa    @relation(fields: [empresaId], references: [id])
   ong          ONG        @relation(fields: [ongId], references: [id])
+  acao         Acao       @relation(fields: [acaoId], references: [id])
   prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
 }
 
 model Criterio {
-  id         Int      @id @default(autoincrement())
-  tipo       String
-  pontuacao  Int
+  id          Int      @id @default(autoincrement())
+  tipo        String
+  pontuacao   Int
 
-  empresaId  Int
-  seloId     Int
+  empresaId   Int
+  seloId      Int
 
-  empresa    Empresa  @relation(fields: [empresaId], references: [id])
-  selo       Selo     @relation(fields: [seloId], references: [id])
+  empresa     Empresa  @relation(fields: [empresaId], references: [id])
+  selo        Selo     @relation(fields: [seloId], references: [id])
 }
 
 model Selo {
-  id         Int        @id @default(autoincrement())
-  tipo       String
-  tier       String
+  id          Int      @id @default(autoincrement())
+  tipo        String
+  tier        String
 
-  criterios  Criterio[]
+  criterios   Criterio[]
 }

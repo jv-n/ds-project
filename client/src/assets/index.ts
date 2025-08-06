@@ -49,9 +49,6 @@ export { setapbaixo };
 import downloadicon from "./downloadicon.svg";
 export { downloadicon };
 
-import Bronze from "./bronze.svg";
-export { Bronze };
-
 import Fechar from "./fechar.svg";
 export { Fechar };
 

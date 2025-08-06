@@ -9,6 +9,8 @@ import { useState } from "react";
 import Cardcadastrado from "@/components/card-acao-cadastrada"; 
 import Modalcontatos from "@/components/modal-contato"; 
 import Modalcriterios from "@/components/modal-criterios";
+import SelosPage from "@/app/selospage/page";
+import DoacoesPage from "@/app/doacoespage/page";
 
 export default function Home() {
   const [ativo, setAtivo] = useState("acoes");
@@ -47,7 +49,7 @@ export default function Home() {
 
         {/* O conteúdo dinâmico da página */}
         {ativo === "acoes" && (
-          <Modalcriterios nivel="Ouro" />
+          <SelosPage />
         )}
         {ativo === "selos" && (
           <SelosPage />

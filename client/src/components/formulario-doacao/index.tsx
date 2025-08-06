@@ -1,14 +1,20 @@
 import React, { useCallback, useState } from 'react';
 import FileUploadInput from '../file-uploader';
-import SuccessModal from '../sucess-modal';
 
+// Definindo os tipos dos props para o componente
 interface CadastroDoacaoProps {
   onClose: () => void;
   ongName: string;
   actionName: string;
+  // Nova prop: função para submeter os dados para o componente pai
+  onSubmitDonation: (data: {
+    tipoAjuda: string;
+    valorOuQuantidade: string;
+    documentos: File[];
+  }) => void;
 }
 
-export default function CadastroDoacao({ onClose, ongName, actionName }: CadastroDoacaoProps) {
+export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitDonation }: CadastroDoacaoProps) {
   const [valueOrQuantity, setValueOrQuantity] = useState('');
   const [documentosComprobatorios, setDocumentosComprobatorios] = useState<File[]>([]);
 
@@ -20,11 +26,14 @@ export default function CadastroDoacao({ onClose, ongName, actionName }: Cadastr
   const [selectedDonationType, setSelectedDonationType] = useState('');
 
   const donationTypesOptions = ["Dinheiro", "Alimento", "Roupa", "Serviço"];
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
-    onClose();
-  };
+  
+  // A lógica do modal de sucesso foi movida para o componente pai (DoacoesPage)
+  // const [showSuccessModal, setShowSuccessModal] = useState(false);
+  // const handleCloseSuccessModal = () => {
+  //   setShowSuccessModal(false);
+  //   onClose();
+  // };
+
   const handleSelectDonationType = (type: string) => {
     setSelectedDonationType(type);
     setIsDonationTypeDropdownOpen(false);
@@ -32,14 +41,19 @@ export default function CadastroDoacao({ onClose, ongName, actionName }: Cadastr
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log({
-      ongName,
-      actionName,
-      selectedDonationType,
-      valueOrQuantity,
-      documentosComprobatorios: documentosComprobatorios.map(f => f.name),
-    });
-    setShowSuccessModal(true);
+    
+    // Coleta os dados do formulário
+    const formData = {
+      tipoAjuda: selectedDonationType,
+      valorOuQuantidade: valueOrQuantity,
+      documentos: documentosComprobatorios,
+    };
+
+    // Chama a função passada pelo pai para lidar com a submissão
+    onSubmitDonation(formData);
+
+    // O fechamento do modal e do sidebar será responsabilidade do pai após o sucesso da API
+    // setShowSuccessModal(true);
   };
 
   return (
@@ -194,7 +208,8 @@ export default function CadastroDoacao({ onClose, ongName, actionName }: Cadastr
           </svg>
         </button>
       </form>
-      <SuccessModal isOpen={showSuccessModal} onClose={handleCloseSuccessModal} />
+      {/* O SuccessModal agora será renderizado e controlado pelo componente pai */}
+      {/* <SuccessModal isOpen={showSuccessModal} onClose={handleCloseSuccessModal} /> */}
     </div>
   );
 }

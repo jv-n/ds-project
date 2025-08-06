@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { saveFile } from '@/data'; 
 import Image from 'next/image';
 import { cloudupload, paperclip, ok, problem, loading, close } from '@/assets'; 
 
-type UploadStatus = 'idle' | 'loading' | 'error' | 'success';
+type UploadStatus = 'idle' | 'processing' | 'error' | 'success'; // 'loading' renomeado para 'processing' para clareza local
 
 interface FileUploadInputProps {
   label: string;
@@ -18,9 +17,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const successTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const errorTimerRef = useRef<NodeJS.Timeout | null>(null); 
-  const isFileInputOpenRef = useRef(false); 
+  const statusTimerRef = useRef<NodeJS.Timeout | null>(null); // Um único timer para sucesso/erro
 
   // Effect para notificar o componente pai sobre mudanças nos arquivos
   useEffect(() => {
@@ -30,196 +27,122 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
   // Effect para limpar timers ao desmontar o componente
   useEffect(() => {
     return () => {
-      if (successTimerRef.current) {
-        clearTimeout(successTimerRef.current);
-      }
-      if (errorTimerRef.current) { 
-        clearTimeout(errorTimerRef.current);
+      if (statusTimerRef.current) {
+        clearTimeout(statusTimerRef.current);
       }
     };
   }, []);
 
-  // Effect para gerenciar o estado 'loading' ao abrir janela de arquvios
-  useEffect(() => {
-    const handleWindowFocus = () => {
-      if (isFileInputOpenRef.current && uploadStatus === 'loading' && !errorMessage) {
-        setTimeout(() => {
-          if (uploadStatus === 'loading' && !errorMessage) {
-            setUploadStatus('idle'); 
-          }
-          isFileInputOpenRef.current = false;
-        }, 50); 
-      }
-    };
-
-    window.addEventListener('focus', handleWindowFocus);
-    return () => {
-      window.removeEventListener('focus', handleWindowFocus);
-    };
-  }, [uploadStatus, errorMessage]); 
-
-
-  const handleUploadAndSave = useCallback(async (file: File) => {
-    if (successTimerRef.current) {
-      clearTimeout(successTimerRef.current);
-      successTimerRef.current = null;
-    }
-    if (errorTimerRef.current) { 
-      clearTimeout(errorTimerRef.current);
-      errorTimerRef.current = null;
+  // Função para processar e adicionar um arquivo
+  const handleProcessFile = useCallback((file: File) => {
+    // Limpa qualquer timer de status anterior
+    if (statusTimerRef.current) {
+      clearTimeout(statusTimerRef.current);
+      statusTimerRef.current = null;
     }
 
-    setUploadStatus('loading'); 
-    setErrorMessage(null);
+    setErrorMessage(null); // Limpa mensagens de erro anteriores
 
-    // 1. Verificar o limite de arquivos antes de qualquer outra validação
+    // 1. Verificar o limite de arquivos
     if (attachedFiles.length >= maxFiles) {
-        setUploadStatus('error');
-        setErrorMessage(`Limite de ${maxFiles} arquivos atingido.`);
-        errorTimerRef.current = setTimeout(() => {
-            setUploadStatus('idle');
-            setErrorMessage(null);
-        }, 2000); 
-        return; 
+      setUploadStatus('error');
+      setErrorMessage(`Limite de ${maxFiles} arquivos atingido.`);
+      statusTimerRef.current = setTimeout(() => {
+        setUploadStatus('idle');
+        setErrorMessage(null);
+      }, 2000); // Exibe erro por 2 segundos
+      return;
     }
 
     // 2. Verificar se o arquivo já existe na lista
     const fileExists = attachedFiles.some(f => f.name === file.name && f.size === file.size);
     if (fileExists) {
-        setUploadStatus('error');
-        setErrorMessage(`Arquivo já selecionado.`); 
-        errorTimerRef.current = setTimeout(() => {
-            setUploadStatus('idle');
-            setErrorMessage(null);
-        }, 2000); 
-        return; 
+      setUploadStatus('error');
+      setErrorMessage(`Arquivo "${file.name}" já selecionado.`);
+      statusTimerRef.current = setTimeout(() => {
+        setUploadStatus('idle');
+        setErrorMessage(null);
+      }, 2000); // Exibe erro por 2 segundos
+      return;
     }
     
-    try {
-      await saveFile(file); // Simulação do upload (mock)
+    // Se passou nas validações, adiciona o arquivo e define status de sucesso
+    setAttachedFiles((prevFiles) => [...prevFiles, file]);
+    setUploadStatus('success');
+    setErrorMessage(null); // Garante que não há erro visível
 
-      setAttachedFiles((prevFiles) => {
-        if (!prevFiles.some(f => f.name === file.name && f.size === file.size) && prevFiles.length < maxFiles) {
-          return [...prevFiles, file];
-        }
-        return prevFiles;
-      });
+    statusTimerRef.current = setTimeout(() => {
+      setUploadStatus('idle'); // Volta para idle após 2 segundos
+    }, 2000);
 
-      setUploadStatus('success');
-      setErrorMessage(null);
-
-      successTimerRef.current = setTimeout(() => {
-        setUploadStatus('idle');
-        setErrorMessage(null);
-      }, 2000);
-
-    } catch (error: any) {
-      console.error("Erro inesperado no upload/salvamento do arquivo:", error);
-      setUploadStatus('error');
-      setErrorMessage(error.message || 'Falha inesperada ao anexar o arquivo.');
-      errorTimerRef.current = setTimeout(() => {
-        setUploadStatus('idle');
-        setErrorMessage(null);
-      }, 2000); 
-    }
-  }, [attachedFiles, maxFiles]); 
-
+  }, [attachedFiles, maxFiles]);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    isFileInputOpenRef.current = false; 
-    
     if (event.target.files && event.target.files.length > 0) {
-        const file = event.target.files[0];
-        await handleUploadAndSave(file);
+      const file = event.target.files[0];
+      setUploadStatus('processing'); // Mostra "Carregando..." enquanto processa localmente
+      handleProcessFile(file);
     } else {
-        if (uploadStatus === 'loading' && !errorMessage) {
-            setUploadStatus('idle');
-            setErrorMessage(null);
-        }
+      // Se o usuário cancelou a seleção de arquivo, volta para idle
+      setUploadStatus('idle');
+      setErrorMessage(null);
     }
-    event.target.value = ''; 
+    event.target.value = ''; // Limpa o input para permitir selecionar o mesmo arquivo novamente
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    // Quando começa o drag, pode ir para loading se não estiver já em um estado final
-    if (uploadStatus === 'idle' || uploadStatus === 'success' || uploadStatus === 'error') {
-      setUploadStatus('loading');
-      setErrorMessage(null);
-    }
-    isFileInputOpenRef.current = true; 
+    // Mostra "Carregando..." quando um item é arrastado sobre a área
+    setUploadStatus('processing');
+    setErrorMessage(null);
   };
- 
-  // Para caso de desistência de drop
+  
   const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault(); 
-    if (isFileInputOpenRef.current && uploadStatus === 'loading' && attachedFiles.length === 0 && !errorMessage) {
-        setUploadStatus('idle');
-        setErrorMessage(null);
-        isFileInputOpenRef.current = false; 
-    }
+    event.preventDefault();
+    // Se o usuário arrastou para fora, volta para idle
+    setUploadStatus('idle');
+    setErrorMessage(null);
   };
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    isFileInputOpenRef.current = false; // O drop aconteceu, então a interação com o input terminou
-
-    if (uploadStatus !== 'loading') { 
-      setUploadStatus('loading');
-      setErrorMessage(null);
-    }
+    setUploadStatus('processing'); // Mostra "Carregando..." enquanto processa localmente
 
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
       const file = event.dataTransfer.files[0];
-      await handleUploadAndSave(file);
+      handleProcessFile(file);
     } else {
-      // Se não houver arquivos no drop (e.g., arrastou algo que não é arquivo),
-      // volta para idle (se não houver erro anterior ou arquivos)
-      if (uploadStatus === 'loading' && !errorMessage) {
-        setUploadStatus('idle');
-        setErrorMessage(null);
-      }
+      // Se não houver arquivos no drop (e.g., arrastou algo que não é arquivo), volta para idle
+      setUploadStatus('idle');
+      setErrorMessage(null);
     }
   };
 
   const handleRemoveFile = (indexToRemove: number) => {
     // Limpa timers ao remover, para que o status não seja sobrescrito por um timer antigo
-    if (successTimerRef.current) {
-      clearTimeout(successTimerRef.current);
-      successTimerRef.current = null;
-    }
-    if (errorTimerRef.current) { 
-      clearTimeout(errorTimerRef.current);
-      errorTimerRef.current = null;
+    if (statusTimerRef.current) {
+      clearTimeout(statusTimerRef.current);
+      statusTimerRef.current = null;
     }
 
     setAttachedFiles((prevFiles) => {
       const newFiles = prevFiles.filter((_, index) => index !== indexToRemove);
-
-      // Define o status após a remoção
-      // Se não há mais arquivos, volta para idle.
-      // Se era erro, limpa o erro e volta para idle.
-      // Caso contrário, volta para idle.
-      if (newFiles.length === 0 || uploadStatus === 'error' || uploadStatus === 'success') {
-        setUploadStatus('idle');
-        setErrorMessage(null);
-      }
-      // Se o status já era 'idle' antes da remoção, ele continua 'idle'.
-
+      // Após remover, o status volta para idle e limpa qualquer erro
+      setUploadStatus('idle');
+      setErrorMessage(null);
       return newFiles;
     });
   };
 
   const handleDivClick = () => {
     if (attachedFiles.length < maxFiles) {
-      setUploadStatus('loading'); // Define para loading antes de abrir o seletor
+      setUploadStatus('processing'); // Define para "processing" antes de abrir o seletor
       setErrorMessage(null);
-      isFileInputOpenRef.current = true; // Marca que o gerenciador de arquivos está prestes a abrir
       fileInputRef.current?.click();
     } else {
       setUploadStatus('error');
       setErrorMessage(`Limite de ${maxFiles} arquivos atingido.`);
-      errorTimerRef.current = setTimeout(() => {
+      statusTimerRef.current = setTimeout(() => {
         setUploadStatus('idle');
         setErrorMessage(null);
       }, 2000);
@@ -228,7 +151,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
 
   const borderColorClass = {
     'idle': 'border-[#89BAFF]',
-    'loading': 'border-[#89BAFF]',
+    'processing': 'border-[#89BAFF]', // Cor para "processando"
     'error': 'border-[#DB4437]',
     'success': 'border-[#11B163]'
   }[uploadStatus];
@@ -263,17 +186,17 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
             <p className="mt-2 text-sm text-center">Arraste e solte ou selecione o arquivo</p>
           </>
         );
-      case 'loading':
+      case 'processing': // Estado para indicar processamento local
         return (
           <>
             <Image
               src={loading}
-              alt="Carregando..."
+              alt="Processando..."
               width={20}
               height={20}
               className="mx-auto mb-2 animate-spin"
             />
-            <p className="mt-2 text-sm text-center">Carregando...</p>
+            <p className="mt-2 text-sm text-center">Processando arquivo...</p>
           </>
         );
       case 'success':
@@ -281,12 +204,12 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
           <>
             <Image
               src={ok}
-              alt="Carregamento concluído"
+              alt="Arquivo anexado"
               width={20}
               height={20}
               className="mx-auto mb-2"
             />
-            <p className="mt-2 text-sm text-center">Carregamento concluído</p>
+            <p className="mt-2 text-sm text-center">Arquivo anexado com sucesso!</p>
           </>
         );
       default:
@@ -316,7 +239,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
           flex flex-col items-center justify-center p-6
           border-2 border-dashed rounded-sm cursor-pointer
           ${borderColorClass} ${
-            uploadStatus === 'loading' ? 'bg-[#C4DCFF]' :
+            uploadStatus === 'processing' ? 'bg-[#C4DCFF]' : // Cor para "processing"
             uploadStatus === 'error' ? 'bg-[#F2F5F7]' :
             uploadStatus === 'success' ? 'bg-[#F2F5F7]' :
             'bg-[#F2F5F7]'
@@ -347,7 +270,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
         <div className="mt-6 space-y-2 w-full">
           {attachedFiles.map((file, index) => (
             <div
-              key={file.name + file.size + index}
+              key={file.name + file.size + index} // Melhorar key para evitar conflitos
               className="flex items-center justify-between px-4 py-2 border-[1.5px] border-[#E6E6E6] rounded-sm text-gray-700 bg-[#F2F5F7] h-[38px]"
             >
               <div className="flex items-center flex-grow min-w-0">
@@ -374,6 +297,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
                   alt="Ícone de Fechar"
                   width={20}
                   height={20}
+                  className="ml-2" // Adicionado margem para o ícone de fechar
                 />
               </button>
             </div>

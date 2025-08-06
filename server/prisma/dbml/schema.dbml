@@ -3,7 +3,7 @@
 //// ------------------------------------------------------
 
 Table Usuario {
-  id Int [pk, increment]
+  id String [pk]
   cnpj String [unique, not null]
   email String [unique, not null]
   senha String [not null]
@@ -16,23 +16,37 @@ Table Usuario {
 Table ONG {
   id Int [pk, increment]
   ods String
-  usuarioId Int [unique, not null]
+  causa String [not null]
+  nome String [not null]
+  usuarioId String [unique, not null]
   usuario Usuario [not null]
   apoiosRecebidos Apoio [not null]
+  acoes Acao [not null]
+}
+
+Table Acao {
+  id Int [pk, increment]
+  nome String [not null]
+  descricao String [not null]
+  ongId Int [not null]
+  ong ONG [not null]
+  apoios Apoio [not null]
 }
 
 Table Empresa {
   id Int [pk, increment]
-  usuarioId Int [unique, not null]
+  nome String [not null]
+  usuarioId String [unique, not null]
   usuario Usuario [not null]
   apoios Apoio [not null]
+  pontos Int [not null, default: 0]
   criterios Criterio [not null]
 }
 
 Table Prefeitura {
   id Int [pk, increment]
   nome String [not null]
-  usuarioId Int [unique, not null]
+  usuarioId String [unique, not null]
   usuario Usuario [not null]
   apoios Apoio [not null]
 }
@@ -43,11 +57,14 @@ Table Apoio {
   valor Float [not null]
   tipoAjuda String [not null]
   documentacao String [not null]
+  status StatusApoio [not null, default: 'CONTATO_INICIAL']
   empresaId Int [not null]
   ongId Int [not null]
+  acaoId Int [not null]
   prefeituraId Int
   empresa Empresa [not null]
   ong ONG [not null]
+  acao Acao [not null]
   prefeitura Prefeitura
 }
 
@@ -68,7 +85,16 @@ Table Selo {
   criterios Criterio [not null]
 }
 
+Enum StatusApoio {
+  CONTATO_INICIAL
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
+
 Ref: ONG.usuarioId - Usuario.id
+
+Ref: Acao.ongId > ONG.id
 
 Ref: Empresa.usuarioId - Usuario.id
 
@@ -77,6 +103,8 @@ Ref: Prefeitura.usuarioId - Usuario.id
 Ref: Apoio.empresaId > Empresa.id
 
 Ref: Apoio.ongId > ONG.id
+
+Ref: Apoio.acaoId > Acao.id
 
 Ref: Apoio.prefeituraId > Prefeitura.id
 
