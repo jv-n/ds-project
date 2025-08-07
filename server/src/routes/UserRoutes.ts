@@ -5,25 +5,14 @@ import { UserController } from '../controllers';
 const userRouter = Router();
 
 userRouter.route('/')
-  .post(
-    UserController.create,
-  );
+  .post(UserController.create);
 
 userRouter.route('/:userId')
-  .get(
-    UserController.read,
-  );
+  .get(UserController.read)
+  .patch(auth, UserController.update)
+  .delete(auth, UserController.delete);
 
-userRouter.route('/:userId')
-  .patch(
-    [auth],
-    UserController.update,
-  );
-
-userRouter.route('/:userId')
-  .delete(
-    [auth],
-    UserController.delete,
-  );
+userRouter.route('/:userId/tier')
+  .get(UserController.getTier);
 
 export default userRouter;

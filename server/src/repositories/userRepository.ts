@@ -1,68 +1,72 @@
-import { Prisma, User } from '@prisma/client';
+import { Prisma, Usuario } from '@prisma/client';
 import prisma from '@database';
 
 class UserRepository {
-  async create(data: Prisma.UserCreateInput): Promise<User> {
-    const user = await prisma.user.create({ data });
-    return user;
+  async create(data: Prisma.UsuarioCreateInput): Promise<Usuario> {
+    const usuario = await prisma.usuario.create({ data });
+    return usuario;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({ where: { email } });
-    return user;
+  async findByEmail(email: string): Promise<Usuario | null> {
+    const usuario = await prisma.usuario.findUnique({ where: { email } });
+    return usuario;
   }
 
-  async findById(id: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({ where: { id } });
-    return user;
+  async findById(id: number): Promise<Usuario | null> {
+    const usuario = await prisma.usuario.findUnique({ where: { id } });
+    return usuario;
   }
 
-  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
-    const user = await prisma.user.update({ where: { id }, data });
-    return user;
+  async update(id: number, data: Prisma.UsuarioUpdateInput): Promise<Usuario> {
+    const usuario = await prisma.usuario.update({ where: { id }, data });
+    return usuario;
   }
 
-  async delete(id: string): Promise<User> {
-    const user = await prisma.user.delete({ where: { id } });
-    return user;
+  async delete(id: number): Promise<Usuario> {
+    const usuario = await prisma.usuario.delete({ where: { id } });
+    return usuario;
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await prisma.user.findMany();
-    return users;
+  async findAll(): Promise<Usuario[]> {
+    const usuarios = await prisma.usuario.findMany();
+    return usuarios;
   }
 
 
   async getImpactData(userId: number) {
-    const totalDonatedAggregation = await prisma.donation.aggregate({
+    const totalDonatedAggregation = await prisma.apoio.aggregate({
       _sum: {
-        amount: true,
+        valor: true,
       },
       where: {
-        userId: userId,
+        empresa: {
+          usuarioId: userId,
+        },
       },
     });
-    const totalDonated = totalDonatedAggregation._sum.amount || 0;
 
-    const supportedNgos = await prisma.donation.count({
+    const totalDonated = totalDonatedAggregation._sum.valor || 0;
+
+    const supportedNgos = await prisma.apoio.count({
       where: {
-        userId: userId,
+        empresa: {
+          usuarioId: userId,
+        },
       },
-      distinct: ['ngoId'],
+      distinct: ['ongId'],
     });
 
-    const distinctSdgsCount = await prisma.sDG.count({
+    const distinctSdgsCount = await prisma.oNG.count({
       where: {
-        ngos: {
+        apoiosRecebidos: {
           some: {
-            ngo: {
-              donations: {
-                some: {
-                  userId: userId,
-                },
-              },
+            empresa: {
+              usuarioId: userId,
             },
           },
+        },
+        ods: {
+          not: null,
         },
       },
     });
