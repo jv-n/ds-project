@@ -31,6 +31,48 @@ class UserRepository {
     const users = await prisma.user.findMany();
     return users;
   }
+
+
+  async getImpactData(userId: number) {
+    const totalDonatedAggregation = await prisma.donation.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        userId: userId,
+      },
+    });
+    const totalDonated = totalDonatedAggregation._sum.amount || 0;
+
+    const supportedNgos = await prisma.donation.count({
+      where: {
+        userId: userId,
+      },
+      distinct: ['ngoId'],
+    });
+
+    const distinctSdgsCount = await prisma.sDG.count({
+      where: {
+        ngos: {
+          some: {
+            ngo: {
+              donations: {
+                some: {
+                  userId: userId,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      totalDonated,
+      supportedNgos,
+      supportedSdgs: distinctSdgsCount,
+    };
+  }
 }
 
 export default new UserRepository();
