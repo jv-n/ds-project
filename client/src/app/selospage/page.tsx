@@ -7,22 +7,10 @@ import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
-import { goldenmedal } from "@/assets";
 import Cardpontos from "@/components/pontos-esmpresa";
 
 export default function Home() {
-  const [ativo, setAtivo] = useState("acoes");
-  const [ativocontato, setAtivoContato] = useState("acoes");
-  const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarcriterios, Setcriterios] = useState("off");
-
-  function abrirModal() {
-    setMostrarModal(true);
-  }
-
-  function fecharModal() {
-    setMostrarModal(false);
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
@@ -49,16 +37,25 @@ export default function Home() {
       />
 
       <div className="font-sans font-bold text-[32px] text-black mr-[630px] mt-[25px] flex justify-center">
-        <div>Selo de Impacto Social</div>
+        <div>Tipos de Selo</div>
       </div>
 
       <div className="w-full flex items-center justify-center mt-[50px]">
         <div className="flex items-center justify-between">
-          <CardMedalhaBronze abrirModal={Setcriterios} />
+          <CardMedalhaBronze
+            abrirModal={Setcriterios}
+            
+          />
           <div className="ml-[15px] mr-[15px]">
-            <CardMedalhaPrata abrirModal={Setcriterios} />
+            <CardMedalhaPrata
+              abrirModal={Setcriterios}
+              
+            />
           </div>
-          <CardMedalhaOuro abrirModal={Setcriterios} />
+          <CardMedalhaOuro
+            abrirModal={Setcriterios}
+            
+          />
         </div>
       </div>
 
@@ -85,7 +82,6 @@ export default function Home() {
       </div>
 
       <div className="h-[100px]" />
-
       <Rodape />
     </div>
   );

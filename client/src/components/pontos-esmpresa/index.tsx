@@ -56,9 +56,9 @@ const imagensPorNivel = {
 };
 
 const textonivel = {
-  goldenmedal: "Nível Ouro",
-  silvermedal: "Nível Prata",
-  bronzemedal: "Nível Bronze",
+  goldenmedal: "Selo Empresa de Impacto",
+  silvermedal: "Selo Empresa Engajada",
+  bronzemedal: "Selo Empresa Aderente",
 };
 
 const descricao = {

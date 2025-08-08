@@ -13,9 +13,9 @@ const imagensPorNivel = {
 };
 
 const nomesPorNivel = {
-  goldenmedal: "ouro",
-  silvermedal: "prata",
-  bronzemedal: "bronze",
+  goldenmedal: "Selo Empresa de Impacto",
+  silvermedal: "Selo Empresa Engajada",
+  bronzemedal: "Selo Empresa Aderente",
 };
 
 const coresPorNivel = {
@@ -59,7 +59,7 @@ export default function Modalcriterios(props: Criteriosprops) {
           <div className="flex">
             <div
               style={{ color: coresPorNivel[props.nivel] }}
-              className="font-bold text-[20px]"
+              className="font-bold text-[20px] w-[500px]"
             >
               Nível {nomesPorNivel[props.nivel]}
             </div>
@@ -67,7 +67,7 @@ export default function Modalcriterios(props: Criteriosprops) {
               onClick={() => props.fecharmodal("off")}
               src={xsair}
               alt=""
-              className="ml-[485px]   cursor-pointer"
+              className="ml-[110px]   cursor-pointer"
             />
           </div>
           <div className="text-[#4A5565] mt-[-5px]">
@@ -78,7 +78,8 @@ export default function Modalcriterios(props: Criteriosprops) {
       </div>
 
       <div className="text-[#717182] mt-[3px]">
-        Critérios e faixas de pontuação para o Nível {props.nivel}
+        Critérios e faixas de pontuação para o Nível{" "}
+        {nomesPorNivel[props.nivel]}
       </div>
 
       <div
