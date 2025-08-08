@@ -62,4 +62,24 @@ export class CompanyRepository {
   async delete(id: number) {
     return prisma.empresa.delete({ where: { id } });
   }
+  
+  async findByCnpj(cnpj: string) {
+    return prisma.empresa.findUnique({
+      where: {
+        cnpj,
+      },
+    });
+  }
+
+  async findByCnpjWithUser(cnpj: string) {
+    return prisma.empresa.findUnique({
+      where: {
+        cnpj,
+      },
+      include: {
+        usuario: true,
+      },
+    });
+  }
+
 }

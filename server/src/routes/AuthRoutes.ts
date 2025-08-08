@@ -1,21 +1,11 @@
 import { Router } from 'express';
 import { LoginController } from '../controllers';
 
-const AuthRouter = Router();
+const authRouter = Router();
 
-AuthRouter.route('/')
-  .post(
-    LoginController.login,
-  );
+authRouter.post('/login', LoginController.login);
+authRouter.post('/login/company', LoginController.loginCompany);
+authRouter.post('/refresh', LoginController.refresh);
+authRouter.get('/logout', LoginController.logout);
 
-AuthRouter.route('/')
-  .patch(
-    LoginController.refresh,
-  );
-
-AuthRouter.route('/')
-  .delete(
-    LoginController.logout,
-  );
-
-export default AuthRouter;
+export const AuthRoutes = authRouter;

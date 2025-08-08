@@ -1,4 +1,3 @@
-// src/controllers/company-controller.ts
 import { Request, Response } from 'express';
 import { CompanyRepository } from '../repositories/CompanyRepository';
 
