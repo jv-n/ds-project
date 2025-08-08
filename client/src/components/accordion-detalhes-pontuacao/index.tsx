@@ -1,22 +1,30 @@
-import React, { useState } from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function DetalhesPontuacao() {
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
+  const [pontuacoes, setPontuacoes] = useState<{
+    pontuacaoONGs: number;
+    pontuacaoODS: number;
+    pontuacaoDoacoes: number;
+    pontuacaoTotal: number;
+  } | null>(null);
 
-  const pontuacoes = [
-    { label: "Ações de Conscientização e Educação Interna sobre ODSS", detalhe: "6 ações realizadas", pontos: "25 pts" },
-    { label: "ODSs com Atuação da Empresa", detalhe: "7 a 8 ODS abordados", pontos: "20 pts" },
-    { label: "ONGs Atingidas por Ações de Voluntariado", detalhe: "5 a 6 ONGs parceiras", pontos: "15 pts" },
-    { label: "Colaboradores Engajados em Ações de Voluntariado", detalhe: "6% a 10% dos colaboradores", pontos: "4 pts" },
-    { label: "Orçamento Destinado a Voluntariado e Iniciativas Sociais", detalhe: "Até 0.1% do orçamento", pontos: "4 pts" },
-  ];
+  useEffect(() => {
+    const fetchPontuacoes = async () => {
+      try {
+        const userId = localStorage.getItem('user_id'); // ou a forma correta que seu app usa
+        if (!userId) return;
+        const { data } = await axios.get(`/users/${userId}/tier`);
+        setPontuacoes(data);
+      } catch (error) {
+        console.error('Erro ao buscar pontuação:', error);
+      }
+    };
 
-  const totalPontos = pontuacoes.reduce((acc, item) => {
-    // Isso é uma simplificação, você precisaria de um parsing mais robusto se os pontos tivessem outra formatação
-    const pontosNum = parseInt(item.pontos.replace(' pts', ''));
-    return acc + pontosNum;
-  }, 0);
-
+    fetchPontuacoes();
+  }, []);
 
   return (
     <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
@@ -39,21 +47,52 @@ export default function DetalhesPontuacao() {
 
       {isOpen && (
         <div className="p-6">
-          {pontuacoes.map((item, index) => (
-            <div key={index} className="flex justify-between items-center py-3 border-b last:border-b-0 border-gray-100">
-              <div className="flex flex-col">
-                <span className="font-semibold text-sm text-[#1B2029]">{item.label}</span>
-                <span className="text-xs text-gray-500 mt-1">{item.detalhe}</span>
+          {pontuacoes ? (
+            <>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-[#1B2029]">
+                    ONGs diferentes apoiadas
+                  </span>
+                  <span className="text-xs text-gray-500 mt-1">
+                    Pontuação com base no número de ONGs únicas impactadas
+                  </span>
+                </div>
+                <span className="font-bold text-[#1B2029] text-sm">{pontuacoes.pontuacaoONGs} pts</span>
               </div>
-              <span className="font-bold text-[#1B2029] text-sm">{item.pontos}</span>
-            </div>
-          ))}
 
-          {/* Total */}
-          <div className="flex justify-between items-center mt-4 p-4 rounded-b-lg bg-[#E0F2F7] text-[#009FE3] font-bold text-lg">
-            <span>Total</span>
-            <span>{totalPontos} pontos</span>
-          </div>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-[#1B2029]">
+                    ODSs diferentes apoiadas
+                  </span>
+                  <span className="text-xs text-gray-500 mt-1">
+                    Pontuação baseada na variedade de ODSs apoiadas
+                  </span>
+                </div>
+                <span className="font-bold text-[#1B2029] text-sm">{pontuacoes.pontuacaoODS} pts</span>
+              </div>
+
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-[#1B2029]">
+                    Valor total doado
+                  </span>
+                  <span className="text-xs text-gray-500 mt-1">
+                    Quanto maior a contribuição, maior a pontuação
+                  </span>
+                </div>
+                <span className="font-bold text-[#1B2029] text-sm">{pontuacoes.pontuacaoDoacoes} pts</span>
+              </div>
+
+              <div className="flex justify-between items-center mt-4 p-4 rounded-b-lg bg-[#E0F2F7] text-[#009FE3] font-bold text-lg">
+                <span>Total</span>
+                <span>{pontuacoes.pontuacaoTotal} pontos</span>
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">Carregando pontuação...</p>
+          )}
         </div>
       )}
     </div>

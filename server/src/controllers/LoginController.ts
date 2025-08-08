@@ -21,7 +21,7 @@ class LoginController {
         });
       }
 
-      const checkPassword = await compare(password, user.password);
+      const checkPassword = await compare(password, user.senha);
 
       if (!checkPassword) {
         return next({
@@ -30,12 +30,12 @@ class LoginController {
         });
       }
 
-      const accessToken = TokenRepository.generateAccessToken(user.id, '60s');
-      const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d');
+      const accessToken = TokenRepository.generateAccessToken(user.id.toString(), '60s');
+      const refreshToken = TokenRepository.generateRefreshToken(user.id.toString(), '60s');
 
       CookieRepository.setCookie(res, 'refresh_token', refreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { senha: _, ...loggedUser } = user;
 
       res.locals = {
         status: 200,
@@ -52,49 +52,57 @@ class LoginController {
     }
   }
 
-   async loginCompany(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { cnpj, password } = req.body;
+  async loginCompany(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { cnpj, password } = req.body;
 
-      const user = await UserRepository.findUserWithCompanyByCnpj(cnpj);
-
-      if (!user) {
-        return next({
-          status: 400,
-          message: 'Invalid credentials.', 
-        });
-      }
-
-      const checkPassword = await compare(password, user.password);
-
-      if (!checkPassword) {
-        return next({
-          status: 400,
-          message: 'Invalid credentials.',
-        });
-      }
-
-      const accessToken = TokenRepository.generateAccessToken(user.id, '60s');
-      const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d');
-
-      CookieRepository.setCookie(res, 'refresh_token', refreshToken);
-
-      const { password: _, ...loggedUser } = user;
-
-      res.locals = {
-        status: 200,
-        message: 'Company user logged in',
-        data: {
-          loggedUser, 
-          accessToken,
-        },
-      };
-
-      return next();
-    } catch (error) {
-      return next(error);
+    if (!cnpj || !password) {
+      return next({
+        status: 400,
+        message: 'CNPJ and password are required.',
+      });
     }
+
+    const user = await UserRepository.findUserWithCompanyByCnpj(cnpj);
+
+    if (!user) {
+      return next({
+        status: 401,
+        message: 'Invalid credentials.', 
+      });
+    }
+
+    const checkPassword = await compare(password, user.password);
+
+    if (!checkPassword) {
+      return next({
+        status: 401,
+        message: 'Invalid credentials.',
+      });
+    }
+
+    const accessToken = TokenRepository.generateAccessToken(user.id, '60s');
+    const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d');
+
+    CookieRepository.setCookie(res, 'refresh_token', refreshToken);
+
+    const { password: _, ...loggedUser } = user;
+
+    res.locals = {
+      status: 200,
+      message: 'Company user logged in',
+      data: {
+        loggedUser, 
+        accessToken,
+      },
+    };
+
+    return next();
+  } catch (error) {
+    return next(error);
   }
+}
+
 
   async refresh(req: Request, res: Response, next: NextFunction) {
     try {
@@ -135,14 +143,14 @@ class LoginController {
       CookieRepository.clearCookies(res, 'refresh_token');
 
       const newRefreshToken = TokenRepository.generateRefreshToken(
-        user.id,
+        user.id.toString(),
         '1d',
       );
-      const acessToken = TokenRepository.generateAccessToken(user.id, '30s');
+      const acessToken = TokenRepository.generateAccessToken(user.id.toString(), '30s');
 
       CookieRepository.setCookie(res, 'refresh_token', newRefreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { senha: _, ...loggedUser } = user;
 
       res.locals = {
         status: 200,
