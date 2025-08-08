@@ -61,7 +61,7 @@ export default function Modalcriterios(props: Criteriosprops) {
               style={{ color: coresPorNivel[props.nivel] }}
               className="font-bold text-[20px] w-[500px]"
             >
-              Nível {nomesPorNivel[props.nivel]}
+              {nomesPorNivel[props.nivel]}
             </div>
             <Image
               onClick={() => props.fecharmodal("off")}
