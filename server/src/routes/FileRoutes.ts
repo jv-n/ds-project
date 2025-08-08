@@ -31,4 +31,6 @@ FileRouter.route('/debug').post(upload.any(), (req, res, next) => FileController
 
 FileRouter.route('/:id').delete((req, res, next) => FileController.delete(req, res, next));
 
+FileRouter.route('/').get((req, res, next) => FileController.list(req, res, next));
+
 export default FileRouter;

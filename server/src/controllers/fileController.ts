@@ -9,7 +9,7 @@ class FileController {
       console.log('Body:', req.body);
       console.log('File:', req.file);
       console.log('Files:', req.files);
-      
+
       res.locals = {
         status: 200,
         data: {
@@ -29,7 +29,6 @@ class FileController {
 
   async upload(req: Request, res: Response, next: NextFunction) {
     try {
-
       if (!req.file) {
         return next({
           status: 400,
@@ -67,6 +66,21 @@ class FileController {
         message: 'Arquivo deletado.',
       };
 
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  // Método implementado para listar arquivos
+  async list(req: Request, res: Response, next: NextFunction) {
+    try {
+      const files = await FileRepository.listFiles();
+      res.locals = {
+        status: 200,
+        data: files,
+        message: 'Arquivos listados com sucesso.',
+      };
       return next();
     } catch (err) {
       return next(err);
