@@ -8,7 +8,6 @@ export default function EntrarPage() {
   return (
     <div className="flex items-center relative">
       <div className="min-h-screen w-1/2 bg-gray-50 flex flex-col justify-center sm:px-6 lg:px-8">
-        <BackButton />
         <div className="sm:mx-auto sm:w-full sm:max-w-md mb-2">
           <AuthHeader
             title=""
@@ -20,13 +19,13 @@ export default function EntrarPage() {
           <div className="py-10 px-4 sm:px-10">
             <div className="flex gap-4">
               <Link href="/auth/pages/login-ong">
-                <button className="w-full bg-[#294BB6] text-white py-14 px-4 rounded-md border-2 hover:bg-blue-700 transition font-medium text-lg">
-                  Sou uma ONG/projeto
+                <button className="w-[180px] h-[140px] bg-[#294BB6] text-white py-14 px-4 rounded-md border-2 hover:bg-blue-700 transition font-medium text-lg cursor-pointer flex flex-col justify-center items-center items-center">
+                  <div>Auditoria</div>
                 </button>
               </Link>
               <Link href="/auth/pages/login-empresas">
-                <button className="w-full bg-white text-blue-600 py-14 px-5.5 rounded-md border-2 hover:bg-gray-50 transition font-medium text-lg">
-                  Sou uma Empresa
+                <button className="w-[180px] h-[140px] bg-white text-blue-600 py-14 px-5.5 rounded-md border-2 hover:bg-gray-50 transition font-medium text-lg cursor-pointer flex flex-col justify-center items-center items-center">
+                  <div>Sou uma Empresa </div>
                 </button>
               </Link>
             </div>

@@ -11,7 +11,7 @@ import { Search } from "lucide-react";
 const minhasAuditorias: (RowAuditoriaProps & { acao: string })[] = [
   {
     id: "aud1",
-    nomeEmpresa: "Empresa ABC Construções Recife",
+    nomeEmpresa: "Empresa Grandes Construções Recife",
     emailEmpresa: "contato@empresaabc.com",
     nomeONG: "ONG Esperança de Jaboatão",
     tipoDoacao: "Alimentos não perecíveis",
@@ -33,36 +33,36 @@ const minhasAuditorias: (RowAuditoriaProps & { acao: string })[] = [
         dataEnvio: "2025-06-10T10:00:00Z",
         url: "#",
       },
+      // ... seus outros documentos do grupo aud1
+    ],
+    acao: "Doação de Alimentos",
+  },
+  {
+    id: "aud4",
+    nomeEmpresa: "Construtora Nova Era",
+    emailEmpresa: "contato@novaera.com.br",
+    nomeONG: "ONG Solidariedade Recife",
+    tipoDoacao: "Materiais de Construção",
+    valorDoacao: "100 sacos de cimento",
+    dataDoacao: "2025-06-11T09:00:00Z",
+    status: "aguardando",
+    documentos: [
       {
-        id: "doc1_3",
-        nome: "Nota_Fiscal_Compra.pdf",
+        id: "doc4_1",
+        nome: "Nota_Fiscal_Materiais.pdf",
         tipo: "PDF",
-        dataEnvio: "2025-06-10T10:00:00Z",
+        dataEnvio: "2025-06-11T09:00:00Z",
         url: "#",
       },
       {
-        id: "doc1_4",
-        nome: "Comprovante_Entrega.pdf",
+        id: "doc4_2",
+        nome: "Comprovante_Entrega_Construcao.pdf",
         tipo: "PDF",
-        dataEnvio: "2025-06-10T10:00:00Z",
-        url: "#",
-      },
-      {
-        id: "doc1_5",
-        nome: "Nota_Fiscal_Compra.pdf",
-        tipo: "PDF",
-        dataEnvio: "2025-06-10T10:00:00Z",
-        url: "#",
-      },
-      {
-        id: "doc1_6",
-        nome: "Comprovante_Entrega.pdf",
-        tipo: "PDF",
-        dataEnvio: "2025-06-10T10:00:00Z",
+        dataEnvio: "2025-06-11T09:30:00Z",
         url: "#",
       },
     ],
-    acao: "Doação de Alimentos",
+    acao: "Doação de Materiais",
   },
   {
     id: "aud2",
@@ -159,8 +159,8 @@ export default function AuditoriaPage() {
   }
 
   return (
-    <div className="bg-[#F5F5F5] flex flex-col min-h-screen">
-      <Navbar variant="logout" onLogout={() => alert("Saindo...")} />
+    <div className="bg-[#F5F5F5] flex flex-col min-h-screen pt-[88px]">
+      <Navbar ativo="sair" />
 
       <main className="px-[52px] py-8 flex-grow gap-9">
         <div className="max-w-7xl py-8 flex flex-col gap-9">

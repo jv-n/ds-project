@@ -1,10 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, type ChangeEvent } from "react";
 
-import React from "react";
+type OdsImagesProps = {
+  id: string | number;
+  name: string;
+  checked: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  imageUrl: string;
+  label?: string;
+  required?: boolean;
+  disabled?: boolean;
+  className?: string;
+  imageAlt?: string;
+};
 
-const ODS_DESCRIPTIONS = {
+const ODS_DESCRIPTIONS: Record<number, string> = {
   1: "Erradicação da Pobreza",
   2: "Fome Zero e Agricultura Sustentável",
   3: "Saúde e bem-estar",
@@ -24,24 +35,30 @@ const ODS_DESCRIPTIONS = {
   17: "Parcerias e Meios de Implementação",
 };
 
-const OdsImages = ({
+const OdsImages: React.FC<OdsImagesProps> = ({
   id,
   name,
   label,
   checked,
   onChange,
-  required,
-  disabled,
-  className,
+  required = false,
+  disabled = false,
+  className = "",
   imageUrl,
-  imageAlt = `ODS ${id}`,
+  imageAlt,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     setTooltipPosition({ x: e.clientX, y: e.clientY });
   };
+
+  const alt = imageAlt ?? `ODS ${id}`;
+  const desc = ODS_DESCRIPTIONS[Number(id)] ?? "";
 
   return (
     <div
@@ -50,12 +67,10 @@ const OdsImages = ({
       onMouseLeave={() => setShowTooltip(false)}
       onMouseMove={handleMouseMove}
     >
-      {/* Container principal*/}
-      <div className="relative ">
-        {/* Checkbox*/}
-        <div className="absolute -top-2 -right-2 ">
+      <div className="relative">
+        <div className="absolute -top-2 -right-2">
           <input
-            id={id}
+            id={String(id)}
             name={name}
             type="checkbox"
             checked={checked}
@@ -68,20 +83,20 @@ const OdsImages = ({
           />
         </div>
 
-        {/* Imagem e label */}
         <div className="flex flex-col items-center">
           <div className="flex-shrink-0">
             <img
               src={imageUrl}
-              alt={imageAlt}
-              className={`h-20 w-20 object-contain
-               ${disabled ? "opacity-50" : ""}`}
+              alt={alt}
+              className={`h-20 w-20 object-contain ${
+                disabled ? "opacity-50" : ""
+              }`}
             />
           </div>
 
           {label && (
             <label
-              htmlFor={id}
+              htmlFor={String(id)}
               className={`mt-1 text-sm text-center ${
                 disabled ? "text-gray-400" : "text-gray-700"
               }`}
@@ -93,7 +108,6 @@ const OdsImages = ({
         </div>
       </div>
 
-      {/* Tooltip */}
       {showTooltip && !disabled && (
         <div
           className="fixed bg-white p-3 rounded-lg shadow-xl border border-gray-200 z-50 max-w-xs pointer-events-none"
@@ -103,7 +117,7 @@ const OdsImages = ({
           }}
         >
           <h3 className="font-bold text-blue-600 text-sm">ODS {id}</h3>
-          <p className="text-xs text-gray-600">{ODS_DESCRIPTIONS[id]}</p>
+          <p className="text-xs text-gray-600">{desc}</p>
         </div>
       )}
     </div>

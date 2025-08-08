@@ -18,7 +18,7 @@ export default function Navbar({ ativo }: NavbarProps) {
         {ativo === "sair" ? (
           <div
             className="relative cursor-pointer flex items-center"
-            onClick={() => router.push("")}
+            onClick={() => router.push("/entrar")} // aqui, trocar para /entrar
           >
             <Image src={portasair} alt="Sair" />
             <div className="absolute bottom-0 left-0 h-[2px] w-full bg-white" />
@@ -57,7 +57,7 @@ export default function Navbar({ ativo }: NavbarProps) {
 
             <div
               className="relative cursor-pointer flex items-center"
-              onClick={() => router.push("")}
+              onClick={() => router.push("/entrar")} // também trocar aqui
             >
               <Image src={portasair} alt="Sair" />
               {ativo === "sair" && (
