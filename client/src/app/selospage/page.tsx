@@ -6,6 +6,7 @@ import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
 import Cardpontos from "@/components/pontos-esmpresa";
+import Navbar from "@/components/navbar";
 
 export default function SelosPage() {
   const [ativo, setAtivo] = useState("acoes");

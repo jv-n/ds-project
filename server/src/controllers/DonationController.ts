@@ -10,10 +10,8 @@ export class DonationController {
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const donationData = Donation.parse(req.body);
-      const documentacao = req.file?.filename ?? 'sem-documento.pdf';
       const donation = await repository.create({
         ...donationData,
-        documentacao,
         data: new Date(donationData.data),
       });
 
@@ -77,11 +75,9 @@ export class DonationController {
     try {
       const id = Number(req.params.id);
       const donationData = UpdateDonation.parse(req.body);
-      const documentacao = req.file?.filename;
 
       const updatedDonation = await repository.update(id, {
         ...donationData,
-        documentacao,
         data: donationData.data ? new Date(donationData.data) : undefined,
       });
 
@@ -101,8 +97,7 @@ export class DonationController {
       const id = Number(req.params.id);
       await repository.delete(id);
       
-      // Envia a resposta diretamente aqui
-      res.status(204).send(); // Para DELETE, geralmente não há corpo de resposta
+      res.status(204).send(); 
       // return next(); 
     } catch (err) {
       return next(err);

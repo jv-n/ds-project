@@ -3,13 +3,11 @@ import { z } from 'zod';
 import { StatusApoio } from '@prisma/client'; // Ou o caminho correto para o seu StatusApoio
 
 export const Donation = z.object({
-  data: z.string().datetime(), // Ou z.string() se você parsear a data depois
-  valor: z.coerce.number(), // <--- MUDANÇA AQUI: Coage string para número
+  valor: z.coerce.number(), 
   tipoAjuda: z.string(),
-  documentacao: z.string(),
-  empresaId: z.coerce.number(), // <--- MUDANÇA AQUI: Coage string para número
-  ongId: z.coerce.number(),     // <--- MUDANÇA AQUI: Coage string para número
-  acaoId: z.coerce.number(),    // <--- MUDANÇA AQUI: Coage string para número
+  empresaId: z.coerce.number(), 
+  ongId: z.coerce.number(),     
+  acaoId: z.coerce.number(),    
   prefeituraId: z.coerce.number().optional(),
   status: z.nativeEnum(StatusApoio).default(StatusApoio.CONTATO_INICIAL),
 });

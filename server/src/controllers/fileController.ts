@@ -29,29 +29,18 @@ class FileController {
 
   async upload(req: Request, res: Response, next: NextFunction) {
     try {
+      const files = req.files as Express.Multer.File[] || [];
+      const apoioId = req.body.apoioId ? Number(req.body.apoioId) : null;
 
-      if (!req.file) {
-        return next({
-          status: 400,
-          message: 'Sem arquivo.',
-        });
-      }
-      const url = await FileRepository.uploadFile(req.file, req.file?.filename);
+      if (!files.length) return next({ status: 400, message: 'Sem arquivos.' });
 
-      res.locals = {
-        status: 200,
-        data: {
-          url,
-          filename: req.file.originalname,
-          size: req.file.size,
-          mimetype: req.file.mimetype,
-        },
-        message: 'Arquivo enviado com sucesso.',
-      };
+      // Chama repositório que salva no DB; pode usar transaction se quiser
+      const saved = await FileRepository.uploadFiles(files, apoioId);
 
+      res.locals = { status: 200, data: saved, message: 'Arquivos enviados' };
       return next();
     } catch (err) {
-      console.error('Upload error:', err);
+      console.error(err);
       return next(err);
     }
   }

@@ -1,12 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import FileUploadInput from '../file-uploader';
 
-// Definindo os tipos dos props para o componente
 interface CadastroDoacaoProps {
   onClose: () => void;
   ongName: string;
   actionName: string;
-  // Nova prop: função para submeter os dados para o componente pai
   onSubmitDonation: (data: {
     tipoAjuda: string;
     valorOuQuantidade: string;
@@ -26,13 +24,6 @@ export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitD
   const [selectedDonationType, setSelectedDonationType] = useState('');
 
   const donationTypesOptions = ["Dinheiro", "Alimento", "Roupa", "Serviço"];
-  
-  // A lógica do modal de sucesso foi movida para o componente pai (DoacoesPage)
-  // const [showSuccessModal, setShowSuccessModal] = useState(false);
-  // const handleCloseSuccessModal = () => {
-  //   setShowSuccessModal(false);
-  //   onClose();
-  // };
 
   const handleSelectDonationType = (type: string) => {
     setSelectedDonationType(type);
@@ -49,15 +40,13 @@ export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitD
       documentos: documentosComprobatorios,
     };
 
-    // Chama a função passada pelo pai para lidar com a submissão
     onSubmitDonation(formData);
 
-    // O fechamento do modal e do sidebar será responsabilidade do pai após o sucesso da API
-    // setShowSuccessModal(true);
   };
 
   return (
-    <div className="bg-white flex flex-col h-full">
+    <div className="bg-white flex flex-col h-full max-w-[400px] mx-auto w-full px-2 text-sm">
+
 
       {/* Cabeçalho do Formulário */}
       <div className="flex justify-between items-start px-0 pt-0 pb-6 flex-shrink-0">
@@ -82,7 +71,7 @@ export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitD
 
       {/* Formulário principal */}
       <form onSubmit={handleSubmit} className="flex-grow flex flex-col"> 
-        <div className="space-y-5 flex-grow"> 
+        <div className="space-y-5 flex-grow overflow-y-auto"> 
           {/* Tipo de doação */}
           <div className="relative pt-2">
             <label
@@ -191,7 +180,7 @@ export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitD
             bg-[#1474FF] text-white py-3 px-6 rounded-sm font-normal text-base hover:bg-[#1B2029] transition-colors
             mt-auto 
             mb-0 
-            flex-shrink-0 /* Garante que o botão não encolha em altura */
+            flex-shrink-0 
             cursor-pointer
           "
         >
@@ -208,8 +197,6 @@ export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitD
           </svg>
         </button>
       </form>
-      {/* O SuccessModal agora será renderizado e controlado pelo componente pai */}
-      {/* <SuccessModal isOpen={showSuccessModal} onClose={handleCloseSuccessModal} /> */}
     </div>
   );
 }

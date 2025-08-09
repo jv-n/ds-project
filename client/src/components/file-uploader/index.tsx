@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { cloudupload, paperclip, ok, problem, loading, close } from '@/assets'; 
 
-type UploadStatus = 'idle' | 'processing' | 'error' | 'success'; // 'loading' renomeado para 'processing' para clareza local
+type UploadStatus = 'idle' | 'processing' | 'error' | 'success'; 
 
 interface FileUploadInputProps {
   label: string;
@@ -136,7 +136,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
 
   const handleDivClick = () => {
     if (attachedFiles.length < maxFiles) {
-      setUploadStatus('processing'); // Define para "processing" antes de abrir o seletor
+      setUploadStatus('processing'); 
       setErrorMessage(null);
       fileInputRef.current?.click();
     } else {
@@ -151,7 +151,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
 
   const borderColorClass = {
     'idle': 'border-[#89BAFF]',
-    'processing': 'border-[#89BAFF]', // Cor para "processando"
+    'processing': 'border-[#89BAFF]', 
     'error': 'border-[#DB4437]',
     'success': 'border-[#11B163]'
   }[uploadStatus];
@@ -186,7 +186,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
             <p className="mt-2 text-sm text-center">Arraste e solte ou selecione o arquivo</p>
           </>
         );
-      case 'processing': // Estado para indicar processamento local
+      case 'processing': 
         return (
           <>
             <Image
@@ -218,7 +218,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 text-sm">
       <label htmlFor="file-upload" className="block text-sm font-bold text-gray-700">
         {label}
       </label>
@@ -236,16 +236,16 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
 
       <div
         className={`
-          flex flex-col items-center justify-center p-6
+          flex flex-col items-center justify-center 
           border-2 border-dashed rounded-sm cursor-pointer
           ${borderColorClass} ${
-            uploadStatus === 'processing' ? 'bg-[#C4DCFF]' : // Cor para "processing"
+            uploadStatus === 'processing' ? 'bg-[#C4DCFF]' : 
             uploadStatus === 'error' ? 'bg-[#F2F5F7]' :
             uploadStatus === 'success' ? 'bg-[#F2F5F7]' :
             'bg-[#F2F5F7]'
           }
           transition-colors duration-200 ease-in-out
-          py-4 px-6
+          py-3 px-4
           h-[136px]
         `}
         onClick={handleDivClick}
@@ -270,7 +270,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
         <div className="mt-6 space-y-2 w-full">
           {attachedFiles.map((file, index) => (
             <div
-              key={file.name + file.size + index} // Melhorar key para evitar conflitos
+              key={file.name + file.size + index} 
               className="flex items-center justify-between px-4 py-2 border-[1.5px] border-[#E6E6E6] rounded-sm text-gray-700 bg-[#F2F5F7] h-[38px]"
             >
               <div className="flex items-center flex-grow min-w-0">
@@ -297,7 +297,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({ label, subtitle, onFi
                   alt="Ícone de Fechar"
                   width={20}
                   height={20}
-                  className="ml-2" // Adicionado margem para o ícone de fechar
+                  className="ml-2" 
                 />
               </button>
             </div>

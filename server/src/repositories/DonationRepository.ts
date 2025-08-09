@@ -2,10 +2,9 @@ import prisma from '@database';
 import { StatusApoio } from '@prisma/client';
 
 interface CreateDonationDTO {
-  data: Date;
+  data?: Date;
   valor: number;
   tipoAjuda: string;
-  documentacao: string;
   empresaId: number;
   ongId: number;
   acaoId: number;
@@ -17,7 +16,6 @@ interface UpdateDonationDTO {
   data?: Date;
   valor?: number;
   tipoAjuda?: string;
-  documentacao?: string;
   empresaId?: number;
   ongId?: number;
   acaoId?: number;
@@ -111,14 +109,14 @@ export class DonationRepository {
     const result: any[] = [];
     for (const [acaoId, data] of acoesProcessadas.entries()) {
       result.push({
-        id: data.acao.id, // Este é o ID da Acao
+        id: data.acao.id, 
         nome: data.acao.nome,
         descricao: data.acao.descricao,
         ongId: data.acao.ongId,
-        ong: data.acao.ong, // Inclui o objeto ONG completo
+        ong: data.acao.ong, 
         currentUserDonationCount: data.donationCount,
         currentUserDonationStatus: data.latestStatus,
-        latestApoioId: data.latestApoioId, // NOVO: ID do apoio mais recente
+        latestApoioId: data.latestApoioId, 
       });
     }
 

@@ -81,7 +81,6 @@ model Apoio {
   data         DateTime
   valor        Float
   tipoAjuda    String
-  documentacao String
 
   status       StatusApoio @default(CONTATO_INICIAL)
 
@@ -94,6 +93,8 @@ model Apoio {
   ong          ONG        @relation(fields: [ongId], references: [id])
   acao         Acao       @relation(fields: [acaoId], references: [id])
   prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
+
+  documentos     File[]
 }
 
 model Criterio {
@@ -122,6 +123,9 @@ model File {
   mimetype   String
   size       Int
   path       String
-  status     String
   createdAt  DateTime @default(now())
+
+  apoioId     Int
+
+  apoio       Apoio    @relation(fields: [apoioId], references: [id])
 }
