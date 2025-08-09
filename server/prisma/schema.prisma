@@ -20,11 +20,11 @@ enum StatusApoio {
 }
 
 model Usuario {
-  id          String       @id @default(uuid()) // CORRIGIDO: ID agora é String (UUID)
-  cnpj        String       @unique
-  email       String       @unique
-  senha       String
-  telefone    String?
+  id         Int        @id @default(autoincrement())
+  cnpj       String     @unique
+  email      String     @unique
+  senha      String     @map("password")
+  telefone   String?
 
   ong         ONG?
   empresa     Empresa?
