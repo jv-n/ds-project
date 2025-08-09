@@ -76,6 +76,7 @@ Table File {
   mimetype String [not null]
   size Int [not null]
   path String [not null]
+  status String [not null]
   createdAt DateTime [default: `now()`, not null]
 }
 
