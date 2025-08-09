@@ -19,20 +19,16 @@ model Usuario {
   email      String     @unique
   senha      String
   telefone   String?
+  perfil     String @default("prefeitura") // empresa, prefeitura
 
-  ong        ONG?
   empresa    Empresa?
-  prefeitura Prefeitura?
 }
 
 model ONG {
   id             Int       @id @default(autoincrement())
   ods            String?
-  
-  usuarioId      Int       @unique
-  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
 
-  apoiosRecebidos Apoio[]
+  apoio     Apoio[]
 }
 
 model Empresa {
@@ -42,18 +38,9 @@ model Empresa {
   usuarioId  Int       @unique
   usuario    Usuario   @relation(fields: [usuarioId], references: [id])
 
-  apoios     Apoio[]
-  pontos     Int       @default(0)
-  criterios  Criterio[]
-}
-
-model Prefeitura {
-  id         Int       @id @default(autoincrement())
-  nome       String
-  usuarioId  Int       @unique
-  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
-
-  apoios     Apoio[]
+  apoio     Apoio[]
+  ponto     Int       @default(0)
+  criterio  Criterio[]
 }
 
 model Apoio {
@@ -61,7 +48,7 @@ model Apoio {
   data         DateTime
   valor        Float
   tipoAjuda    String
-  documentacao String
+  documentacao File[]
 
   empresaId    Int
   ongId        Int
@@ -69,7 +56,6 @@ model Apoio {
 
   empresa      Empresa    @relation(fields: [empresaId], references: [id])
   ong          ONG        @relation(fields: [ongId], references: [id])
-  prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
 }
 
 model Criterio {
@@ -100,4 +86,6 @@ model File {
   path       String
   status     String
   createdAt  DateTime @default(now())
+  apoioId    Int?
+  apoio      Apoio?   @relation(fields: [apoioId], references: [id])
 }

@@ -1,57 +1,74 @@
 import path from 'path';
 import { Express } from 'express';
+import fs from 'fs';
 import prisma from '../database';
 
-const fs = require('fs');
-
 class FileRepository {
-    private uploadFolder = path.resolve(__dirname, '..', 'uploads');
+    // Use a consistent upload folder relative to project root
+    private uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
+
+    constructor() {
+        // Ensure upload directory exists
+        this.ensureUploadDirectoryExists();
+    }
+
+    private ensureUploadDirectoryExists(): void {
+        if (!fs.existsSync(this.uploadFolder)) {
+            fs.mkdirSync(this.uploadFolder, { recursive: true });
+            console.log(`📁 Upload directory created: ${this.uploadFolder}`);
+        }
+    }
 
     async uploadFile(file: Express.Multer.File, filename?: string): Promise<string> {
-        const { originalname } = file;
+        const { originalname, mimetype, size } = file;
         const storedName = filename || `${Date.now().toString()}-${originalname}`;
         const filePath = path.join(this.uploadFolder, storedName);
 
-        await prisma.file.create({
-          data: {
-            storedName,
-            mimetype: file.mimetype,
-            size: file.size,
-            path: filePath,
-            status: "pendente"
-          },
+        // Save file info to database
+        const savedFile = await prisma.file.create({
+            data: {
+                storedName,
+                mimetype,
+                size,
+                path: filePath,
+                status: "pendente"
+            },
         });
-        
+
+        console.log(`📄 File uploaded: ${storedName}`);
         return filePath;
     }
 
-  // async saveFileInfo(originalName: string, storedName: string, file: Express.Multer.File): Promise<void> {
-  //   const filePath = path.join(this.uploadFolder, storedName);
+    async deleteFile(storedName: string, id: string): Promise<void> {
+        const filePath = path.join(this.uploadFolder, storedName);
+        
+        try {
+            // Delete the file from the filesystem if it exists
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+                console.log(`🗑️ File deleted from filesystem: ${storedName}`);
+            }
 
-  //   await prisma.file.create({
-  //     data: {
-  //       storedName,
-  //       mimetype: file.mimetype,
-  //       size: file.size,
-  //       path: filePath,
-  //     },
-  //   });
-  // }
-
-  async deleteFile(storedName: string, id: string): Promise<void> {
-    const filePath = path.join(this.uploadFolder, storedName);
-    
-    // Delete the file from the filesystem
-   
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+            // Remove the file info from the database
+            await prisma.file.delete({
+                where: { id },
+            });
+            
+            console.log(`🗑️ File record deleted from database: ${id}`);
+        } catch (error) {
+            console.error(`❌ Error deleting file: ${storedName}`, error);
+            throw error;
+        }
     }
 
-    // Remove the file info from the database
-    await prisma.file.delete({
-      where: { id },
-    });
-  }
+    async getFilePath(storedName: string): Promise<string> {
+        return path.join(this.uploadFolder, storedName);
+    }
+
+    async fileExists(storedName: string): Promise<boolean> {
+        const filePath = path.join(this.uploadFolder, storedName);
+        return fs.existsSync(filePath);
+    }
 }
 
 export default new FileRepository();

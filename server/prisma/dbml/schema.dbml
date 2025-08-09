@@ -8,17 +8,14 @@ Table Usuario {
   email String [unique, not null]
   senha String [not null]
   telefone String
-  ong ONG
+  perfil String [not null, default: 'prefeitura']
   empresa Empresa
-  prefeitura Prefeitura
 }
 
 Table ONG {
   id Int [pk, increment]
   ods String
-  usuarioId Int [unique, not null]
-  usuario Usuario [not null]
-  apoiosRecebidos Apoio [not null]
+  apoio Apoio [not null]
 }
 
 Table Empresa {
@@ -26,17 +23,9 @@ Table Empresa {
   nome String [not null]
   usuarioId Int [unique, not null]
   usuario Usuario [not null]
-  apoios Apoio [not null]
-  pontos Int [not null, default: 0]
-  criterios Criterio [not null]
-}
-
-Table Prefeitura {
-  id Int [pk, increment]
-  nome String [not null]
-  usuarioId Int [unique, not null]
-  usuario Usuario [not null]
-  apoios Apoio [not null]
+  apoio Apoio [not null]
+  ponto Int [not null, default: 0]
+  criterio Criterio [not null]
 }
 
 Table Apoio {
@@ -44,13 +33,12 @@ Table Apoio {
   data DateTime [not null]
   valor Float [not null]
   tipoAjuda String [not null]
-  documentacao String [not null]
+  documentacao File [not null]
   empresaId Int [not null]
   ongId Int [not null]
   prefeituraId Int
   empresa Empresa [not null]
   ong ONG [not null]
-  prefeitura Prefeitura
 }
 
 Table Criterio {
@@ -76,21 +64,20 @@ Table File {
   mimetype String [not null]
   size Int [not null]
   path String [not null]
+  status String [not null]
   createdAt DateTime [default: `now()`, not null]
+  apoioId Int
+  apoio Apoio
 }
 
-Ref: ONG.usuarioId - Usuario.id
-
 Ref: Empresa.usuarioId - Usuario.id
-
-Ref: Prefeitura.usuarioId - Usuario.id
 
 Ref: Apoio.empresaId > Empresa.id
 
 Ref: Apoio.ongId > ONG.id
 
-Ref: Apoio.prefeituraId > Prefeitura.id
-
 Ref: Criterio.empresaId > Empresa.id
 
 Ref: Criterio.seloId > Selo.id
+
+Ref: File.apoioId > Apoio.id
