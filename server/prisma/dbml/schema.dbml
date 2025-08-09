@@ -36,7 +36,7 @@ Table Acao {
 Table Empresa {
   id Int [pk, increment]
   nome String [not null]
-  usuarioId String [unique, not null]
+  usuarioId Int [unique, not null]
   usuario Usuario [not null]
   apoios Apoio [not null]
   pontos Int [not null, default: 0]
@@ -83,6 +83,15 @@ Table Selo {
   tipo String [not null]
   tier String [not null]
   criterios Criterio [not null]
+}
+
+Table File {
+  id String [pk]
+  storedName String [not null]
+  mimetype String [not null]
+  size Int [not null]
+  path String [not null]
+  createdAt DateTime [default: `now()`, not null]
 }
 
 Enum StatusApoio {

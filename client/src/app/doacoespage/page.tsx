@@ -219,7 +219,7 @@ export default function DoacoesPage() {
             onSearch={handleSearch}
             initialValue=""
             />
-        </div>
+          </div>
 
         {/* Grid de cards */}
         <div className={`grid grid-cols-1 md:grid-cols-2 ${cardGridColsClass} gap-x-6 gap-y-8`}>
@@ -227,8 +227,9 @@ export default function DoacoesPage() {
         </div>
       </div>
 
-      {/* Sidebar */}
-      <div className={`
+        {/* Sidebar */}
+        <div
+          className={`
         flex-shrink-0 bg-white shadow-lg
         transition-all duration-300 ease-in-out
         ${showCadastroDoacaoSidebar ? 'w-[450px] p-3' : 'w-0 overflow-hidden'}

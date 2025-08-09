@@ -1,43 +1,56 @@
-import {
-  PutObjectCommand,
-  PutObjectCommandInput,
-  S3,
-} from '@aws-sdk/client-s3';
+import path from 'path';
+import { Express } from 'express';
+import prisma from '../database';
 
-const s3 = new S3({
-  endpoint: `https://${process.env.S3_ENDPOINT}`,
-  region: process.env.S3_ENDPOINT?.split('.')?.[0],
-  credentials: {
-    accessKeyId: process.env.S3_KEY,
-    secretAccessKey: process.env.S3_SECRET,
-  },
-});
-
-type UploadFileInput = Omit<PutObjectCommandInput, 'Bucket'> & { Key: string };
+const fs = require('fs');
 
 class FileRepository {
-  async uploadFile({ Key, Body }: UploadFileInput) {
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key,
-      Body,
-      ACL: 'public-read',
-    } as const;
+    private uploadFolder = path.resolve(__dirname, '..', 'uploads');
 
-    await s3.send(new PutObjectCommand(params));
+    async uploadFile(file: Express.Multer.File, filename?: string): Promise<string> {
+        const { originalname } = file;
+        const storedName = filename || `${Date.now().toString()}-${originalname}`;
+        const filePath = path.join(this.uploadFolder, storedName);
 
-    return `https://${process.env.S3_BUCKET}.${
-      process.env.S3_ENDPOINT
-    }/${encodeURI(Key)}`;
-  }
+        await prisma.file.create({
+          data: {
+            storedName,
+            mimetype: file.mimetype,
+            size: file.size,
+            path: filePath,
+            status: "pendente"
+          },
+        });
+        
+        return filePath;
+    }
 
-  async deleteFile(Key: string) {
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key,
-    };
+  // async saveFileInfo(originalName: string, storedName: string, file: Express.Multer.File): Promise<void> {
+  //   const filePath = path.join(this.uploadFolder, storedName);
 
-    await s3.deleteObject(params);
+  //   await prisma.file.create({
+  //     data: {
+  //       storedName,
+  //       mimetype: file.mimetype,
+  //       size: file.size,
+  //       path: filePath,
+  //     },
+  //   });
+  // }
+
+  async deleteFile(storedName: string, id: string): Promise<void> {
+    const filePath = path.join(this.uploadFolder, storedName);
+    
+    // Delete the file from the filesystem
+   
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    // Remove the file info from the database
+    await prisma.file.delete({
+      where: { id },
+    });
   }
 }
 

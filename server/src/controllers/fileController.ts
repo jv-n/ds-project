@@ -1,24 +1,24 @@
 import { NextFunction, Request, Response } from 'express';
-import { FileRepository } from '@repositories';
+import { FileRepository } from '../repositories';
 
 class FileController {
-  async upload(req: Request, res: Response, next: NextFunction) {
+  // Debug method to test multer configuration
+  async debug(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.file) {
-        return next({
-          status: 400,
-          message: 'Sem arquivo.',
-        });
-      }
-      const url = await FileRepository.uploadFile({
-        Body: req.file.buffer,
-        Key: req.file.originalname,
-      });
-
+      console.log('Headers:', req.headers);
+      console.log('Body:', req.body);
+      console.log('File:', req.file);
+      console.log('Files:', req.files);
+      
       res.locals = {
         status: 200,
-        data: url,
-        message: 'Arquivo salvo.',
+        data: {
+          headers: req.headers,
+          body: req.body,
+          file: req.file,
+          files: req.files,
+        },
+        message: 'Debug info.',
       };
 
       return next();
@@ -27,11 +27,40 @@ class FileController {
     }
   }
 
+  async upload(req: Request, res: Response, next: NextFunction) {
+    try {
+
+      if (!req.file) {
+        return next({
+          status: 400,
+          message: 'Sem arquivo.',
+        });
+      }
+      const url = await FileRepository.uploadFile(req.file, req.file?.filename);
+
+      res.locals = {
+        status: 200,
+        data: {
+          url,
+          filename: req.file.originalname,
+          size: req.file.size,
+          mimetype: req.file.mimetype,
+        },
+        message: 'Arquivo enviado com sucesso.',
+      };
+
+      return next();
+    } catch (err) {
+      console.error('Upload error:', err);
+      return next(err);
+    }
+  }
+
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { key } = req.params;
+      const { id, filename } = req.params;
 
-      await FileRepository.deleteFile(key);
+      await FileRepository.deleteFile(filename, id);
 
       res.locals = {
         status: 200,

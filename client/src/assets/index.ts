@@ -78,3 +78,6 @@ export { close };
 
 import lupa from "./lupa.svg";
 export { lupa };
+
+import portasair from "./portasair.svg";
+export { portasair };

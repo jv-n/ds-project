@@ -10,6 +10,8 @@ export interface Cardacaoprops {
   ods3: string;
   ods4: string;
   nomedaong: string;
+  emailong: string;
+  numeroong: string;
   onEntrarContato: () => void;
 }
 

@@ -3,19 +3,19 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
-import Cardacao from "@/components/card-de-acao"; 
-import Cardcontatos from "@/components/card-cadastrar-doacao"; 
+import Cardacao from "@/components/card-de-acao";
+import Cardcontatos from "@/components/card-cadastrar-doacao";
 import { useState } from "react";
-import Cardcadastrado from "@/components/card-acao-cadastrada"; 
-import Modalcontatos from "@/components/modal-contato"; 
+import Cardcadastrado from "@/components/card-acao-cadastrada";
+import Modalcontatos from "@/components/modal-contato";
 import Modalcriterios from "@/components/modal-criterios";
 import SelosPage from "@/app/selospage/page";
 import DoacoesPage from "@/app/doacoespage/page";
 
 export default function Home() {
   const [ativo, setAtivo] = useState("acoes");
-  const [ativocontato, setAtivoContato] = useState("acoes"); 
-  const [mostrarModal, setMostrarModal] = useState(false); 
+  const [ativocontato, setAtivoContato] = useState("acoes");
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   function abrirModal() {
     setMostrarModal(true);
@@ -26,8 +26,8 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar ativo={ativo} setAtivo={setAtivo} />
+    <div className="flex flex-col min-h-screen pt-[88px]">
+      <Navbar ativo="" />
 
       <div className="flex-grow flex flex-col items-center">
         <div className="flex flex-col sm:flex-row justify-center mt-6 gap-4 p-4">
@@ -48,15 +48,6 @@ export default function Home() {
       <div className="flex-grow bg-gray-100"> 
 
         {/* O conteúdo dinâmico da página */}
-        {ativo === "acoes" && (
-          <SelosPage />
-        )}
-        {ativo === "selos" && (
-          <SelosPage />
-        )}
-        {ativo === "minhas doacoes" && (
-          <DoacoesPage />
-        )}
       </div>
 
       <Rodape />

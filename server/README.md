@@ -46,7 +46,7 @@ JWT_REFRESH_SECRET=92fba49f6912d14733332bb9ebaac1562f51ee685594acf103d71f685f708
 4. Para rodar o servidor, execute:
 
 ```bash
-docker-compose up
+docker compose up --build
 ```
 
 5. Para rodar as migrations, execute com o servidor rodando em outro terminal:
