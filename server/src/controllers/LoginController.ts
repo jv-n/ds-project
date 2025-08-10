@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { compare } from 'bcryptjs';
+import { Login, LoginCnpj} from '../DTOs'; 
 
 import {
   UserRepository,
@@ -10,9 +11,9 @@ import {
 class LoginController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body;
+      const loginData = Login.parse(req.body);
 
-      const user = await UserRepository.findByEmail(email);
+      const user = await UserRepository.findByEmail(loginData.email);
 
       if (!user) {
         return next({
@@ -21,7 +22,7 @@ class LoginController {
         });
       }
 
-      const checkPassword = await compare(password, user.senha);
+      const checkPassword = await compare(loginData.senha, user.senha);
 
       if (!checkPassword) {
         return next({
@@ -31,7 +32,7 @@ class LoginController {
       }
 
       const accessToken = TokenRepository.generateAccessToken(user.id.toString(), '60s');
-      const refreshToken = TokenRepository.generateRefreshToken(user.id.toString(), '60s');
+      const refreshToken = TokenRepository.generateRefreshToken(user.id.toString(), '5d');
 
       CookieRepository.setCookie(res, 'refresh_token', refreshToken);
 
@@ -54,16 +55,9 @@ class LoginController {
 
   async loginCompany(req: Request, res: Response, next: NextFunction) {
   try {
-    const { cnpj, password } = req.body;
+    const loginCompanyData = LoginCnpj.parse(req.body);
 
-    if (!cnpj || !password) {
-      return next({
-        status: 400,
-        message: 'CNPJ and password are required.',
-      });
-    }
-
-    const user = await UserRepository.findUserWithCompanyByCnpj(cnpj);
+    const user = await UserRepository.findUserByCnpj(loginCompanyData.cnpj);
 
     if (!user) {
       return next({
@@ -72,7 +66,7 @@ class LoginController {
       });
     }
 
-    const checkPassword = await compare(password, user.password);
+    const checkPassword = await compare(loginCompanyData.senha, user.senha);
 
     if (!checkPassword) {
       return next({
@@ -81,12 +75,12 @@ class LoginController {
       });
     }
 
-    const accessToken = TokenRepository.generateAccessToken(user.id, '60s');
-    const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d');
+    const accessToken = TokenRepository.generateAccessToken(user.id.toString(), '60s');
+    const refreshToken = TokenRepository.generateRefreshToken(user.id.toString(), '5d');
 
     CookieRepository.setCookie(res, 'refresh_token', refreshToken);
 
-    const { password: _, ...loggedUser } = user;
+    const { senha: _, ...loggedUser } = user;
 
     res.locals = {
       status: 200,

@@ -1,29 +1,37 @@
 import { Router } from 'express';
+import  UserController  from '../controllers/UserController';
+import { requestHandler } from '../middlewares';
 import auth from '../middlewares/auth';
-import { UserController } from '../controllers';
 
-const userRouter = Router();
+const userRoutes = Router();
 
-userRouter.route('/')
-  .post(
-    UserController.create,
-  );
+userRoutes.post(
+  '/',
+  requestHandler(UserController.create)
+);
 
-userRouter.route('/:userId')
-  .get(
-    UserController.read,
-  );
+userRoutes.get(
+  '/',
+  auth,
+  requestHandler(UserController.getAll)
+);
 
-userRouter.route('/:userId')
-  .patch(
-    [auth],
-    UserController.update,
-  );
+userRoutes.get(
+  '/:id',
+  auth,
+  requestHandler(UserController.getById)
+);
 
-userRouter.route('/:userId')
-  .delete(
-    [auth],
-    UserController.delete,
-  );
+userRoutes.put(
+  '/:id',
+  auth,
+  requestHandler(UserController.update)
+);
 
-export default userRouter;
+userRoutes.delete(
+  '/:id',
+  auth,
+  requestHandler(UserController.delete)
+);
+
+export default userRoutes;
