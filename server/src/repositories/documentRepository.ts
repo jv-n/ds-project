@@ -3,7 +3,7 @@ import { Express } from 'express';
 import fs from 'fs';
 import prisma from '../database';
 
-class FileRepository {
+class DocumentRepository {
     // Use a consistent upload folder relative to project root
     private uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
 
@@ -25,13 +25,12 @@ class FileRepository {
         const filePath = path.join(this.uploadFolder, storedName);
 
         // Save file info to database
-        const savedFile = await prisma.file.create({
+        const savedFile = await prisma.documento.create({
             data: {
                 storedName,
                 mimetype,
                 size,
-                path: filePath,
-                status: "pendente"
+                path: filePath
             },
         });
 
@@ -50,7 +49,7 @@ class FileRepository {
             }
 
             // Remove the file info from the database
-            await prisma.file.delete({
+            await prisma.documento.delete({
                 where: { id },
             });
             
@@ -71,4 +70,4 @@ class FileRepository {
     }
 }
 
-export default new FileRepository();
+export default new DocumentRepository();

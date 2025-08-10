@@ -19,73 +19,77 @@ model Usuario {
   email      String     @unique
   senha      String
   telefone   String?
-  perfil     String @default("prefeitura") // empresa, prefeitura
+  perfil     String @default("empresa") // empresa, prefeitura
 
   empresa    Empresa?
 }
 
-model ONG {
-  id             Int       @id @default(autoincrement())
-  ods            String?
-
-  apoio     Apoio[]
-}
-
 model Empresa {
-  id         Int       @id @default(autoincrement())
-  nome       String
+  id                Int       @id @default(autoincrement())
+  nome              String
+  pontuacao         Int       @default(0)
+  numColaboradores  Int       @default(0)
   
-  usuarioId  Int       @unique
-  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId    Int       @unique
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
 
-  apoio     Apoio[]
-  ponto     Int       @default(0)
-  criterio  Criterio[]
+  odsId        Int[]
+  acoes        AcaoEmpresa[]
+  selos        Selo[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
-model Apoio {
+model AcaoEmpresa {
+  acaoId          Int        
+  empresaId       Int   
+  @@id(name: "acaoEmpresaId", [acaoId, empresaId]) 
+  nome            String
+  descricao       String
+  nomeOng         String
+  emailOng        String
+  telefoneOng     String
+  doacoes         Doacao[]
+  odsAcao       Int[]
+
+  empresa         Empresa    @relation(fields: [empresaId], references: [id])
+}
+
+model Doacao {
   id           Int        @id @default(autoincrement())
   data         DateTime
   valor        Float
-  tipoAjuda    String
-  documentacao File[]
-
+  tipo         String
+  documentos   Documento[]
+  status       String @default("Pendente") // pendente, aprovado, reprovado
+  motivoReprovacao String?
   empresaId    Int
-  ongId        Int
-  prefeituraId Int?
+  acaoId       Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  empresa      Empresa    @relation(fields: [empresaId], references: [id])
-  ong          ONG        @relation(fields: [ongId], references: [id])
-}
-
-model Criterio {
-  id         Int      @id @default(autoincrement())
-  tipo       String
-  pontuacao  Int
-
-  empresaId  Int
-  seloId     Int
-
-  empresa    Empresa  @relation(fields: [empresaId], references: [id])
-  selo       Selo     @relation(fields: [seloId], references: [id])
+  acao         AcaoEmpresa       @relation(fields: [acaoId, empresaId], references: [acaoId, empresaId])
 }
 
 model Selo {
-  id         Int        @id @default(autoincrement())
-  tipo       String
-  tier       String
+  id            Int        @id @default(autoincrement())
+  nivel         String
+  descricao     String
+  pontuacaoMin  Int
+  createdAt     DateTime   @default(now())
+  empresaId     Int
 
-  criterios  Criterio[]
+  empresa    Empresa    @relation(fields: [empresaId], references: [id])
 }
 
-model File {
+model Documento {
   id         String   @id @default(uuid())
   storedName String
   mimetype   String
   size       Int
   path       String
-  status     String
   createdAt  DateTime @default(now())
-  apoioId    Int?
-  apoio      Apoio?   @relation(fields: [apoioId], references: [id])
+  doacaoId    Int?
+
+  doacao      Doacao?   @relation(fields: [doacaoId], references: [id])
 }

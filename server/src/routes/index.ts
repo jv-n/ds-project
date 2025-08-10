@@ -1,18 +1,18 @@
 import { Router } from 'express';
 
-import UserRouter from './UserRoutes';
-import AuthRouter from './AuthRoutes';
-import FileRouter from './FileRoutes';
-import ActionRouter from './ActionRoutes';
-import CompanyRouter from './CompanyRoutes';
-import AuditRouter from './AuditRoutes';
+import UserRouter from './userRoutes';
+import AuthRouter from './authRoutes';
+import FileRouter from './documentRoutes';
+import DonationRouter from './donationRoutes';
+import CompanyRouter from './companyRoutes';
+import ActionCompanyRouter from './actionCompanyRoutes';
 const router = Router();
 
 router.use('/user', UserRouter);
-router.use('/sessions', AuthRouter);
+router.use('/auth', AuthRouter);
 router.use('/file', FileRouter);
-router.use('/action', ActionRouter);
-router.use('/audit', AuditRouter);
+router.use('/donations', DonationRouter);
+router.use('/actions', ActionCompanyRouter);
 router.use('/company', CompanyRouter);
 
 router.route('/').get((_, res) => {

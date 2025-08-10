@@ -1,14 +1,14 @@
 // src/controllers/company-controller.ts
 import { Request, Response } from 'express';
-import { CompanyRepository } from '../repositories/CompanyRepository';
+import { CompanyRepository } from '../repositories/companyRepository';
 
 const repository = new CompanyRepository();
 
 export class CompanyController {
   async create(req: Request, res: Response) {
     try {
-      const { nome, usuarioId } = req.body;
-      const empresa = await repository.create({ nome, usuarioId });
+      const { nome, usuarioId, numColaboradores, odsId } = req.body;
+      const empresa = await repository.create({ nome, usuarioId, numColaboradores, odsId });
       res.status(201).json(empresa);
     } catch (err) {
       res.status(400).json({ error: 'Erro ao criar empresa', details: err });
