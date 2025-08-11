@@ -73,10 +73,15 @@ class FileController {
   }
 
   // Método implementado para listar arquivos
-  async list(_req: Request, res: Response, next: NextFunction) {
+  async list(req: Request, res: Response, next: NextFunction) {
     try {
       const files = await FileRepository.listFiles();
-      return res.status(200).json(files);
+      res.locals = {
+        status: 200,
+        data: files,
+        message: 'Arquivos listados com sucesso.',
+      };
+      return next();
     } catch (err) {
       return next(err);
     }
