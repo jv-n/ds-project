@@ -1,189 +1,106 @@
-import { Request, Response } from 'express';
-import { DonationRepository } from '../repositories/donationRepository';
-import { CompanyRepository } from '../repositories/companyRepository';
-import { ActionCompanyRepository } from '../repositories/actionCompanyRepository';
-import { sendEmail } from '../services/mailService';
-import path from 'path';
-import fs from 'fs';
+// src/controllers/DonationController.ts
+import { Request, Response, NextFunction } from 'express';
+import { DonationRepository } from '../repositories/DonationRepository';
+import { Donation, UpdateDonation } from '../DTOs';
+import { AuthenticatedRequest } from '../middlewares/authMiddleware'; // Certifique-se de que o caminho está correto
+
+const repository = new DonationRepository();
 
 export class DonationController {
-  private repository: DonationRepository;
-  private companyRepository: CompanyRepository;
-  private actionCompanyRepository: ActionCompanyRepository;
-
-  constructor() {
-    this.repository = new DonationRepository();
-    this.companyRepository = new CompanyRepository();
-    this.actionCompanyRepository = new ActionCompanyRepository();
-  }
-
-  create = async (req: Request, res: Response) => {
+  create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Espera que arquivos foram enviados via multer no campo 'documents'
-      const files = req.files as Express.Multer.File[] | undefined;
-
-      const {
-        data,
-        valor,
-        tipo,
-        empresaId,
-        acaoId,
-      } = req.body;
-
-      if (!data || !valor || !tipo || !empresaId || !acaoId) {
-        return res.status(400).json({ error: 'Missing required fields' });
-      }
-
-      const documentos = files?.map(file => ({
-        storedName: file.filename,
-        mimetype: file.mimetype,
-        size: file.size,
-        path: file.path
-      }));
-
-      const donation = await this.repository.create({
-        data: new Date(data),
-        valor: Number(valor),
-        tipo,
-        empresaId: Number(empresaId),
-        acaoId: Number(acaoId),
-        documentos,
+      const donationData = Donation.parse(req.body);
+      const donation = await repository.create({
+        ...donationData,
+        data: new Date(donationData.data),
       });
 
-      res.status(201).json(donation);
-    } catch (error) {
-      console.error('Error creating donation:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      // Envia a resposta diretamente aqui
+      res.status(201).json({
+        message: 'Doação criada com sucesso',
+        data: donation,
+      });
+
+      // Não chame next() se a resposta já foi enviada
+      // return next(); 
+    } catch (err) {
+      return next(err);
     }
   };
 
-  getAll = async (_req: Request, res: Response) => {
+  getAll = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const donations = await this.repository.findAll();
-      res.json(donations);
-    } catch (error) {
-      console.error('Error fetching all donations:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  };
-
-  getByStatus = async (req: Request, res: Response) => {
-    try {
-      const status = req.params.status;
-      const donations = await this.repository.findByStatus(status);
-      res.json(donations);
-    } catch (error) {
-      console.error('Error fetching donations by status:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  };
-
-  getDocumentsByDonationId = async (req: Request, res: Response) => {
-    try {
-      const donationId = Number(req.params.id);
-      if (isNaN(donationId)) {
-        return res.status(400).json({ error: 'Invalid donation ID' });
+      const loggedEmpresaId = req.empresaId;
+      
+      if (loggedEmpresaId === undefined) {
+        return next({
+          status: 401,
+          message: 'ID da empresa logada não fornecido. Autenticação necessária.',
+        });
       }
 
-      const documents = await this.repository.findDocumentsByDonationId(donationId);
-      res.json(documents);
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      const donations = await repository.findAll(loggedEmpresaId);
+      
+      // CORREÇÃO: Envia a resposta diretamente aqui
+      res.status(200).json(donations);
+
+      // Não chame next() se a resposta já foi enviada
+      // return next(); 
+    } catch (err) {
+      return next(err);
     }
   };
 
-  getDocumentById = async (req: Request, res: Response) => {
-  try {
-    const documentId = req.params.documentId;
-
-    const document = await this.repository.findDocumentById(documentId);
-
-    if (!document) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-
-    const filePath = path.resolve(document.path);
-
-    // Verifica se o arquivo existe
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'File not found on server' });
-    }
-
-    // Define o cabeçalho para download com o nome original do arquivo
-    res.download(filePath, document.storedName);
-    } catch (error) {
-        console.error('Error downloading document:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-  };
-
-  private async notifyStatusChange(donationId: number, status: 'Aprovada' | 'Reprovada') {
-    const donation = await this.repository.findById(donationId);
-
-    if (!donation) {
-      throw new Error('Donation not found');
-    }
-
-    const actionCompany = await this.actionCompanyRepository.findById(donation.acaoId, donation.empresaId);
-
-    // Buscar email da empresa associada
-    const company = await this.companyRepository.findById(donation.empresaId);
-
-    if (!company || !company.usuario?.email) {
-      throw new Error('Empresa or email not found');
-    }
-
-    const subject = status === 'Aprovada' 
-      ? 'Doação Aprovada - Selo de Responsa' 
-      : 'Doação Reprovada - Selo de Responsa';
-
-    const data = {
-      empresaNome: company.nome,
-      status,
-      descricao: actionCompany ? actionCompany.descricao : '',
-      tipo: donation.tipo,
-      valor: donation.valor,
-      data: donation.data.toISOString(), // Convert Date to string
-      nomeOng: actionCompany ? actionCompany.nomeOng : '',
-      emailOng: actionCompany ? actionCompany.emailOng : '',
-      telefoneOng: actionCompany ? actionCompany.telefoneOng : '',
-    };
-
-    await sendEmail(company.usuario.email, subject, data);
-  }
-
-  approveDonation = async (req: Request, res: Response) => {
+  getById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const donationId = Number(req.params.id);
-      if (isNaN(donationId)) return res.status(400).json({ error: 'Invalid donation ID' });
+      const id = Number(req.params.id);
+      const donation = await repository.findById(id);
 
-      const updatedDonation = await this.repository.updateStatus(donationId, 'Aprovada');
+      if (!donation) {
+        return next({
+          status: 404,
+          message: 'Doação não encontrada',
+        });
+      }
 
-      // Envia notificação por email
-      await this.notifyStatusChange(donationId, 'Aprovada');
-
-      res.json(updatedDonation);
-    } catch (error) {
-      console.error('Error approving donation:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      // Envia a resposta diretamente aqui
+      res.status(200).json(donation);
+      // return next();
+    } catch (err) {
+      return next(err);
     }
   };
 
-  rejectDonation = async (req: Request, res: Response) => {
+  update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const donationId = Number(req.params.id);
-      if (isNaN(donationId)) return res.status(400).json({ error: 'Invalid donation ID' });
+      const id = Number(req.params.id);
+      const donationData = UpdateDonation.parse(req.body);
 
-      const updatedDonation = await this.repository.updateStatus(donationId, 'Reprovada');
+      const updatedDonation = await repository.update(id, {
+        ...donationData,
+        data: donationData.data ? new Date(donationData.data) : undefined,
+      });
 
-      // Envia notificação por email
-      await this.notifyStatusChange(donationId, 'Reprovada');
+      // Envia a resposta diretamente aqui
+      res.status(200).json({
+        message: 'Doação atualizada com sucesso',
+        data: updatedDonation,
+      });
+      // return next();
+    } catch (err) {
+      return next(err);
+    }
+  };
 
-      res.json(updatedDonation);
-    } catch (error) {
-      console.error('Error rejecting donation:', error);
-      res.status(500).json({ error: 'Internal server error' });
+  delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = Number(req.params.id);
+      await repository.delete(id);
+      
+      res.status(204).send(); 
+      // return next(); 
+    } catch (err) {
+      return next(err);
     }
   };
 }
