@@ -1,5 +1,5 @@
-import UserController from './UserController';
-import LoginController from './LoginController';
-import FileController from './fileController';
+import {UserController} from './userController';
+import {AuthController} from './authController';
+import FileController from './documentController';
 
-export { UserController, LoginController, FileController };
+export { UserController, AuthController, FileController };
