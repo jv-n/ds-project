@@ -1,0 +1,44 @@
+name: Deploy server and run migrations
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Check if droplet_ip.txt is on the repo
+        run: |
+          if [ ! -s droplet_ip.txt ]; then
+            echo "droplet_ip.txt does not exist or is empty"
+            exit 1
+          fi
+      - name: Get droplet IP
+        run: |
+          DROPLET_IP=$(cat droplet_ip.txt) && echo "DROPLET_IP=$DROPLET_IP" >> $GITHUB_ENV
+      - name: Dokku deploy
+        uses: vitalyliber/dokku-github-action@v7.1
+        env:
+          PRIVATE_KEY: ${{ secrets.CITI_PRIVATE_KEY }}
+          HOST: ${{ env.DROPLET_IP }}
+          PROJECT: server
+          BRANCH: main
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: yarn install
+      - name: Run migrations
+        run: yarn migration:deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
