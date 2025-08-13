@@ -15,13 +15,13 @@ class UserController {
       if (existsUserWithEmail) {
         return next({
           status: 400,
-          message: 'This email is already registred',
+          message: 'Esse email já está cadastrado',
         });
       }
 
       const userDataWithHashedPassword = {
         ...userData,
-        password: await hash(userData.password, 6),
+        senha: await hash(userData.senha, 6),
       };
 
       const user = await UserRepository.create(userDataWithHashedPassword);
@@ -42,7 +42,9 @@ class UserController {
     try {
       const { userId } = req.params;
 
-      const user = await UserRepository.findById(userId);
+      const id = Number(userId);
+
+      const user = await UserRepository.findById(id);
 
       if (!user) {
         return next({
@@ -67,7 +69,9 @@ class UserController {
       const { userId } = req.params;
       const userData = UpdateUser.parse(req.body);
 
-      const user = await UserRepository.update(userId, userData);
+      const id = Number(userId);
+
+      const user = await UserRepository.update(id, userData);
 
       res.locals = {
         status: 200,
@@ -84,8 +88,8 @@ class UserController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { userId } = req.params;
-
-      await UserRepository.delete(userId);
+      const id = Number(userId);
+      await UserRepository.delete(id);
 
       res.locals = {
         status: 200,

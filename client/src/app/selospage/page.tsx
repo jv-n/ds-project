@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { logoamassada } from "@/assets"; 
 import DetalhesPontuacao from "@/components/accordion-detalhes-pontuacao";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
@@ -21,6 +21,11 @@ export default function SelosPage() {
   function fecharModal() {
     setIsModalOpen(false);
   }
+
+  useEffect(() => {
+
+    
+  }, []);
 
   const certificado: CertificateProps = {
     id: "certificado-123",
