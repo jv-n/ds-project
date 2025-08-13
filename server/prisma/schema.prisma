@@ -18,6 +18,7 @@ model User {
   email      String      @unique
   senha      String
   telefone   String?
+  
   empresa    Empresa?
   ong        ONG?
   prefeitura Prefeitura?
