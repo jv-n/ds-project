@@ -9,7 +9,6 @@ export const Donation = z.object({
   ongId: z.coerce.number(),     
   acaoId: z.coerce.number(),    
   prefeituraId: z.coerce.number().optional(),
-  status: z.nativeEnum(StatusApoio).default(StatusApoio.CONTATO_INICIAL),
 });
 
 export type Donation = z.infer<typeof Donation>;

@@ -1,255 +1,436 @@
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
-// Importe o enum StatusApoio do Prisma Client
-// O caminho pode variar dependendo da sua configuração, use o que funciona no seu projeto
-import { StatusApoio } from '@prisma/client'; // Ou '../../generated/prisma/client' se for o caso
 
 const prisma = new PrismaClient();
 
 async function seed() {
   const saltRounds = 6;
 
-  // 1. Criação de Usuários (já existente, mas ajustado para incluir CNPJ)
-  const usersData = [
-    {
-      // Alice Johnson - Usuário da ONG Social Brasil
-      id: 'c1a5e3c8-8240-41c1-8b0b-8cfd94b50d3a',
+  console.log('Iniciando o seeding do banco de dados...');
+
+  // 1. Criação de Usuários
+  const user1 = await prisma.usuario.create({
+    data: {
       cnpj: '00.000.000/0001-01',
-      email: 'alice@ongsocial.com',
+      email: 'alice@empresa.com',
       senha: await hash('alicepassword123', saltRounds),
       telefone: '555-1234',
+      perfil: 'empresa',
     },
-    {
-      // Bob Smith - Usuário da ONG Amigos da Natureza
-      id: 'd9f2e709-9b6f-4e3b-b8d5-218b3b6f9d8d',
-      cnpj: '00.000.000/0001-02',
-      email: 'bob@amigosdanatureza.com',
-      senha: await hash('bobpassword456', saltRounds),
-      telefone: null,
-    },
-    {
-      // Charlie Davis - Usuário da Empresa Tech Solutions
-      id: 'ec69f192-6d5e-49f6-a09b-6a57c3282dcf',
+  });
+
+  const user2 = await prisma.usuario.create({
+    data: {
       cnpj: '10.000.000/0001-01',
-      email: 'charlie@techsolutions.com',
+      email: 'charlie@empresa.com',
       senha: await hash('charliepassword789', saltRounds),
       telefone: '555-5678',
+      perfil: 'empresa',
     },
-    {
-      // Diana Prince - Usuário da Empresa Global Corp
-      id: 'f3a61b62-e1d6-42d2-9bbf-f1e6c0e52b91',
+  });
+
+  const user3 = await prisma.usuario.create({
+    data: {
       cnpj: '20.000.000/0001-01',
-      email: 'diana@globalcorp.com',
-      senha: await hash('dianapassword321', saltRounds),
-      telefone: '555-9876',
-    },
-    {
-      // Eve Thompson - Usuário da Prefeitura Municipal
-      id: 'a2d67db2-6d5e-49f6-a19b-6a57c3283dac',
-      cnpj: '30.000.000/0001-01',
       email: 'eve@prefeitura.com',
       senha: await hash('evepassword654', saltRounds),
       telefone: '555-4321',
-    },
-  ];
-  await prisma.usuario.createMany({ data: usersData });
-  console.log('Users created successfully');
-
-  // 2. Criação de ONGs
-  const ong1 = await prisma.oNG.create({
-    data: {
-      nome: 'ONG Social Brasil',
-      causa: 'Apoio Social',
-      ods: 'ODS 1, ODS 2',
-      usuarioId: usersData[0].id, // Alice Johnson
+      perfil: 'prefeitura',
     },
   });
 
-  const ong2 = await prisma.oNG.create({
+  const user4 = await prisma.usuario.create({
     data: {
-      nome: 'Amigos da Natureza',
-      causa: 'Meio Ambiente',
-      ods: 'ODS 13, ODS 15',
-      usuarioId: usersData[1].id, // Bob Smith
+      cnpj: '30.000.000/0001-01',
+      email: 'frank@empresa.com',
+      senha: await hash('frankpassword123', saltRounds),
+      telefone: '555-9876',
+      perfil: 'empresa',
     },
   });
-  console.log('ONGs created successfully');
 
-  // 3. Criação de Empresas
+  const user5 = await prisma.usuario.create({
+    data: {
+      cnpj: '40.000.000/0001-01',
+      email: 'grace@empresa.com',
+      senha: await hash('gracepassword456', saltRounds),
+      telefone: '555-3210',
+      perfil: 'empresa',
+    },
+  });
+  console.log('Usuários criados com sucesso!');
+
+  // 2. Criação de Empresas
   const empresa1 = await prisma.empresa.create({
     data: {
       nome: 'Tech Solutions Ltda.',
-      usuarioId: usersData[2].id, // Charlie Davis
-      pontos: 100,
+      usuarioId: user1.id,
+      pontuacao: 150,
+      numColaboradores: 50,
+      odsId: [1, 2, 13],
     },
   });
 
   const empresa2 = await prisma.empresa.create({
     data: {
       nome: 'Global Corp S.A.',
-      usuarioId: usersData[3].id, // Diana Prince
-      pontos: 50,
+      usuarioId: user2.id,
+      pontuacao: 75,
+      numColaboradores: 20,
+      odsId: [1, 15],
     },
   });
-  console.log('Empresas created successfully');
 
-  // 4. Criação de Prefeituras (se necessário para Apoio)
-  const prefeitura1 = await prisma.prefeitura.create({
+  const empresa3 = await prisma.empresa.create({
     data: {
-      nome: 'Prefeitura Municipal de Exemplo',
-      usuarioId: usersData[4].id, // Eve Thompson
+      nome: 'Eco-Soluções Ambientais',
+      usuarioId: user4.id,
+      pontuacao: 200,
+      numColaboradores: 100,
+      odsId: [6, 7, 13],
     },
   });
-  console.log('Prefeituras created successfully');
 
-  // 5. Criação de Ações (Oportunidades de Doação)
-  const acao1 = await prisma.acao.create({
+  const empresa4 = await prisma.empresa.create({
     data: {
+      nome: 'Finanças do Futuro',
+      usuarioId: user5.id,
+      pontuacao: 120,
+      numColaboradores: 80,
+      odsId: [8, 9, 10],
+    },
+  });
+  console.log('Empresas criadas com sucesso!');
+
+  // 3. Criação de Ações das Empresas (AcaoEmpresa)
+  // Ações para a Empresa 1
+  const acaoEmpresa1 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 1,
+      empresaId: empresa1.id,
       nome: 'Campanha Inverno Solidário',
-      descricao: 'Ajude famílias em situação de vulnerabilidade com roupas e cobertores.',
-      ongId: ong1.id,
+      descricao: 'Ajude famílias com roupas e cobertores.',
+      nomeOng: 'ONG Social Brasil',
+      emailOng: 'ongsocial@email.com',
+      telefoneOng: '111-1111',
+      odsAcao: [1, 2],
     },
   });
 
-  const acao2 = await prisma.acao.create({
+  const acaoEmpresa3 = await prisma.acaoEmpresa.create({
     data: {
+      acaoId: 3,
+      empresaId: empresa1.id,
+      nome: 'Apoio Alimentar para Refugiados',
+      descricao: 'Doe alimentos não perecíveis para famílias refugiadas.',
+      nomeOng: 'Pão e Esperança',
+      emailOng: 'paoeesperanca@email.com',
+      telefoneOng: '333-3333',
+      odsAcao: [2],
+    },
+  });
+
+  const acaoEmpresa6 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 6,
+      empresaId: empresa1.id,
+      nome: 'Tecnologia para Escolas Públicas',
+      descricao: 'Doe computadores e equipamentos para escolas de baixa renda.',
+      nomeOng: 'Educação para Todos',
+      emailOng: 'eduforall@email.com',
+      telefoneOng: '666-6666',
+      odsAcao: [4, 9],
+    },
+  });
+
+  // Ações para a Empresa 2
+  const acaoEmpresa2 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 2,
+      empresaId: empresa2.id,
       nome: 'Projeto Verde Esperança',
-      descricao: 'Foco na sustentabilidade e plantio de árvores em áreas urbanas.',
-      ongId: ong2.id,
+      descricao: 'Foco em sustentabilidade e plantio de árvores.',
+      nomeOng: 'Amigos da Natureza',
+      emailOng: 'amigosdanatureza@email.com',
+      telefoneOng: '222-2222',
+      odsAcao: [13, 15],
     },
   });
 
-  const acao3 = await prisma.acao.create({
+  const acaoEmpresa4 = await prisma.acaoEmpresa.create({
     data: {
-      nome: 'Alimento para Todos',
-      descricao: 'Distribuição de cestas básicas para comunidades carentes.',
-      ongId: ong1.id,
+      acaoId: 4,
+      empresaId: empresa2.id,
+      nome: 'Programa de Reciclagem Comunitária',
+      descricao: 'Apoio a iniciativas de coleta e reciclagem em bairros carentes.',
+      nomeOng: 'EcoCidade Limpa',
+      emailOng: 'ecocidade@email.com',
+      telefoneOng: '444-4444',
+      odsAcao: [11, 12],
     },
   });
 
-  const acao4 = await prisma.acao.create({
+  const acaoEmpresa7 = await prisma.acaoEmpresa.create({
     data: {
-      nome: 'Projeto Ajuda Animal',
-      descricao: 'Foco na proteção e cuidado de animais em situação de risco.',
-      ongId: ong2.id,
+      acaoId: 7,
+      empresaId: empresa2.id,
+      nome: 'Limpeza de Praias Locais',
+      descricao: 'Ajude na organização de mutirões de limpeza de praias.',
+      nomeOng: 'Mares Limpos',
+      emailOng: 'mareslimpos@email.com',
+      telefoneOng: '777-7777',
+      odsAcao: [14],
     },
   });
-  console.log('Acoes created successfully');
 
-  // 6. Criação de Apoios (Doações Detalhadas)
-  await prisma.apoio.createMany({
+  // Ações para a Empresa 3
+  const acaoEmpresa5 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 5,
+      empresaId: empresa3.id,
+      nome: 'Fundo para Pesquisa de Energia Limpa',
+      descricao: 'Contribua para o desenvolvimento de novas tecnologias de energia renovável.',
+      nomeOng: 'Inovação Verde',
+      emailOng: 'inovacao.verde@email.com',
+      telefoneOng: '555-5555',
+      odsAcao: [7],
+    },
+  });
+
+  const acaoEmpresa8 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 8,
+      empresaId: empresa3.id,
+      nome: 'Proteção de Nascentes',
+      descricao: 'Apoie a conservação de nascentes em áreas de mata nativa.',
+      nomeOng: 'Guardiões das Águas',
+      emailOng: 'guardiaodaagua@email.com',
+      telefoneOng: '888-8888',
+      odsAcao: [6, 15],
+    },
+  });
+
+  // NOVA AÇÃO: Empresa 3 com múltiplas doações
+  const acaoEmpresa11 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 11,
+      empresaId: empresa3.id,
+      nome: 'Reflorestamento de Áreas Desmatadas',
+      descricao: 'Voluntariado para plantio de mudas em áreas de preservação.',
+      nomeOng: 'Verde Vale',
+      emailOng: 'verdevale@email.com',
+      telefoneOng: '111-2222',
+      odsAcao: [13, 15],
+    },
+  });
+
+  // Ações para a Empresa 4
+  const acaoEmpresa9 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 9,
+      empresaId: empresa4.id,
+      nome: 'Microcrédito para Empreendedores',
+      descricao: 'Ofereça microcréditos para pequenos empreendedores em comunidades.',
+      nomeOng: 'Giro Solidário',
+      emailOng: 'girosolidario@email.com',
+      telefoneOng: '999-9999',
+      odsAcao: [8, 10],
+    },
+  });
+
+  const acaoEmpresa10 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 10,
+      empresaId: empresa4.id,
+      nome: 'Mentoria para Startups de Impacto',
+      descricao: 'Apoie startups que visam resolver problemas sociais e ambientais.',
+      nomeOng: 'Nós por Eles',
+      emailOng: 'nos_por_eles@email.com',
+      telefoneOng: '101-1010',
+      odsAcao: [9, 17],
+    },
+  });
+
+  // NOVA AÇÃO: Empresa 4 com uma única doação
+  const acaoEmpresa12 = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 12,
+      empresaId: empresa4.id,
+      nome: 'Workshop de Educação Financeira',
+      descricao: 'Ofereça workshops sobre finanças pessoais para jovens.',
+      nomeOng: 'Saber e Crescer',
+      emailOng: 'saberecrescer@email.com',
+      telefoneOng: '121-1212',
+      odsAcao: [4, 8],
+    },
+  });
+  console.log('Ações de Empresa criadas com sucesso!');
+
+  // 4. Criação de Doações
+  await prisma.doacao.createMany({
     data: [
-      // Apoio 1: Empresa 1 para Acao 1 - PENDENTE (primeira doação)
+      // Doações para a Ação 1 (Empresa 1)
       {
         data: new Date('2024-07-01T10:00:00Z'),
         valor: 150.00,
-        tipoAjuda: 'Dinheiro',
+        tipo: 'Dinheiro',
         empresaId: empresa1.id,
-        ongId: ong1.id,
-        acaoId: acao1.id,
-        status: StatusApoio.PENDENTE,
-        prefeituraId: null,
+        acaoId: acaoEmpresa1.acaoId,
+        status: 'Pendente',
       },
-      // Apoio 2: Empresa 1 para Acao 1 - APROVADO (segunda doação)
       {
         data: new Date('2024-07-15T11:30:00Z'),
         valor: 200.00,
-        tipoAjuda: 'Roupas',
+        tipo: 'Roupas',
         empresaId: empresa1.id,
-        ongId: ong1.id,
-        acaoId: acao1.id,
-        status: StatusApoio.APROVADO,
-        prefeituraId: null,
+        acaoId: acaoEmpresa1.acaoId,
+        status: 'Aprovado',
       },
-      // Apoio 3: Empresa 1 para Acao 1 - APROVADO (terceira doação)
-      {
-        data: new Date('2024-07-20T14:00:00Z'),
-        valor: 50.00,
-        tipoAjuda: 'Alimento',
-        empresaId: empresa1.id,
-        ongId: ong1.id,
-        acaoId: acao1.id,
-        status: StatusApoio.APROVADO,
-        prefeituraId: null,
-      },
-      // Apoio 4: Empresa 2 para Acao 2 - CONTATO_INICIAL (apenas iniciou contato)
-      {
-        data: new Date('2024-07-25T09:00:00Z'),
-        valor: 0.00, // Valor 0 para contato inicial
-        tipoAjuda: 'Contato',
-        empresaId: empresa2.id,
-        ongId: ong2.id,
-        acaoId: acao2.id,
-        status: StatusApoio.CONTATO_INICIAL,
-        prefeituraId: null,
-      },
-      
-      // Apoio 5: Empresa 1 para Acao 3 - REJEITADO
       {
         data: new Date('2024-07-28T16:00:00Z'),
         valor: 100.00,
-        tipoAjuda: 'Serviço',
+        tipo: 'Serviço',
         empresaId: empresa1.id,
-        ongId: ong1.id,
-        acaoId: acao3.id,
-        status: StatusApoio.REJEITADO,
-        prefeituraId: null,
+        acaoId: acaoEmpresa1.acaoId,
+        status: 'Reprovado',
+        motivoReprovacao: 'Documentação incompleta.',
       },
-      // Apoio 6: Empresa 2 para Acao 3 - PENDENTE
+      // Doações para a Ação 3 (Empresa 1)
       {
-        data: new Date('2024-08-01T08:00:00Z'),
-        valor: 75.00,
-        tipoAjuda: 'Dinheiro',
-        empresaId: empresa2.id,
-        ongId: ong1.id,
-        acaoId: acao3.id,
-        status: StatusApoio.PENDENTE,
-        prefeituraId: null,
+        data: new Date('2024-08-01T09:00:00Z'),
+        valor: 50.00,
+        tipo: 'Dinheiro',
+        empresaId: empresa1.id,
+        acaoId: acaoEmpresa3.acaoId,
+        status: 'Pendente',
       },
-      // Apoio 7: Empresa 1 para Acao 2 - APROVADO
+      // Doação para a Ação 6 (Empresa 1)
+      {
+        data: new Date('2024-08-25T14:00:00Z'),
+        valor: 0.00,
+        tipo: 'Tecnologia',
+        empresaId: empresa1.id,
+        acaoId: acaoEmpresa6.acaoId,
+        status: 'Pendente',
+      },
+      // Doações para a Ação 2 (Empresa 2)
       {
         data: new Date('2024-08-05T10:00:00Z'),
         valor: 300.00,
-        tipoAjuda: 'Dinheiro',
-        empresaId: empresa1.id,
-        ongId: ong2.id,
-        acaoId: acao2.id,
-        status: StatusApoio.APROVADO,
-        prefeituraId: null,
-      },
-      // Apoio 8: Empresa 2 para Acao 4 - APROVADO
-      {
-        data: new Date('2024-07-25T09:00:00Z'),
-        valor: 340.00, 
-        tipoAjuda: 'Dinheiro',
+        tipo: 'Dinheiro',
         empresaId: empresa2.id,
-        ongId: ong2.id,
-        acaoId: acao4.id,
-        status: StatusApoio.APROVADO,
-        prefeituraId: null,
+        acaoId: acaoEmpresa2.acaoId,
+        status: 'Aprovado',
       },
-      // Apoio 9: Empresa 2 para Acao 4 - CONTATO_INICIAL
       {
-        data: new Date('2024-07-25T09:00:00Z'),
-        valor: 340.00, 
-        tipoAjuda: 'Dinheiro',
+        data: new Date('2024-08-10T14:00:00Z'),
+        valor: 0.00,
+        tipo: 'Materiais',
         empresaId: empresa2.id,
-        ongId: ong2.id,
-        acaoId: acao4.id,
-        status: StatusApoio.APROVADO,
-        prefeituraId: null,
+        acaoId: acaoEmpresa2.acaoId,
+        status: 'Pendente',
+      },
+      // Doações para a Ação 4 (Empresa 2)
+      {
+        data: new Date('2024-08-12T16:30:00Z'),
+        valor: 250.00,
+        tipo: 'Serviço',
+        empresaId: empresa2.id,
+        acaoId: acaoEmpresa4.acaoId,
+        status: 'Reprovado',
+        motivoReprovacao: 'Serviço não solicitado no momento.',
+      },
+      // Doação para a Ação 7 (Empresa 2)
+      {
+        data: new Date('2024-08-27T10:00:00Z'),
+        valor: 100.00,
+        tipo: 'Dinheiro',
+        empresaId: empresa2.id,
+        acaoId: acaoEmpresa7.acaoId,
+        status: 'Pendente',
+      },
+      // Doações para a Ação 5 (Empresa 3)
+      {
+        data: new Date('2024-08-20T12:00:00Z'),
+        valor: 500.00,
+        tipo: 'Dinheiro',
+        empresaId: empresa3.id,
+        acaoId: acaoEmpresa5.acaoId,
+        status: 'Pendente',
+      },
+      // Doação para a Ação 8 (Empresa 3)
+      {
+        data: new Date('2024-08-22T08:00:00Z'),
+        valor: 0.00,
+        tipo: 'Serviço',
+        empresaId: empresa3.id,
+        acaoId: acaoEmpresa8.acaoId,
+        status: 'Aprovado',
+      },
+      // Doações para a NOVA AÇÃO 11 (Empresa 3 - Múltiplas doações)
+      {
+        data: new Date('2024-09-01T10:00:00Z'),
+        valor: 0.00,
+        tipo: 'Voluntariado',
+        empresaId: empresa3.id,
+        acaoId: acaoEmpresa11.acaoId,
+        status: 'Aprovado',
+      },
+      {
+        data: new Date('2024-09-05T15:30:00Z'),
+        valor: 200.00,
+        tipo: 'Dinheiro',
+        empresaId: empresa3.id,
+        acaoId: acaoEmpresa11.acaoId,
+        status: 'Pendente',
+      },
+      {
+        data: new Date('2024-09-10T11:00:00Z'),
+        valor: 0.00,
+        tipo: 'Materiais',
+        empresaId: empresa3.id,
+        acaoId: acaoEmpresa11.acaoId,
+        status: 'Reprovado',
+        motivoReprovacao: 'Tipo de material incorreto.',
+      },
+      // Doação para a Ação 9 (Empresa 4)
+      {
+        data: new Date('2024-08-29T11:00:00Z'),
+        valor: 1000.00,
+        tipo: 'Dinheiro',
+        empresaId: empresa4.id,
+        acaoId: acaoEmpresa9.acaoId,
+        status: 'Pendente',
+      },
+      // Doação para a Ação 10 (Empresa 4)
+      {
+        data: new Date('2024-08-30T15:00:00Z'),
+        valor: 0.00,
+        tipo: 'Serviço',
+        empresaId: empresa4.id,
+        acaoId: acaoEmpresa10.acaoId,
+        status: 'Aprovado',
+      },
+      // Doação para a NOVA AÇÃO 12 (Empresa 4 - Única doação)
+      {
+        data: new Date('2024-09-15T10:00:00Z'),
+        valor: 0.00,
+        tipo: 'Voluntariado',
+        empresaId: empresa4.id,
+        acaoId: acaoEmpresa12.acaoId,
+        status: 'Aprovado',
       },
     ],
   });
-  console.log('Apoios created successfully');
+  console.log('Doações criadas com sucesso!');
 }
 
 seed()
   .then(() => {
-    console.log('Database successfully seeded');
+    console.log('Banco de dados populado com sucesso!');
   })
   .catch((e) => {
-    console.error('Error seeding database:', e);
+    console.error('Erro ao popular o banco de dados:', e);
     process.exit(1);
   })
   .finally(async () => {
