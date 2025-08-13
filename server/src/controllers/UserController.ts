@@ -90,6 +90,8 @@ class UserController {
     }
   }
 
+  // ## havendo conflito essa parte a baixo entra
+
   async getTier(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = parseInt(req.params.userId, 10);

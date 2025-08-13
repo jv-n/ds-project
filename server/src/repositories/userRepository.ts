@@ -32,7 +32,7 @@ class UserRepository {
     return usuarios;
   }
 
-
+  // ## havendo conflito essa parte a baixo entra
   async getImpactData(userId: number) {
     const totalDonatedAggregation = await prisma.apoio.aggregate({
       _sum: {

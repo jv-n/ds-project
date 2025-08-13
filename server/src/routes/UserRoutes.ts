@@ -1,18 +1,45 @@
 import { Router } from 'express';
+import  UserController  from '../controllers/UserController';
+import { requestHandler } from '../middlewares';
 import auth from '../middlewares/auth';
-import { UserController } from '../controllers';
 
-const userRouter = Router();
+const userRoutes = Router();
 
-userRouter.route('/')
-  .post(UserController.create);
+userRoutes.post(
+  '/',
+  requestHandler(UserController.create)
+);
 
-userRouter.route('/:userId')
-  .get(UserController.read)
-  .patch(auth, UserController.update)
-  .delete(auth, UserController.delete);
+userRoutes.get(
+  '/',
+  auth,
+  requestHandler(UserController.getAll)
+);
 
-userRouter.route('/:userId/tier')
-  .get(UserController.getTier);
+// ## havendo conflito essa unica rota abaixo deve entrar
 
-export default userRouter;
+userRoutes.get(
+  '/me/tier',
+  auth,       
+  requestHandler(UserController.getMyTier)
+);
+
+userRoutes.get(
+  '/:id',
+  auth,
+  requestHandler(UserController.getById)
+);
+
+userRoutes.put(
+  '/:id',
+  auth,
+  requestHandler(UserController.update)
+);
+
+userRoutes.delete(
+  '/:id',
+  auth,
+  requestHandler(UserController.delete)
+);
+
+export default userRoutes;

@@ -20,23 +20,27 @@ interface ITierData {
 
 export default function Home() {
   const [mostrarcriterios, Setcriterios] = useState("off");
-  
-  const [tierData, setTierData] = useState<ITierData | null>();
-  
-  const [loading, setLoading] = useState(true); 
-
+  const [tierData, setTierData] = useState<ITierData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Função para buscar os dados da API
     const fetchTierData = async () => {
       try {
-        const userId = '1'; 
-        const response = await fetch(`/api/users/${userId}/tier`);
-        
-        if (!response.ok) {
-          throw new Error('Falha ao buscar dados');
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Usuário não autenticado");
         }
-        
+
+        const response = await fetch("/api/users/me/tier", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Falha ao buscar dados");
+        }
+
         const data = await response.json();
         setTierData(data.data);
       } catch (error) {
@@ -47,8 +51,7 @@ export default function Home() {
     };
 
     fetchTierData();
-  }, []); 
-  
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
@@ -65,7 +68,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Exibição condicional: mostra um texto de carregamento ou o card com os dados */}
+      {/* Exibição condicional */}
       {loading ? (
         <div className="text-center">Carregando seus pontos...</div>
       ) : tierData ? (
@@ -74,13 +77,13 @@ export default function Home() {
           ptsodsscomatuacao={tierData.points.sdg.toString()}
           ptsongsatingidas={tierData.points.ngo.toString()}
           ptsorcamentodestinado={tierData.points.budget.toString()}
-          // OBS: As propriedades abaixo não existem no retorno da API.
-          // Mantidas como "0" para não quebrar o componente.
-          ptsacoesdeconscientizacao="0" 
+          ptsacoesdeconscientizacao="0"
           ptscolaboradoresengajados="0"
         />
       ) : (
-        <div className="text-center">Não foi possível carregar os dados. Tente novamente mais tarde.</div>
+        <div className="text-center">
+          Não foi possível carregar os dados. Tente novamente mais tarde.
+        </div>
       )}
 
       <div className="font-sans font-bold text-[32px] text-black mr-[630px] mt-[25px] flex justify-center">
