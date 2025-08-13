@@ -3,14 +3,11 @@ import prisma from '../database';
 interface CreateCompanyDTO {
   nome: string;
   usuarioId: number;
-  odsId: number[];
-  numColaboradores: number;
 }
 
 interface UpdateCompanyDTO {
-  pontuacao?: number;
-  odsId?: number[];
-  numColaboradores?: number;
+  nome?: string;
+  pontos?: number;
 }
 
 export class CompanyRepository {
@@ -18,7 +15,9 @@ export class CompanyRepository {
     return prisma.empresa.create({
       data,
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
   }
@@ -26,7 +25,9 @@ export class CompanyRepository {
   async findAll() {
     return prisma.empresa.findMany({
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
   }
@@ -35,22 +36,25 @@ export class CompanyRepository {
     return prisma.empresa.findUnique({
       where: { id },
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
   }
 
   async update(id: number, data: UpdateCompanyDTO) {
     const prismaData: any = {};
-    if (data.pontuacao !== undefined) prismaData.pontuacao = data.pontuacao;
-    if (data.odsId !== undefined) prismaData.odsId = { set: data.odsId.map(odsId => ({ id: odsId })) };
-    if (data.numColaboradores !== undefined) prismaData.numColaboradores = data.numColaboradores;
+    if (data.nome !== undefined) prismaData.nome = data.nome;
+    if (data.pontos !== undefined) prismaData.pontos = data.pontos;
 
     return prisma.empresa.update({
       where: { id },
       data: prismaData,
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
   }

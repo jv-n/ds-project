@@ -1,48 +1,36 @@
-import { Prisma, Usuario } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import prisma from '@database';
 
-interface CreateUserDTO {
-  cnpj: string;           
-  email: string;           
-  senha: string;      
-  telefone: string;   
-}
-
-interface UpdateUserDTO {
-  cnpj?: string;
-  email?: string;
-  senha?: string;
-  telefone?: string;
-}
-
-export class UserRepository {
-  async create(data: CreateUserDTO): Promise<Usuario> {
-    const user = await prisma.usuario.create({ data });
+class UserRepository {
+  async create(data: Prisma.UserCreateInput): Promise<User> {
+    const user = await prisma.user.create({ data });
     return user;
   }
 
-  async findByEmail(email: string): Promise<Usuario | null> {
-    const user = await prisma.usuario.findUnique({ where: { email } });
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await prisma.user.findUnique({ where: { email } });
     return user;
   }
 
-  async findById(id: number): Promise<Usuario | null> {
-    const user = await prisma.usuario.findUnique({ where: { id } });
+  async findById(id: string): Promise<User | null> {
+    const user = await prisma.user.findUnique({ where: { id } });
     return user;
   }
 
-  async update(id: number, data: UpdateUserDTO): Promise<Usuario> {
-    const user = await prisma.usuario.update({ where: { id }, data });
+  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+    const user = await prisma.user.update({ where: { id }, data });
     return user;
   }
 
-  async delete(id: number): Promise<Usuario> {
-    const user = await prisma.usuario.delete({ where: { id } });
+  async delete(id: string): Promise<User> {
+    const user = await prisma.user.delete({ where: { id } });
     return user;
   }
 
-  async findAll(): Promise<Usuario[]> {
-    const users = await prisma.usuario.findMany();
+  async findAll(): Promise<User[]> {
+    const users = await prisma.user.findMany();
     return users;
   }
 }
+
+export default new UserRepository();

@@ -19,77 +19,85 @@ model Usuario {
   email      String     @unique
   senha      String     @map("password")
   telefone   String?
-  perfil     String @default("empresa") // empresa, prefeitura
 
+  ong        ONG?
   empresa    Empresa?
+  prefeitura Prefeitura?
+}
+
+model ONG {
+  id             Int       @id @default(autoincrement())
+  ods            String?
+  
+  usuarioId      Int       @unique
+  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
+
+  apoiosRecebidos Apoio[]
 }
 
 model Empresa {
-  id                Int       @id @default(autoincrement())
-  nome              String
-  pontuacao         Int       @default(0)
-  numColaboradores  Int       @default(0)
+  id         Int       @id @default(autoincrement())
+  nome       String
   
-  usuarioId    Int       @unique
-  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId  Int       @unique
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
 
-  odsId        Int[]
-  acoes        AcaoEmpresa[]
-  selos        Selo[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  apoios     Apoio[]
+  pontos     Int       @default(0)
+  criterios  Criterio[]
 }
 
-model AcaoEmpresa {
-  acaoId          Int        
-  empresaId       Int   
-  @@id(name: "acaoEmpresaId", [acaoId, empresaId]) 
-  nome            String
-  descricao       String
-  nomeOng         String
-  emailOng        String
-  telefoneOng     String
-  doacoes         Doacao[]
-  odsAcao       Int[]
+model Prefeitura {
+  id         Int       @id @default(autoincrement())
+  nome       String
+  usuarioId  Int       @unique
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
 
-  empresa         Empresa    @relation(fields: [empresaId], references: [id])
+  apoios     Apoio[]
 }
 
-model Doacao {
+model Apoio {
   id           Int        @id @default(autoincrement())
   data         DateTime
   valor        Float
-  tipo         String
-  documentos   Documento[]
-  status       String @default("Pendente") // pendente, aprovado, reprovado
-  motivoReprovacao String?
-  empresaId    Int
-  acaoId       Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  tipoAjuda    String
+  documentacao String
 
-  acao         AcaoEmpresa       @relation(fields: [acaoId, empresaId], references: [acaoId, empresaId])
+  empresaId    Int
+  ongId        Int
+  prefeituraId Int?
+
+  empresa      Empresa    @relation(fields: [empresaId], references: [id])
+  ong          ONG        @relation(fields: [ongId], references: [id])
+  prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
+}
+
+model Criterio {
+  id         Int      @id @default(autoincrement())
+  tipo       String
+  pontuacao  Int
+
+  empresaId  Int
+  seloId     Int
+
+  empresa    Empresa  @relation(fields: [empresaId], references: [id])
+  selo       Selo     @relation(fields: [seloId], references: [id])
 }
 
 model Selo {
-  id            Int        @id @default(autoincrement())
-  nivel         String
-  descricao     String
-  pontuacaoMin  Int
-  createdAt     DateTime   @default(now())
-  empresaId     Int
+  id         Int        @id @default(autoincrement())
+  tipo       String
+  tier       String
 
-  empresa    Empresa    @relation(fields: [empresaId], references: [id])
+  criterios  Criterio[]
 }
 
-model Documento {
+model File {
   id         String   @id @default(uuid())
   storedName String
   mimetype   String
   size       Int
   path       String
+  status     String
   createdAt  DateTime @default(now())
-  doacaoId    Int?
-
-  doacao      Doacao?   @relation(fields: [doacaoId], references: [id])
 }
