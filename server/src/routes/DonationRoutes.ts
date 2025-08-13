@@ -1,35 +1,19 @@
-// src/routes/DonationRoutes.ts
 import { Router } from 'express';
-import multer from 'multer';
-import { DonationController } from '../controllers/DonationController';
+import { upload } from '../services/uploadService';
+import { DonationController } from '../controllers/donationController';
 
 const DonationRouter = Router();
 const controller = new DonationController();
 
-// Configuração do multer para uploads
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (_req, file, cb) => {
-    const timestamp = Date.now();
-    const filename = `${timestamp}-${file.originalname}`;
-    cb(null, filename);
-  },
-});
+DonationRouter.post('/', upload.array('documents', 5), controller.create);
 
-const upload = multer({ storage });
-
-// Adicionando a rota POST para criar uma doação
-DonationRouter.post('/', controller.create);
-
-// Rotas existentes
-DonationRouter.get('/', controller.getAll);
-DonationRouter.get('/:id', controller.getById);
-
-// Adicionando a rota PUT para atualizar uma doação
-DonationRouter.put('/:id', controller.update);
-
-// Rota existente
-DonationRouter.delete('/:id', controller.delete);
+// Audit routes
+DonationRouter.get('/audit/', controller.getAll);
+DonationRouter.get('/audit/status/:status', controller.getByStatus);
+DonationRouter.get('/:id/audit/documents/', controller.getDocumentsByDonationId);
+DonationRouter.get('/:id/audit/documents/:documentId', controller.getDocumentById);
+DonationRouter.patch('/:id/audit/approve/', controller.approveDonation);
+DonationRouter.patch('/:id/audit/reject/', controller.rejectDonation);
 
 export default DonationRouter;
 
