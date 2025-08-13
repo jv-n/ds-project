@@ -3,7 +3,9 @@ import prisma from '@database';
 
 class UserRepository {
   async create(data: Prisma.UsuarioCreateInput): Promise<Usuario> {
-    const usuario = await prisma.usuario.create({ data });
+    const usuario = await prisma.usuario.create({
+      data,
+    });
     return usuario;
   }
 
@@ -45,7 +47,6 @@ class UserRepository {
       },
     });
 
-    // 1. Buscamos todos os registros de apoio para o usuário
     const apoios = await prisma.apoio.findMany({
       where: {
         empresa: {
@@ -53,11 +54,10 @@ class UserRepository {
         },
       },
       select: {
-        ongId: true, // Selecionamos apenas o ID da ONG para otimizar
+        ongId: true, 
       },
     });
 
-    // ✅ CORREÇÃO: Contamos as ONGs únicas a partir do resultado anterior
     const supportedNgos = new Set(apoios.map(apoio => apoio.ongId)).size;
 
     const distinctSdgsCount = await prisma.oNG.count({
@@ -77,10 +77,29 @@ class UserRepository {
 
     return {
       totalDonated: totalDonatedAggregation._sum.valor || 0,
-      supportedNgos: supportedNgos, // Usamos a contagem correta aqui
+      supportedNgos: supportedNgos, 
       supportedSdgs: distinctSdgsCount,
     };
   }
+    async findByCnpj(cnpj: string) {
+    return prisma.usuario.findUnique({
+      where: {
+        cnpj,
+      }
+    });
+  }
+
+    async findUserByCnpj(cnpj: string) {
+    return prisma.usuario.findUnique({
+      where: {
+        cnpj,
+      },
+      include: {
+        empresa: true,
+      },
+    });
+  }
+
 }
 
 export default new UserRepository();

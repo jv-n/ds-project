@@ -1,21 +1,17 @@
 import { Router } from 'express';
 import { LoginController } from '../controllers';
+import { requestHandler } from '../middlewares';
+import auth from '../middlewares/auth';
 
-const AuthRouter = Router();
+const authRouter = Router();
 
-AuthRouter.route('/')
-  .post(
-    LoginController.login,
-  );
 
-AuthRouter.route('/')
-  .patch(
-    LoginController.refresh,
-  );
+authRouter.post('/login', requestHandler(LoginController.login));
+authRouter.post('/login/company', requestHandler(LoginController.loginCompany));
+authRouter.post('/refresh', requestHandler(LoginController.refresh));
+authRouter.get('/logout', 
+    auth, 
+    requestHandler(LoginController.logout)
+);
 
-AuthRouter.route('/')
-  .delete(
-    LoginController.logout,
-  );
-
-export default AuthRouter;
+export default authRouter;

@@ -12,10 +12,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-        restart: true
+        #restart: true
       test-db:
         condition: service_started
-        restart: true
+        #restart: true
     develop:
       watch:
         - action: sync

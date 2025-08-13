@@ -1,27 +1,35 @@
 import { z } from 'zod';
 
+// Schema para a CRIAÇÃO de um usuário
 export const User = z.object({
-  name: z
+  cnpj: z
     .string({
-      invalid_type_error: 'O nome deve ser uma string',
-      required_error: 'O nome é obrigatório',
+      invalid_type_error: 'O CNPJ deve ser uma string',
+      required_error: 'O CNPJ é obrigatório',
     })
-    .regex(/^[a-zA-Z\s]+$/, { message: 'O nome deve conter apenas letras' }),
-  phone: z
-    .string({ invalid_type_error: 'O número de telefone deve ser uma string' })
-    .regex(/^\+?[0-9]+$/, {
-      message: 'O número de telefone deve conter apenas números',
-    })
-    .optional(),
+    .regex(/^\d{14}$/, { message: 'O CNPJ deve conter exatamente 14 dígitos numéricos.' }), 
+
+
   email: z
     .string({
       invalid_type_error: 'O email deve ser uma string',
       required_error: 'O email é obrigatório',
     })
     .email({ message: 'Endereço de email inválido' }),
-  password: z
-    .string({ invalid_type_error: 'A senha deve ser uma string' })
-    .min(8, { message: 'A senha deve ter no mínimo 8 caracteres' }),
+  
+  senha: z
+    .string({ 
+      invalid_type_error: 'A senha deve ser uma string',
+      required_error: 'A senha é obrigatória',
+    })
+    .min(6, { message: 'A senha deve ter no mínimo 6 caracteres' }),
+
+  telefone: z
+    .string({ invalid_type_error: 'O número de telefone deve ser uma string' })
+    .regex(/^\d{10,11}$/, { 
+      message: 'O número de telefone deve conter 10 ou 11 dígitos numéricos.',
+    })
+    .optional(),
 });
 
 export const UpdateUser = User.partial();

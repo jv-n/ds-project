@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { compare } from 'bcryptjs';
+import { Login, LoginCnpj} from '../DTOs'; 
 
 import {
   UserRepository,
@@ -10,9 +11,9 @@ import {
 class LoginController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body;
+      const loginData = Login.parse(req.body);
 
-      const user = await UserRepository.findByEmail(email);
+      const user = await UserRepository.findByEmail(loginData.email);
 
       if (!user) {
         return next({
@@ -21,7 +22,7 @@ class LoginController {
         });
       }
 
-      const checkPassword = await compare(password, user.password);
+      const checkPassword = await compare(loginData.senha, user.senha);
 
       if (!checkPassword) {
         return next({
@@ -30,12 +31,12 @@ class LoginController {
         });
       }
 
-      const accessToken = TokenRepository.generateAccessToken(user.id, '60s');
-      const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d');
+      const accessToken = TokenRepository.generateAccessToken(user.id.toString(), '60s');
+      const refreshToken = TokenRepository.generateRefreshToken(user.id.toString(), '5d');
 
       CookieRepository.setCookie(res, 'refresh_token', refreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { senha: _, ...loggedUser } = user;
 
       res.locals = {
         status: 200,
@@ -51,6 +52,51 @@ class LoginController {
       return next(error);
     }
   }
+
+  async loginCompany(req: Request, res: Response, next: NextFunction) {
+  try {
+    const loginCompanyData = LoginCnpj.parse(req.body);
+
+    const user = await UserRepository.findUserByCnpj(loginCompanyData.cnpj);
+
+    if (!user) {
+      return next({
+        status: 401,
+        message: 'Invalid credentials.', 
+      });
+    }
+
+    const checkPassword = await compare(loginCompanyData.senha, user.senha);
+
+    if (!checkPassword) {
+      return next({
+        status: 401,
+        message: 'Invalid credentials.',
+      });
+    }
+
+    const accessToken = TokenRepository.generateAccessToken(user.id.toString(), '60s');
+    const refreshToken = TokenRepository.generateRefreshToken(user.id.toString(), '5d');
+
+    CookieRepository.setCookie(res, 'refresh_token', refreshToken);
+
+    const { senha: _, ...loggedUser } = user;
+
+    res.locals = {
+      status: 200,
+      message: 'Company user logged in',
+      data: {
+        loggedUser, 
+        accessToken,
+      },
+    };
+
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}
+
 
   async refresh(req: Request, res: Response, next: NextFunction) {
     try {
@@ -91,14 +137,14 @@ class LoginController {
       CookieRepository.clearCookies(res, 'refresh_token');
 
       const newRefreshToken = TokenRepository.generateRefreshToken(
-        user.id,
+        user.id.toString(),
         '1d',
       );
-      const acessToken = TokenRepository.generateAccessToken(user.id, '30s');
+      const acessToken = TokenRepository.generateAccessToken(user.id.toString(), '30s');
 
       CookieRepository.setCookie(res, 'refresh_token', newRefreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { senha: _, ...loggedUser } = user;
 
       res.locals = {
         status: 200,

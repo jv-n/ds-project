@@ -3,90 +3,104 @@ import { hash } from 'bcryptjs';
 import { UserRepository } from '../repositories';
 import { User, UpdateUser } from '../DTOs';
 import { TierService } from '../services/TierService';
+import HttpException from '../DTOs/middlewares/httpException';
 
 class UserController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const userData = User.parse(req.body);
 
-      const existsUserWithEmail = await UserRepository.findByEmail(userData.email);
-      if (existsUserWithEmail) {
-        return next({ status: 400, message: 'This email is already registered' });
+      const existingUserByEmail = await UserRepository.findByEmail(userData.email);
+      if (existingUserByEmail) {
+        throw new HttpException(409, 'Um usuário com este email já existe.');
       }
 
-      const userDataWithHashedPassword = {
+      const existingUserByCnpj = await UserRepository.findByCnpj(userData.cnpj);
+      if (existingUserByCnpj) {
+        throw new HttpException(409, 'Um usuário com este CNPJ já existe.');
+      }
+
+      const hashedPassword = await hash(userData.senha, 10);
+
+      const newUser = await UserRepository.create({
         ...userData,
-        password: await hash(userData.password, 6),
-      };
+        senha: hashedPassword,
+      });
 
-      const user = await UserRepository.create(userDataWithHashedPassword);
-
-      res.locals = {
-        status: 201,
-        message: 'User created',
-        data: user,
-      };
-
-      return next();
+      const { senha: _, ...userWithoutPassword } = newUser;
+      res.status(201).json(userWithoutPassword);
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 
-  async read(req: Request, res: Response, next: NextFunction) {
+
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = parseInt(req.params.userId, 10);
-      if (isNaN(userId)) return next({ status: 400, message: 'Invalid user ID' });
-
-      const user = await UserRepository.findById(userId);
-      if (!user) return next({ status: 404, message: 'User not found' });
-
-      res.locals = {
-        status: 200,
-        data: user,
-      };
-
-      return next();
+      const usuarios = await UserRepository.findAll();
+      const usersWithoutPassword = usuarios.map((usuario) => {
+        const { senha: _, ...userWithoutPass } = usuario;
+        return userWithoutPass;
+      });
+      res.status(200).json(usersWithoutPassword);
     } catch (error) {
-      return next(error);
+      next(error);
+    }
+  }
+
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const usuario = await UserRepository.findById(Number(id));
+
+      if (!usuario) {
+        throw new HttpException(404, 'Usuário não encontrado.');
+      }
+
+      const { senha: _, ...userWithoutPassword } = usuario;
+      res.status(200).json(userWithoutPassword);
+    } catch (error) {
+      next(error);
     }
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = parseInt(req.params.userId, 10);
-      if (isNaN(userId)) return next({ status: 400, message: 'Invalid user ID' });
+      const { id } = req.params;
+      const userDataToUpdate = UpdateUser.parse(req.body);
 
-      const userData = UpdateUser.parse(req.body);
-      const user = await UserRepository.update(userId, userData);
+      if (userDataToUpdate.senha) {
+        userDataToUpdate.senha = await hash(userDataToUpdate.senha, 10);
+      }
 
-      res.locals = {
-        status: 200,
-        data: user,
-        message: 'User updated',
-      };
+      if (Object.keys(userDataToUpdate).length === 0) {
+        throw new HttpException(400, 'Nenhum dado fornecido para atualização.');
+      }
 
-      return next();
+      const updatedUser = await UserRepository.update(
+        Number(id),
+        userDataToUpdate
+      );
+
+      const { senha: _, ...userWithoutPassword } = updatedUser;
+      res.status(200).json(userWithoutPassword);
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = parseInt(req.params.userId, 10);
-      if (isNaN(userId)) return next({ status: 400, message: 'Invalid user ID' });
+      const { id } = req.params;
+      const usuario = await UserRepository.findById(Number(id));
+      if (!usuario) {
+        throw new HttpException(404, 'Usuário não encontrado.');
+      }
 
-      await UserRepository.delete(userId);
-
-      res.locals = {
-        status: 200,
-        message: 'User deleted',
-      };
-
-      return next();
+      await UserRepository.delete(Number(id));
+      res.status(204).send();
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 
@@ -97,9 +111,7 @@ class UserController {
       const { id } = req.params;
       const userId = Number(id);
 
-      // ✅ Validação corrigida para usar 'next(new Error(...))'
       if (isNaN(userId)) {
-        // Criamos um erro customizado para carregar o status
         const error: any = new Error('Invalid user ID');
         error.statusCode = 400;
         return next(error);
@@ -119,7 +131,6 @@ class UserController {
 
       res.status(200).json(tierResult);
     } catch (error) {
-      // Captura qualquer outro erro e passa para o próximo middleware
       next(error);
     }
   }
