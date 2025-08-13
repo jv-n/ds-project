@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { DonationRepository } from '../repositories/donationRepository';
 import { CompanyRepository } from '../repositories/companyRepository';
 import { ActionCompanyRepository } from '../repositories/actionCompanyRepository';
+import { sendEmail } from '../services/mailService';
 import path from 'path';
 import fs from 'fs';
 
@@ -149,6 +150,7 @@ export class DonationController {
       telefoneOng: actionCompany ? actionCompany.telefoneOng : '',
     };
 
+    await sendEmail(company.usuario.email, subject, data);
   }
 
   approveDonation = async (req: Request, res: Response) => {
