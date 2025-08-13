@@ -20,4 +20,4 @@ Aceita em 20/07/2025.
 
 Por se tratar de um projeto com um único bloco, esse padrão arquitetural permite que tenhamos mais facilidade para o desenvolvimento, tendo em vista que, em questões de dificuldade, torna-se um dos modelos mais simples e rápidos no que tange à implementação, aumentando a aderência por parte do time em geral e reduzindo o tempo para conclusão, o qual se mostra potencialmente curto em comparação com outros projetos.
 
-Por outro lado, reconhecemos que, em um cenário de grande escala ou alta demanda futura, um monólito pode apresentar desafios em termos de escalabilidade granular e de adoção de múltiplas tecnologias. Contudo, para os objetivos e recursos atuais do projeto acadêmico, os benefícios de agilidade e simplicidade superam esses potenciais desafios de longo prazo.
+Por outro lado, reconhecemos que em um cenário de grande escala ou alta demanda futura, um monólito pode apresentar desafios em termos de escalabilidade granular e de adoção de múltiplas tecnologias. Contudo, para os objetivos e recursos atuais do projeto acadêmico, os benefícios de agilidade e simplicidade superam esses potenciais desafios de longo prazo.

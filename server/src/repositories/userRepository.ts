@@ -47,7 +47,7 @@ class UserRepository {
 
     const totalDonated = totalDonatedAggregation._sum.valor || 0;
 
-    const supportedNgos = await prisma.apoio.count({
+    const supportedNgos = await prisma.apoio.findMany({
       where: {
         empresa: {
           usuarioId: userId,
@@ -73,7 +73,7 @@ class UserRepository {
 
     return {
       totalDonated,
-      supportedNgos,
+      supportedNgos: supportedNgos.length,
       supportedSdgs: distinctSdgsCount,
     };
   }

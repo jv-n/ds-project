@@ -61,7 +61,6 @@ model Apoio {
   data         DateTime
   valor        Float
   tipoAjuda    String
-  pessoas      int
   documentacao String
 
   empresaId    Int

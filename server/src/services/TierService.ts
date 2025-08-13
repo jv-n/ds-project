@@ -5,7 +5,7 @@ interface IImpactData {
 }
 
 export interface ITierResult {
-  tier: 'Ouro' | 'Prata' | 'Bronze' | 'Nenhum';
+  tier: 'golden' | 'silver' | 'bronze' | 'Nenhum';
   totalScore: number;
   points: {
     sdg: number;
@@ -42,9 +42,9 @@ export class TierService {
   }
 
   private getTierFromScore(score: number): ITierResult['tier'] {
-    if (score >= 75) return 'Ouro';
-    if (score >= 46) return 'Prata';
-    if (score >= 5) return 'Bronze';
+    if (score >= 75) return 'golden';
+    if (score >= 46) return 'silver';
+    if (score >= 5) return 'bronze';
     return 'Nenhum';
   }
 
