@@ -92,25 +92,35 @@ class UserController {
 
   // ## havendo conflito essa parte a baixo entra
 
-  async getTier(req: Request, res: Response, next: NextFunction) {
+ public async getTier(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = parseInt(req.params.userId, 10);
-      if (isNaN(userId)) return next({ status: 400, message: 'Invalid user ID' });
+      const { id } = req.params;
+      const userId = Number(id);
+
+      // ✅ Validação corrigida para usar 'next(new Error(...))'
+      if (isNaN(userId)) {
+        // Criamos um erro customizado para carregar o status
+        const error: any = new Error('Invalid user ID');
+        error.statusCode = 400;
+        return next(error);
+      }
 
       const user = await UserRepository.findById(userId);
-      if (!user) return next({ status: 404, message: 'User not found' });
+      if (!user) {
+        const error: any = new Error('User not found');
+        error.statusCode = 404;
+        return next(error);
+      }
 
       const impactData = await UserRepository.getImpactData(userId);
-      const tierResult = new TierService().calculateTier(impactData);
+      
+      const tierService = new TierService();
+      const tierResult = tierService.calculateTier(impactData);
 
-      res.locals = {
-        status: 200,
-        data: tierResult,
-      };
-
-      return next();
+      res.status(200).json(tierResult);
     } catch (error) {
-      return next(error);
+      // Captura qualquer outro erro e passa para o próximo middleware
+      next(error);
     }
   }
 }

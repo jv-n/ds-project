@@ -4,3 +4,4 @@ import errorHandler from './errorHandler';
 import { requestLogger } from './logger';
 
 export { requestHandler, HttpException, errorHandler, requestLogger };
+export { default as auth } from './auth';

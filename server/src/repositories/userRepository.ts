@@ -45,16 +45,20 @@ class UserRepository {
       },
     });
 
-    const totalDonated = totalDonatedAggregation._sum.valor || 0;
-
-    const supportedNgos = await prisma.apoio.findMany({
+    // 1. Buscamos todos os registros de apoio para o usuário
+    const apoios = await prisma.apoio.findMany({
       where: {
         empresa: {
           usuarioId: userId,
         },
       },
-      distinct: ['ongId'],
+      select: {
+        ongId: true, // Selecionamos apenas o ID da ONG para otimizar
+      },
     });
+
+    // ✅ CORREÇÃO: Contamos as ONGs únicas a partir do resultado anterior
+    const supportedNgos = new Set(apoios.map(apoio => apoio.ongId)).size;
 
     const distinctSdgsCount = await prisma.oNG.count({
       where: {
@@ -72,8 +76,8 @@ class UserRepository {
     });
 
     return {
-      totalDonated,
-      supportedNgos: supportedNgos.length,
+      totalDonated: totalDonatedAggregation._sum.valor || 0,
+      supportedNgos: supportedNgos, // Usamos a contagem correta aqui
       supportedSdgs: distinctSdgsCount,
     };
   }

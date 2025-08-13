@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import  UserController  from '../controllers/UserController';
-import { requestHandler } from '../middlewares';
-import auth from '../middlewares/auth';
+import { requestHandler } from '../DTOs/middlewares';
+import auth from '../DTOs/middlewares/auth';
 
 const userRoutes = Router();
 
