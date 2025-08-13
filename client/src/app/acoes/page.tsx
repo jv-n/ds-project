@@ -1,12 +1,25 @@
 "use client";
+
+import { useState } from "react";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
 import GridAcoes from "@/components/grid-de-acoes";
-import FiltroODS from "@/components/filtros-ods";
+import SearchbarComFiltrosODS from "@/components/search-bar-com-filtrosODS";
 
-// Criando a página funcional
 export default function AcoesPage() {
-  const [searchTerm, setSearchTerm] = "";
+  const [searchText, setSearchText] = useState("");
+  const [odsFilters, setOdsFilters] = useState<string[]>([]);
+
+  const handleAddOds = (nomeODS: string) => {
+    setOdsFilters((prev) => (prev.includes(nomeODS) ? prev : [...prev, nomeODS]));
+  };
+  const handleRemoveOds = (nomeODS: string) => {
+    setOdsFilters((prev) => prev.filter((x) => x !== nomeODS));
+  };
+  const handleClearAll = () => {
+    setSearchText("");
+    setOdsFilters([]);
+  };
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col min-h-screen items-center pt-[88px]">
@@ -25,8 +38,19 @@ export default function AcoesPage() {
         </div>
       </div>
 
-      <FiltroODS />
-      <GridAcoes />
+      {/* Bloco fixo (825x111) de busca + filtros */}
+      <SearchbarComFiltrosODS
+        searchText={searchText}
+        onSearchTextChange={setSearchText}
+        activeOds={odsFilters}
+        onAddOds={handleAddOds}
+        onRemoveOds={handleRemoveOds}
+        onClearAll={handleClearAll}
+      />
+
+      {/* Grid recebe os critérios e filtra os cards */}
+      <GridAcoes searchText={searchText} odsFilters={odsFilters} />
+
       <Rodape />
     </div>
   );
