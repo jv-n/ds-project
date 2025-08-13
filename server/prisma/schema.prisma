@@ -17,7 +17,7 @@ model Usuario {
   id         Int        @id @default(autoincrement())
   cnpj       String     @unique
   email      String     @unique
-  senha      String
+  senha      String     @map("password")
   telefone   String?
 
   ong        ONG?
