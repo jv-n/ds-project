@@ -16,6 +16,9 @@ services:
       test-db:
         condition: service_started
         restart: true
+    volumes:
+      - ./:/home/node/app 
+      - /home/node/app/node_modules 
     develop:
       watch:
         - action: sync

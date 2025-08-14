@@ -1,7 +1,4 @@
 import { User, UpdateUser } from './User';
+import { Company, Company_Update } from './Company';
 
-export { User, UpdateUser };
-
-import { Donation, UpdateDonation } from './Donation';
-
-export { Donation, UpdateDonation };
+export { User, UpdateUser, Company, Company_Update };

@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Empresa {
+  id            Int     @id @default(autoincrement())
+  nome          String?
+  cnpj          String?
+  email         String?
+  senha         String?
+  colaboradores Int?
+
+  acoes  Acao[]       @relation("ApoioEmpresaAcao")
+  pontos Int?         @default(0)
+  selo   String?
+  ods    EmpresaODS[]
+}
+
+model ODS {
+  id       Int          @id @default(autoincrement())
+  titulo   String
+  empresas EmpresaODS[]
+}
+
+model EmpresaODS {
+  empresaId Int
+  odsId     Int
+
+  empresa Empresa @relation(fields: [empresaId], references: [id])
+  ods     ODS     @relation(fields: [odsId], references: [id])
+
+  @@id([empresaId, odsId])
+}
+
+model Acao {
+  id         Int       @id @default(autoincrement())
+  nome       String?
+  notaFiscal String?
+  ong        String
+  empresas   Empresa[] @relation("ApoioEmpresaAcao")
+}
