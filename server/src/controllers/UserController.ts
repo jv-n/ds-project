@@ -90,7 +90,6 @@ class UserController {
       const { userId } = req.params;
       const id = Number(userId);
       await UserRepository.delete(id);
-
       res.locals = {
         status: 200,
         message: 'User deleted',

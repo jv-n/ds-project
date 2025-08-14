@@ -18,24 +18,25 @@ class FileRepository {
             mimetype: file.mimetype,
             size: file.size,
             path: filePath,
+            status: "pendente"
           },
         });
         
         return filePath;
     }
 
-  async saveFileInfo(originalName: string, storedName: string, file: Express.Multer.File): Promise<void> {
-    const filePath = path.join(this.uploadFolder, storedName);
+  // async saveFileInfo(originalName: string, storedName: string, file: Express.Multer.File): Promise<void> {
+  //   const filePath = path.join(this.uploadFolder, storedName);
 
-    await prisma.file.create({
-      data: {
-        storedName,
-        mimetype: file.mimetype,
-        size: file.size,
-        path: filePath,
-      },
-    });
-  }
+  //   await prisma.file.create({
+  //     data: {
+  //       storedName,
+  //       mimetype: file.mimetype,
+  //       size: file.size,
+  //       path: filePath,
+  //     },
+  //   });
+  // }
 
   async deleteFile(storedName: string, id: string): Promise<void> {
     const filePath = path.join(this.uploadFolder, storedName);

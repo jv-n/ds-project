@@ -18,69 +18,77 @@ model Usuario {
   email      String      @unique
   senha      String
   telefone   String?
-  
-  empresa    Empresa?
+
   ong        ONG?
+  empresa    Empresa?
   prefeitura Prefeitura?
 }
 
 model ONG {
-  id              Int     @id @default(autoincrement())
-  ods             String?
-  userId          Int     @unique
+  id             Int       @id @default(autoincrement())
+  ods            String?
+  
+  usuarioId      Int       @unique
+  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
+
   apoiosRecebidos Apoio[]
-  user            Usuario    @relation(fields: [userId], references: [id])
 }
 
 model Empresa {
-  id            Int        @id @default(autoincrement())
-  nome          String
-  usuarioId     Int        @unique
-  pontos        Int        @default(0)
-  selo_nivel    String     @default("N/A")
+  id         Int       @id @default(autoincrement())
+  nome       String
+  
+  usuarioId  Int       @unique
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
 
-  usuario   Usuario       @relation(fields: [usuarioId], references: [id])
-  apoios    Apoio[]
-  criterios Criterio[]
+  apoios     Apoio[]
+  pontos     Int       @default(0)
+  criterios  Criterio[]
 }
 
 model Prefeitura {
-  id        Int     @id @default(autoincrement())
-  nome      String
-  usuarioId Int     @unique
-  apoios    Apoio[]
-  usuario   Usuario    @relation(fields: [usuarioId], references: [id])
+  id         Int       @id @default(autoincrement())
+  nome       String
+  usuarioId  Int       @unique
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+
+  apoios     Apoio[]
 }
 
 model Apoio {
-  id           Int         @id @default(autoincrement())
+  id           Int        @id @default(autoincrement())
   data         DateTime
   valor        Float
   tipoAjuda    String
   documentacao String
+
   empresaId    Int
   ongId        Int
   prefeituraId Int?
-  empresa      Empresa     @relation(fields: [empresaId], references: [id])
-  ong          ONG         @relation(fields: [ongId], references: [id])
+
+  empresa      Empresa    @relation(fields: [empresaId], references: [id])
+  ong          ONG        @relation(fields: [ongId], references: [id])
   prefeitura   Prefeitura? @relation(fields: [prefeituraId], references: [id])
 }
 
 model Criterio {
-  id        Int     @id @default(autoincrement())
-  tipo      String
-  pontuacao Int
-  empresaId Int
-  seloId    Int
-  empresa   Empresa @relation(fields: [empresaId], references: [id])
-  selo      Selo    @relation(fields: [seloId], references: [id])
+  id         Int      @id @default(autoincrement())
+  tipo       String
+  pontuacao  Int
+
+  empresaId  Int
+  seloId     Int
+
+  empresa    Empresa  @relation(fields: [empresaId], references: [id])
+  selo       Selo     @relation(fields: [seloId], references: [id])
 }
 
 model Selo {
-  id        Int        @id @default(autoincrement())
-  tipo      String
-  tier      String
-  criterios Criterio[]
+  id         Int        @id @default(autoincrement())
+  tipo       String
+  tier       String
+
+  criterios  Criterio[]
 }
 
 model File {
@@ -89,5 +97,6 @@ model File {
   mimetype   String
   size       Int
   path       String
+  status     String
   createdAt  DateTime @default(now())
 }

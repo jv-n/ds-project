@@ -10,6 +10,7 @@ export class CompanyController {
     try {
       const companyData = Company.parse(req.body);
       const empresa = await repository.create(companyData);
+
       res.status(201).json(empresa);
     } catch (err) {
       res.status(400).json({ error: 'Erro ao criar empresa', details: err });

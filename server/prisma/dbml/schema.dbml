@@ -8,17 +8,17 @@ Table Usuario {
   email String [unique, not null]
   senha String [not null]
   telefone String
-  empresa Empresa
   ong ONG
+  empresa Empresa
   prefeitura Prefeitura
 }
 
 Table ONG {
   id Int [pk, increment]
   ods String
-  userId Int [unique, not null]
+  usuarioId Int [unique, not null]
+  usuario Usuario [not null]
   apoiosRecebidos Apoio [not null]
-  user Usuario [not null]
 }
 
 Table Empresa {
@@ -29,6 +29,7 @@ Table Empresa {
   selo_nivel String [not null, default: 'N/A']
   usuario Usuario [not null]
   apoios Apoio [not null]
+  pontos Int [not null, default: 0]
   criterios Criterio [not null]
 }
 
@@ -36,8 +37,8 @@ Table Prefeitura {
   id Int [pk, increment]
   nome String [not null]
   usuarioId Int [unique, not null]
-  apoios Apoio [not null]
   usuario Usuario [not null]
+  apoios Apoio [not null]
 }
 
 Table Apoio {
@@ -80,7 +81,7 @@ Table File {
   createdAt DateTime [default: `now()`, not null]
 }
 
-Ref: ONG.userId - Usuario.id
+Ref: ONG.usuarioId - Usuario.id
 
 Ref: Empresa.usuarioId - Usuario.id
 

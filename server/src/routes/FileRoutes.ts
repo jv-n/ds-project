@@ -25,7 +25,7 @@ const upload = multer({ storage });
 
 const FileRouter = Router();
 
-FileRouter.route('/upload').post(upload.single('file'), (req, res, next) => FileController.upload(req, res, next));
+FileRouter.route('/upload').post(upload.array('file', 5), (req, res, next) => FileController.upload(req, res, next));
 
 FileRouter.route('/debug').post(upload.any(), (req, res, next) => FileController.debug(req, res, next));
 

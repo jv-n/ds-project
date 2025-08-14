@@ -34,6 +34,7 @@ export class CompanyRepository {
     });
   }
 
+
   async update(id: number, data: Prisma.EmpresaUpdateInput) {
 
    const company = await prisma.empresa.update({
@@ -45,6 +46,7 @@ export class CompanyRepository {
         apoios: true,
       },
     });
+
     if (!company) {
       throw new Error('Company not found');
     }
