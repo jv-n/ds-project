@@ -1,5 +1,5 @@
+// src/routes/router.ts
 import { Router } from 'express';
-
 import UserRouter from './userRoutes';
 import AuthRouter from './authRoutes';
 import FileRouter from './documentRoutes';

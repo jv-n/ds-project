@@ -91,3 +91,5 @@ export class DonationRepository {
     });
   }
 }
+
+export default new DonationRepository();

@@ -1,16 +1,14 @@
 "use client";
-import Image from "next/image";
-import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
 import { useState } from "react";
 import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
-import { goldenmedal } from "@/assets";
 import Cardpontos from "@/components/pontos-esmpresa";
+import Navbar from "@/components/navbar";
 
-export default function Home() {
+export default function SelosPage() {
   const [ativo, setAtivo] = useState("acoes");
   const [ativocontato, setAtivoContato] = useState("acoes");
   const [mostrarModal, setMostrarModal] = useState(false);
