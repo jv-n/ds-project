@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { SealRepository } from '../repositories/sealRepository';
 import { SealService } from '../services/sealService';
 
@@ -6,13 +6,13 @@ const sealRepository = new SealRepository();
 const sealService = new SealService();
 
 export class SealController {
-  async getCompanySeal(req: Request, res: Response) {
+  async getCompanySeal(req: Request, res: Response, next: NextFunction) {
     try {
       const companyId = Number(req.params.id);
       const company = await sealRepository.getEmpresaComAcoesEDoacoes(companyId);
 
       if (!company) {
-        return res.status(404).json({ error: 'Empresa não encontrada' });
+        return res.status(400).json({ error: 'Empresa não encontrada' });
       }
 
       const resultado = sealService.calcularPontuacao(company);
@@ -51,9 +51,11 @@ if (existente) {
       };
 
       res.json(response);
+      return response;
     } catch (error) {
       console.error('Erro ao calcular selo:', error);
       res.status(500).json({ error: 'Erro interno ao calcular selo' });
+      return next(error);
     }
   }
 }

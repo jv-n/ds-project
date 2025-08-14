@@ -1,5 +1,5 @@
-import prisma from '../database';
 import { Empresa, AcaoEmpresa, Doacao } from '@prisma/client';
+import prisma from '../database';
 
 export type EmpresaComAcoesEDoacoes = Empresa & {
   acoes: (AcaoEmpresa & { doacoes: Doacao[] })[];

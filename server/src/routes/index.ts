@@ -20,7 +20,7 @@ router.use('/actions', ActionCompanyRouter);
 router.use('/company', CompanyRouter);
 
 router.route('/').get((_, res) => {
-  res.status(200).send('Made with 💚 and &lt; &#x0002F; &gt; by CITi');
+  res.status(200).send('Running...');
 });
 
 export default router;

@@ -1,10 +1,11 @@
-// src/server.ts - AJUSTE NECESSÁRIO
+import 'dotenv/config';
+import '@database';
+import './env';
+import app from './app';
 
-import { createApp } from './app'; // Importa a função em vez da instância
+const url = process.env.DATABASE_URL || 'N/A';
+console.log('DATABASE_URL at runtime:', url.replace(/:(\/\/[^:]+:)[^@]+@/, '://***:***@'));
 
-const app = createApp(); // Chama a função para criar o app
-const PORT = process.env.PORT || 3333;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+app.listen(process.env.SERVER_PORT || 3001, () => {
+  console.log(`🚀 Servidor pronto em http://localhost:${process.env.SERVER_PORT || 3001}`);
 });

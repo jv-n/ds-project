@@ -61,7 +61,7 @@ export function generateDonationEmailTemplate(data: DonationEmailData): string {
   `;
 }
 
-
+/*
 export const transporter = nodemailer.createTransport({
   service: env("EMAIL_SERVICE"), // Gmail, Outlook, etc.
   auth: {
@@ -93,3 +93,4 @@ function env(key: string): string {
   }
   return value;
 }
+*/

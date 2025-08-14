@@ -1,5 +1,5 @@
 import { Prisma, Usuario } from '@prisma/client';
-import prisma from '@database';
+import prisma from '../database';
 
 interface CreateUserDTO {
   cnpj: string;           
