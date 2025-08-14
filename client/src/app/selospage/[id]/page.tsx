@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { logoamassada } from "@/assets"; 
 import DetalhesPontuacao from "@/components/accordion-detalhes-pontuacao";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
@@ -10,8 +10,21 @@ import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import { Bronze, Prata, Ouro } from "@/assets"; 
 import ModalCertificado from "@/components/modal-certificado";
 import { CertificateProps } from "@/components/certificate";
+import { useParams } from "next/navigation";
+import api from "@/services/api";
 
 export default function SelosPage() {
+
+  interface companyProps {
+    nome: string;
+    pontos: number;
+    selo_nivel: string;
+    usuario: {
+        id: string;
+        nome: string;
+        cnpj: string;
+    }
+  }
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -22,18 +35,37 @@ export default function SelosPage() {
     setIsModalOpen(false);
   }
 
-  useEffect(() => {
+  const { id } = useParams();
 
-    
-  }, []);
+  const [company, setCompany] = useState({} as companyProps);
+
+  const fetchCompany = useCallback(async () => {
+    const response = await api.get<companyProps>(`/company/${id}`);
+    setCompany(response.data);
+  }, [id]);
+
+  useEffect(() => {
+    fetchCompany();
+  }, [fetchCompany]);
 
   const certificado: CertificateProps = {
-    id: "certificado-123",
-    level: "Prata",
-    data_emissao: "10/06/2025",
-    empresa: "Construções Recife",
+    id: id as string,
+    level: company.selo_nivel,
+    data_emissao: new Date().toISOString(),
+    empresa: company.nome,
   };
 
+  const seloIcon = () => {
+    if(company.selo_nivel === "Bronze") {
+      return Bronze
+    }
+    if(company.selo_nivel === "Prata") {
+      return Prata
+    }
+    if(company.selo_nivel === "Ouro") {
+      return Ouro
+    } else return Bronze
+  }
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-8">
       {/* Cabeçalho do Selo */}
@@ -47,9 +79,9 @@ export default function SelosPage() {
         <div className="flex flex-col md:flex-row items-center justify-between mt-8">
           <div className="flex flex-col items-center md:items-start">
             {/* Ícone do Selo Prata*/}
-            <Image src={Prata} alt="Ícone Nível Prata" width={50} height={50} className="mb-2" />
-            <h2 className="text-2xl font-bold text-[#1B2029]">Nível Prata</h2>
-            <p className="text-gray-600">Pontuação Atual: 68 pontos</p>
+            <Image src={seloIcon()} alt="Ícone de Selo" width={50} height={50} className="mb-2" />
+            <h2 className="text-2xl font-bold text-[#1B2029]">Nível {company.selo_nivel}</h2>
+            <p className="text-gray-600">Pontuação Atual: {company.pontos} pontos</p>
             <p className="text-gray-600 text-sm mt-1">
               Empresas com bom nível de engajamento e programas sociais consistentes.
             </p>

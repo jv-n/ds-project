@@ -33,13 +33,15 @@ model ONG {
 }
 
 model Empresa {
-  id        Int        @id @default(autoincrement())
-  nome      String
-  usuarioId Int        @unique
-  pontos    Int        @default(0)
+  id            Int        @id @default(autoincrement())
+  nome          String
+  usuarioId     Int        @unique
+  pontos        Int        @default(0)
+  selo_nivel    String     @default("N/A")
+
+  usuario   User       @relation(fields: [usuarioId], references: [id])
   apoios    Apoio[]
   criterios Criterio[]
-  usuario   User       @relation(fields: [usuarioId], references: [id])
 }
 
 model Prefeitura {

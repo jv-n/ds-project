@@ -26,9 +26,10 @@ Table Empresa {
   nome String [not null]
   usuarioId Int [unique, not null]
   pontos Int [not null, default: 0]
+  selo_nivel String [not null, default: 'N/A']
+  usuario User [not null]
   apoios Apoio [not null]
   criterios Criterio [not null]
-  usuario User [not null]
 }
 
 Table Prefeitura {
