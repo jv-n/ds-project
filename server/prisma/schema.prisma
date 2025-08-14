@@ -12,7 +12,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Usuario {
   id         Int         @id @default(autoincrement())
   cnpj       String      @unique
   email      String      @unique
@@ -29,7 +29,7 @@ model ONG {
   ods             String?
   userId          Int     @unique
   apoiosRecebidos Apoio[]
-  user            User    @relation(fields: [userId], references: [id])
+  user            Usuario    @relation(fields: [userId], references: [id])
 }
 
 model Empresa {
@@ -39,7 +39,7 @@ model Empresa {
   pontos        Int        @default(0)
   selo_nivel    String     @default("N/A")
 
-  usuario   User       @relation(fields: [usuarioId], references: [id])
+  usuario   Usuario       @relation(fields: [usuarioId], references: [id])
   apoios    Apoio[]
   criterios Criterio[]
 }
@@ -49,7 +49,7 @@ model Prefeitura {
   nome      String
   usuarioId Int     @unique
   apoios    Apoio[]
-  usuario   User    @relation(fields: [usuarioId], references: [id])
+  usuario   Usuario    @relation(fields: [usuarioId], references: [id])
 }
 
 model Apoio {

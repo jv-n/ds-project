@@ -2,7 +2,7 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table User {
+Table Usuario {
   id Int [pk, increment]
   cnpj String [unique, not null]
   email String [unique, not null]
@@ -18,7 +18,7 @@ Table ONG {
   ods String
   userId Int [unique, not null]
   apoiosRecebidos Apoio [not null]
-  user User [not null]
+  user Usuario [not null]
 }
 
 Table Empresa {
@@ -27,7 +27,7 @@ Table Empresa {
   usuarioId Int [unique, not null]
   pontos Int [not null, default: 0]
   selo_nivel String [not null, default: 'N/A']
-  usuario User [not null]
+  usuario Usuario [not null]
   apoios Apoio [not null]
   criterios Criterio [not null]
 }
@@ -37,7 +37,7 @@ Table Prefeitura {
   nome String [not null]
   usuarioId Int [unique, not null]
   apoios Apoio [not null]
-  usuario User [not null]
+  usuario Usuario [not null]
 }
 
 Table Apoio {
@@ -80,11 +80,11 @@ Table File {
   createdAt DateTime [default: `now()`, not null]
 }
 
-Ref: ONG.userId - User.id
+Ref: ONG.userId - Usuario.id
 
-Ref: Empresa.usuarioId - User.id
+Ref: Empresa.usuarioId - Usuario.id
 
-Ref: Prefeitura.usuarioId - User.id
+Ref: Prefeitura.usuarioId - Usuario.id
 
 Ref: Apoio.empresaId > Empresa.id
 

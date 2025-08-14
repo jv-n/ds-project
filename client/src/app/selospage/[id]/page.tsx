@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { logoamassada } from "@/assets"; 
 import DetalhesPontuacao from "@/components/accordion-detalhes-pontuacao";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
