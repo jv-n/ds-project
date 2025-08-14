@@ -81,3 +81,6 @@ export { lupa };
 
 import portasair from "./portasair.svg";
 export { portasair };
+
+import maozona from "./maozona.svg";
+export { maozona };

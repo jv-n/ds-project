@@ -8,7 +8,6 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-
 generator dbml {
   provider = "prisma-dbml-generator"
 }
@@ -50,7 +49,7 @@ model AcaoEmpresa {
   emailOng        String
   telefoneOng     String
   doacoes         Doacao[]
-  odsAcao       Int[]
+  odsAcao         Int[]
 
   empresa         Empresa    @relation(fields: [empresaId], references: [id])
 }
