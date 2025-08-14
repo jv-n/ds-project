@@ -23,18 +23,28 @@ export default function Cardacao(props: Cardacaoprops) {
       <div className="text-[12px] mt-[7px]">{props.descricao}</div>
 
       <div className="flex flex-wrap gap-[5px] mt-[10px]">
-        <div className="bg-[#C6CAFF] rounded-full px-[10px] py-[2px] text-[12px]">
-          {props.ods1}
-        </div>
-        <div className="bg-[#A5FFAA] rounded-full px-[10px] py-[2px] text-[12px]">
-          {props.ods2}
-        </div>
-        <div className="bg-[#FFD8AE] rounded-full px-[10px] py-[2px] text-[12px]">
-          {props.ods3}
-        </div>
-        <div className="bg-[#FFAED5] rounded-full px-[10px] py-[2px] text-[12px]">
-          {props.ods4}
-        </div>
+        {(
+          [props.ods1, props.ods2, props.ods3, props.ods4].filter(
+            (v) => !!v && String(v).trim().length > 0
+          ) as string[]
+        ).map((ods, idx) => {
+          const colors = [
+            "bg-[#C6CAFF]",
+            "bg-[#A5FFAA]",
+            "bg-[#FFD8AE]",
+            "bg-[#FFAED5]",
+          ];
+          return (
+            <div
+              key={`${ods}-${idx}`}
+              className={`${
+                colors[idx % colors.length]
+              } rounded-full px-[10px] py-[2px] text-[12px]`}
+            >
+              {ods}
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex items-center mt-[16px]">
@@ -48,9 +58,6 @@ export default function Cardacao(props: Cardacaoprops) {
           onClick={props.onEntrarContato}
         >
           Entrar em contato
-        </div>
-        <div className="text-[12px] text-[#0B236D] ml-auto mr-[12px] cursor-pointer">
-          Sobre a ONG
         </div>
       </div>
     </div>

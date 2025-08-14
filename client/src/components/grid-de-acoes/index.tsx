@@ -24,10 +24,10 @@ type ActionApi = {
 
 type Props = {
   searchText: string;
-  odsFilters: string[];
+  odsFilters: string[]; // nomes (ex.: "Educação de Qualidade")
 };
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
 
 /** Utils */
 const safeLower = (s?: string) =>
@@ -37,7 +37,7 @@ const safeLower = (s?: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
-const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
+export default function GridAcoes({ searchText, odsFilters }: Props) {
   const [modalAberto, setModalAberto] = useState(false);
   const [acaoSelecionada, setAcaoSelecionada] = useState<Omit<
     Cardacaoprops,
@@ -48,7 +48,7 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  // converte nomes de ODS para IDs numéricos (ex.: "Educação de qualidade" -> 4)
+  // Converte nomes de ODS em IDs (se o backend aceitar por query)
   const odsIds = useMemo(
     () =>
       odsFilters
@@ -57,32 +57,32 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
     [odsFilters]
   );
 
-  // debounce no texto
+  // Debounce no texto
   const [debouncedText, setDebouncedText] = useState(searchText);
   useEffect(() => {
     const t = setTimeout(() => setDebouncedText(searchText), 250);
     return () => clearTimeout(t);
   }, [searchText]);
 
-  // busca remota na API (desembrulhando { actions, pagination } -> actions[])
+  // Busca remota e desembrulha { actions, pagination } -> actions[]
   useEffect(() => {
     let cancelado = false;
 
-    const fetchAcoes = async () => {
+    (async () => {
       try {
         setLoading(true);
         setErro(null);
 
-        const base = API ?? "http://localhost:3001";
         const qs = new URLSearchParams();
         if (debouncedText.trim()) qs.set("search", debouncedText.trim());
-        if (odsIds.length) qs.set("ods", odsIds.join(","));
+        if (odsIds.length) qs.set("ods", odsIds.join(",")); // se a API ignorar, filtramos no front
 
-        const endpoint = `${base}/actions${
-          qs.toString() ? "?" + qs.toString() : ""
+        const url = `${BASE || "http://localhost:3001"}/actions${
+          qs.toString() ? `?${qs.toString()}` : ""
         }`;
 
-        const resp = await fetch(endpoint, {
+        const resp = await fetch(url, {
+          method: "GET",
           headers: { "Content-Type": "application/json" },
         });
 
@@ -92,34 +92,70 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
           );
         }
 
-        const payload = await resp.json();
-        // O backend retorna: [ { actions: [...], pagination: {...} } ]
-        const actions: ActionApi[] = Array.isArray(payload)
-          ? payload[0]?.actions ?? []
-          : payload?.actions ?? [];
+        const raw = await resp.json();
 
-        if (!cancelado) setAcoes(Array.isArray(actions) ? actions : []);
+        let list: ActionApi[] = [];
+        if (Array.isArray(raw)) {
+          const first = raw[0];
+          list = Array.isArray(first?.actions)
+            ? first.actions
+            : (raw as ActionApi[]);
+        } else if (raw && typeof raw === "object") {
+          list = Array.isArray(raw.actions) ? raw.actions : [];
+        }
+
+        if (!cancelado) setAcoes(Array.isArray(list) ? list : []);
       } catch (e: any) {
         if (!cancelado) setErro(e?.message ?? "Falha ao carregar ações.");
       } finally {
         if (!cancelado) setLoading(false);
       }
-    };
+    })();
 
-    fetchAcoes();
     return () => {
       cancelado = true;
     };
   }, [debouncedText, odsIds.join(",")]);
 
-  // mapeia retorno da API para o formato do Card
+  // ===== Filtro LOCAL (funciona mesmo se o backend não filtrar) =====
+  const filtered = useMemo(() => {
+    const q = safeLower(debouncedText);
+    const odsWanted = odsFilters.map(safeLower);
+
+    return acoes.filter((a) => {
+      const title = safeLower(a.title);
+      const shortDesc = safeLower(a.short_description);
+      const longDesc = safeLower(a.description);
+      const ongName = safeLower(a.ong?.name);
+
+      // busca: casa em título / descrição curta / descrição / ong / nomes das ODS
+      const odsNames = (a.sustainable_development_goals ?? [])
+        .map((g) => safeLower(g.name))
+        .filter(Boolean);
+
+      const searchMatch =
+        !q ||
+        title.includes(q) ||
+        shortDesc.includes(q) ||
+        longDesc.includes(q) ||
+        ongName.includes(q) ||
+        odsNames.some((n) => n.includes(q));
+
+      // ODS: OR (selecionei 3 ODS, basta ter pelo menos 1)
+      const odsMatch =
+        odsWanted.length === 0 || odsWanted.some((n) => odsNames.includes(n));
+
+      return searchMatch && odsMatch;
+    });
+  }, [acoes, debouncedText, odsFilters]);
+
+  // mapeia para o Card
   const cards: Omit<Cardacaoprops, "onEntrarContato">[] = useMemo(() => {
-    return (acoes ?? [])
+    return filtered
       .map((a) => {
         const nomeacao = (a.title ?? "").trim();
-        const descricao = (a.short_description || a.description || "").trim();
+        const descricao = (a.short_description || a.description || "").trim(); // ✅ texto do card
 
-        // pega até 4 ODS pelo nome
         const odsNomes =
           a.sustainable_development_goals
             ?.map((o) => o?.name)
@@ -130,7 +166,6 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
         const emailong = a.ong?.contact_email ?? "";
         const numeroong = a.whatsapp_contact || a.ong?.contact_phone || "";
 
-        // evita renderizar card vazio
         if (!nomeacao && !descricao && !nomedaong) return null;
 
         return {
@@ -146,7 +181,7 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
         };
       })
       .filter(Boolean) as Omit<Cardacaoprops, "onEntrarContato">[];
-  }, [acoes]);
+  }, [filtered]);
 
   const handleAbrirModal = (acao: Omit<Cardacaoprops, "onEntrarContato">) => {
     setAcaoSelecionada(acao);
@@ -156,8 +191,6 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
     setModalAberto(false);
     setAcaoSelecionada(null);
   };
-
-  const resultados = cards;
 
   return (
     <section className="w-[825px] max-w-6xl mx-auto px-1 py-8">
@@ -169,11 +202,11 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
       {!loading && !erro && (
         <>
           <div className="text-sm text-gray-500 mb-3">
-            {resultados.length} resultado{resultados.length !== 1 ? "s" : ""}
+            {cards.length} resultado{cards.length !== 1 ? "s" : ""}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {resultados.map((acao, index) => (
+            {cards.map((acao, index) => (
               <Cardacao
                 key={index}
                 {...acao}
@@ -195,6 +228,4 @@ const GridAcoes: React.FC<Props> = ({ searchText, odsFilters }) => {
       )}
     </section>
   );
-};
-
-export default GridAcoes;
+}
