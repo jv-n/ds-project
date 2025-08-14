@@ -11,7 +11,9 @@ export default function AcoesPage() {
   const [odsFilters, setOdsFilters] = useState<string[]>([]);
 
   const handleAddOds = (nomeODS: string) => {
-    setOdsFilters((prev) => (prev.includes(nomeODS) ? prev : [...prev, nomeODS]));
+    setOdsFilters((prev) =>
+      prev.includes(nomeODS) ? prev : [...prev, nomeODS]
+    );
   };
   const handleRemoveOds = (nomeODS: string) => {
     setOdsFilters((prev) => prev.filter((x) => x !== nomeODS));
