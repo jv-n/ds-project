@@ -4,7 +4,7 @@ import { useState } from "react";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
 import GridAcoes from "@/components/grid-de-acoes";
-import SearchbarComFiltrosODS from "@/components/searchbar-com-filtros-ods";
+import SearchbarComFiltrosODS from "@/components/search-bar-com-filtrosODS";
 
 export default function AcoesPage() {
   const [searchText, setSearchText] = useState("");
