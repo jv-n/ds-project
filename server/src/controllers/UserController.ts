@@ -97,30 +97,29 @@ class UserController {
     }
   }
 
-public async getTier(req: Request, res: Response, next: NextFunction): Promise<void> {
-  try {
-    const { id } = req.params;
-    const userId = Number(id);
+  public async getTier(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const userId = Number(id);
 
-    if (isNaN(userId)) {
-      return next(new HttpException(400, 'Invalid user ID'));
+      if (isNaN(userId)) {
+        return next(new HttpException(400, 'Invalid user ID'));
+      }
+
+      const user = await UserRepository.findById(userId);
+      if (!user) {
+        return next(new HttpException(404, 'User not found'));
+      }
+
+      const impactData = await UserRepository.getImpactData(userId);
+      const tierResult = new TierService().calculateTier(impactData);
+
+      res.status(200).json(tierResult);
+    } catch (error) {
+      next(error);
     }
-
-    const user = await UserRepository.findById(userId);
-    if (!user) {
-      return next(new HttpException(404, 'User not found'));
-    }
-
-    const impactData = await UserRepository.getImpactData(userId);
-    const tierResult = new TierService().calculateTier(impactData);
-
-    res.status(200).json(tierResult);
-  } catch (error) {
-    next(error);
   }
-}
 
-  // 🚀 Novo endpoint: GET /user/:id/impact
   public async getImpact(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;

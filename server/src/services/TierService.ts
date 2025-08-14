@@ -43,7 +43,7 @@ export class TierService {
     return 0;
   }
 
-  private calculateVolunterrPoints (amount: number): number {
+  private calculateServicePoints (amount: number): number {
     if(amount >= 13) return 17;
     if(amount >= 10) return 11;
     if(amount >= 7) return 7;
@@ -69,7 +69,7 @@ export class TierService {
     const sdgPoints = this.calculateSdgPoints(data.supportedSdgs);
     const ngoPoints = this.calculateNgoPoints(data.supportedNgos);
     const budgetPoints = this.calculateBudgetPoints(data.totalDonated);
-    const servicePoints = this.calculateVolunterrPoints(data.totalService);
+    const servicePoints = this.calculateServicePoints(data.totalService);
 
     const totalScore = sdgPoints + ngoPoints + budgetPoints + servicePoints;
     const tier = this.getTierFromScore(totalScore);
