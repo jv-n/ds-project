@@ -1,9 +1,10 @@
-import 'dotenv/config';
+// src/server.ts - AJUSTE NECESSÁRIO
 
-import './env';
-import app from './app';
-import './database';
+import { createApp } from './app'; // Importa a função em vez da instância
 
-app.listen(process.env.SERVER_PORT || 3001, () => {
-  console.log(`🚀 Server ready at http://localhost:${process.env.SERVER_PORT || 3001}`);
+const app = createApp(); // Chama a função para criar o app
+const PORT = process.env.PORT || 3333;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });

@@ -34,7 +34,7 @@ model Empresa {
 
   odsId        Int[]
   acoes        AcaoEmpresa[]
-  selos        Selo[]
+  selos        Selo?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
@@ -76,7 +76,7 @@ model Selo {
   descricao     String
   pontuacaoMin  Int
   createdAt     DateTime   @default(now())
-  empresaId     Int
+  empresaId     Int     @unique
 
   empresa    Empresa    @relation(fields: [empresaId], references: [id])
 }
