@@ -59,7 +59,6 @@ export default function AuditoriaPage() {
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
- 
   const handleFilterClick = (filterName: Exclude<FilterKey, 'todos'>) => {
     setActiveFilter((prev) => (prev === filterName ? 'todos' : filterName));
   };
@@ -68,7 +67,6 @@ export default function AuditoriaPage() {
     setSelectedAuditoria(auditoria);
     setIsModalOpen(true);
   }
-
   function closeModal() {
     setIsModalOpen(false);
   }
@@ -86,24 +84,17 @@ export default function AuditoriaPage() {
         abortRef.current = controller;
 
         const statusApi = mapStatusToApi(activeFilter);
-        const path =
-          statusApi
-            ? `/donations/audit/status/${encodeURIComponent(statusApi)}/`
-            : `/donations/audit/`;
+        const path = statusApi
+          ? `/donations/audit/status/${encodeURIComponent(statusApi)}/`
+          : `/donations/audit/`;
 
         const url = `${BASE_URL}${path}`;
-        const res = await fetch(url, {
-          method: 'GET',
-          credentials: 'include',
-          signal: controller.signal,
-          headers: { 'Content-Type': 'application/json' },
-        });
+        // ⬇️ sem credentials e sem headers para evitar preflight
+        const res = await fetch(url, { method: 'GET', signal: controller.signal });
 
         if (!res.ok) {
           let body: any = null;
-          try {
-            body = await res.json();
-          } catch {}
+          try { body = await res.json(); } catch {}
           throw new Error(body?.message || body?.error || `HTTP ${res.status} ${res.statusText}`);
         }
 
@@ -134,7 +125,6 @@ export default function AuditoriaPage() {
     });
   }, [auditorias, activeFilter, debouncedSearch]);
 
-  
   function handleUpdated(updated: RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null }) {
     setAuditorias((current) =>
       current.map((a) => (a.id === updated.id ? { ...a, ...updated } : a))
@@ -143,18 +133,12 @@ export default function AuditoriaPage() {
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col min-h-screen">
-      
       <Navbar ativo="sair" />
-
       <main className="px-[52px] py-8 flex-grow gap-9">
         <div className="max-w-7xl py-8 flex flex-col gap-9">
           <div>
-            <h1 className="text-black font-sans text-[32px] font-bold ">
-              Auditoria de doações
-            </h1>
-            <p className="text-[#1F1F1F] font-sans text-[16px] font-normal">
-              Aprove ou reprove as documentações submetidas pelas empresas
-            </p>
+            <h1 className="text-black font-sans text-[32px] font-bold ">Auditoria de doações</h1>
+            <p className="text-[#1F1F1F] font-sans text-[16px] font-normal">Aprove ou reprove as documentações submetidas pelas empresas</p>
           </div>
 
           <div className="flex flex-col gap-[16px]">
@@ -172,36 +156,19 @@ export default function AuditoriaPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => handleFilterClick('aguardando')}
-                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${
-                  activeFilter === 'aguardando'
-                    ? 'bg-[#1D71B8] text-white border-[#1D71B8]'
-                    : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'
-                }`}
-              >
+              <button onClick={() => handleFilterClick('aguardando')}
+                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === 'aguardando'
+                  ? 'bg-[#1D71B8] text-white border-[#1D71B8]' : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'}`}>
                 Aguardando Revisão
               </button>
-
-              <button
-                onClick={() => handleFilterClick('aprovada')}
-                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${
-                  activeFilter === 'aprovada'
-                    ? 'bg-[#1D71B8] text-white border-[#1D71B8]'
-                    : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'
-                }`}
-              >
+              <button onClick={() => handleFilterClick('aprovada')}
+                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === 'aprovada'
+                  ? 'bg-[#1D71B8] text-white border-[#1D71B8]' : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'}`}>
                 Aprovados
               </button>
-
-              <button
-                onClick={() => handleFilterClick('reprovada')}
-                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${
-                  activeFilter === 'reprovada'
-                    ? 'bg-[#1D71B8] text-white border-[#1D71B8]'
-                    : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'
-                }`}
-              >
+              <button onClick={() => handleFilterClick('reprovada')}
+                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === 'reprovada'
+                  ? 'bg-[#1D71B8] text-white border-[#1D71B8]' : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'}`}>
                 Reprovados
               </button>
             </div>
@@ -211,46 +178,21 @@ export default function AuditoriaPage() {
 
           <div className="bg-white flex flex-col border border-[#E5E7EB] rounded-[6px] overflow-hidden shadow">
             <div className="flex items-center h-[36px] px-[21px] py-[11px] gap-6 self-stretch bg-[#F9FAFB]">
-              <div className="w-[260px]">
-                <span className="font-sans text-[12px] font-semibold text-[#6A7282] ">EMPRESA</span>
-              </div>
-
-              <div className="flex-1">
-                <span className="font-sans text-[12px] font-semibold text-[#6A7282]">ONG</span>
-              </div>
-
-              <div className="w-[160px]">
-                <span className="font-sans text-[12px] font-semibold text-[#6A7282]">DOAÇÃO</span>
-              </div>
-
-              <div className="w-[80px]">
-                <span className="font-sans text-[12px] font-semibold text-[#6A7282]">DATA</span>
-              </div>
-
-              <div className="w-[146px]">
-                <span className="font-sans text-[12px] font-semibold text-[#6A7282]">STATUS</span>
-              </div>
-
-              <div className="w-[125px]">
-                <span className="font-sans text-[12px] font-semibold text-[#6A7282]">AÇÃO</span>
-              </div>
+              <div className="w-[260px]"><span className="font-sans text-[12px] font-semibold text-[#6A7282] ">EMPRESA</span></div>
+              <div className="flex-1"><span className="font-sans text-[12px] font-semibold text-[#6A7282]">ONG</span></div>
+              <div className="w-[160px]"><span className="font-sans text-[12px] font-semibold text-[#6A7282]">DOAÇÃO</span></div>
+              <div className="w-[80px]"><span className="font-sans text-[12px] font-semibold text-[#6A7282]">DATA</span></div>
+              <div className="w-[146px]"><span className="font-sans text-[12px] font-semibold text-[#6A7282]">STATUS</span></div>
+              <div className="w-[125px]"><span className="font-sans text-[12px] font-semibold text-[#6A7282]">AÇÃO</span></div>
             </div>
 
-            {loading && (
-              <div className="p-6 text-sm text-[#6A7282]">Carregando auditorias...</div>
-            )}
-            {error && (
-              <div className="p-6 text-sm text-red-600">Erro: {error}</div>
-            )}
+            {loading && <div className="p-6 text-sm text-[#6A7282]">Carregando auditorias...</div>}
+            {error && <div className="p-6 text-sm text-red-600">Erro: {error}</div>}
 
             {!loading && !error && (
               <div className="flex flex-col rounded-b-lg shadow">
                 {filteredAuditorias.map((auditoria) => (
-                  <RowAuditoria
-                    key={auditoria.id}
-                    {...auditoria}
-                    onClick={() => openModal(auditoria)}
-                  />
+                  <RowAuditoria key={auditoria.id} {...auditoria} onClick={() => openModal(auditoria)} />
                 ))}
                 {filteredAuditorias.length === 0 && (
                   <div className="p-6 text-sm text-[#6A7282]">Nenhum resultado.</div>
@@ -264,7 +206,6 @@ export default function AuditoriaPage() {
           isOpen={isModalOpen}
           onClose={closeModal}
           auditoria={selectedAuditoria}
-          // Callback para refletir a aprovação/reprovação na lista
           onUpdated={handleUpdated}
         />
       </main>
@@ -273,7 +214,6 @@ export default function AuditoriaPage() {
     </div>
   );
 }
-
 
 function useDebouncedValue<T>(value: T, delay = 300) {
   const [debounced, setDebounced] = useState(value);
