@@ -15,6 +15,7 @@ interface ITierData {
     sdg: number;
     ngo: number;
     budget: number;
+    service: number;
   };
 }
 
@@ -77,6 +78,7 @@ export default function Home() {
           ptsodsscomatuacao={tierData.points.sdg.toString()}
           ptsongsatingidas={tierData.points.ngo.toString()}
           ptsorcamentodestinado={tierData.points.budget.toString()}
+          ptsvoluntarios={tierData.points.service.toString()}
           ptsacoesdeconscientizacao="0"
           ptscolaboradoresengajados="0"
         />

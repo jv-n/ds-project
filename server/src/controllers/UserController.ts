@@ -34,14 +34,10 @@ class UserController {
     }
   }
 
-
   async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const usuarios = await UserRepository.findAll();
-      const usersWithoutPassword = usuarios.map((usuario) => {
-        const { senha: _, ...userWithoutPass } = usuario;
-        return userWithoutPass;
-      });
+      const usersWithoutPassword = usuarios.map(({ senha, ...rest }) => rest);
       res.status(200).json(usersWithoutPassword);
     } catch (error) {
       next(error);
@@ -57,7 +53,7 @@ class UserController {
         throw new HttpException(404, 'Usuário não encontrado.');
       }
 
-      const { senha: _, ...userWithoutPassword } = usuario;
+      const { senha, ...userWithoutPassword } = usuario;
       res.status(200).json(userWithoutPassword);
     } catch (error) {
       next(error);
@@ -77,12 +73,9 @@ class UserController {
         throw new HttpException(400, 'Nenhum dado fornecido para atualização.');
       }
 
-      const updatedUser = await UserRepository.update(
-        Number(id),
-        userDataToUpdate
-      );
+      const updatedUser = await UserRepository.update(Number(id), userDataToUpdate);
 
-      const { senha: _, ...userWithoutPassword } = updatedUser;
+      const { senha, ...userWithoutPassword } = updatedUser;
       res.status(200).json(userWithoutPassword);
     } catch (error) {
       next(error);
@@ -104,32 +97,46 @@ class UserController {
     }
   }
 
-  // ## havendo conflito essa parte a baixo entra
+public async getTier(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { id } = req.params;
+    const userId = Number(id);
 
- public async getTier(req: Request, res: Response, next: NextFunction): Promise<void> {
+    if (isNaN(userId)) {
+      return next(new HttpException(400, 'Invalid user ID'));
+    }
+
+    const user = await UserRepository.findById(userId);
+    if (!user) {
+      return next(new HttpException(404, 'User not found'));
+    }
+
+    const impactData = await UserRepository.getImpactData(userId);
+    const tierResult = new TierService().calculateTier(impactData);
+
+    res.status(200).json(tierResult);
+  } catch (error) {
+    next(error);
+  }
+}
+
+  // 🚀 Novo endpoint: GET /user/:id/impact
+  public async getImpact(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const userId = Number(id);
 
       if (isNaN(userId)) {
-        const error: any = new Error('Invalid user ID');
-        error.statusCode = 400;
-        return next(error);
+        return next(new HttpException(400, 'ID de usuário inválido.'));
       }
 
       const user = await UserRepository.findById(userId);
       if (!user) {
-        const error: any = new Error('User not found');
-        error.statusCode = 404;
-        return next(error);
+        return next(new HttpException(404, 'Usuário não encontrado.'));
       }
 
       const impactData = await UserRepository.getImpactData(userId);
-      
-      const tierService = new TierService();
-      const tierResult = tierService.calculateTier(impactData);
-
-      res.status(200).json(tierResult);
+      res.status(200).json(impactData);
     } catch (error) {
       next(error);
     }

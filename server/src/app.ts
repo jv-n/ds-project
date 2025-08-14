@@ -6,7 +6,7 @@ import expressWinston from 'express-winston';
 import helmet from 'helmet';
 import routes from './routes';
 import swaggerDocument from './docs';
-import { requestHandler, errorHandler, requestLogger } from './middlewares';
+import { requestHandler, errorHandler, requestLogger } from './DTOs/middlewares';
 
 const app: Express = express();
 

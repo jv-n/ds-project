@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import  UserController  from '../controllers/UserController';
+import UserController from '../controllers/UserController';
 import { requestHandler } from '../DTOs/middlewares';
 import auth from '../DTOs/middlewares/auth';
 
@@ -16,12 +16,16 @@ userRoutes.get(
   requestHandler(UserController.getAll)
 );
 
-// ## havendo conflito essa unica rota abaixo deve entrar
-
 userRoutes.get(
   '/me/tier',
-  auth,       
-  requestHandler(UserController.getMyTier)
+  auth,
+  requestHandler(UserController.getTier)
+);
+
+userRoutes.get(
+  '/:id/impact',
+  auth,
+  requestHandler(UserController.getImpact)
 );
 
 userRoutes.get(

@@ -110,7 +110,7 @@ export default function Modalcriterios(props: Criteriosprops) {
         <div className="border mt-[10px] border-gray-300 p-4 rounded-xl">
             <div className="flex justify-between items-start font-bold text-black text-[14px]">
                 <h3 className="w-4/5">Quantidade de ODSs com Atuação da Empresa</h3>
-                <div className="text-[11px] px-2 py-1 bg-[#ECEEF2] rounded-md whitespace-nowrap">Máx: 40 pontos</div>
+                <div className="text-[11px] px-2 py-1 bg-[#ECEEF2] rounded-md whitespace-nowrap">Máx: 33 pontos</div>
             </div>
             <div className="space-y-2 mt-2">
                 <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>Mais de 9 ODSs</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">40pts</div></div>
@@ -129,7 +129,7 @@ export default function Modalcriterios(props: Criteriosprops) {
         <div className="border mt-[10px] border-gray-300 p-4 rounded-xl">
             <div className="flex justify-between items-start font-bold text-black text-[14px]">
                 <h3 className="w-4/5">Quantidade de ONGs Atingidas por Ações de Voluntariado</h3>
-                <div className="text-[11px] px-2 py-1 bg-[#ECEEF2] rounded-md whitespace-nowrap">Máx: 32 pontos</div>
+                <div className="text-[11px] px-2 py-1 bg-[#ECEEF2] rounded-md whitespace-nowrap">Máx: 30 pontos</div>
             </div>
             <div className="space-y-2 mt-2">
                 <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>Mais de 7 ONGs</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">32pts</div></div>
@@ -171,7 +171,7 @@ export default function Modalcriterios(props: Criteriosprops) {
         <div className="border mt-[10px] border-gray-300 p-4 rounded-xl">
             <div className="flex justify-between items-start font-bold text-black text-[14px]">
                 <h3 className="w-4/5">Orçamento Destinado a Doações</h3>
-                <div className="text-[11px] px-2 py-1 bg-[#ECEEF2] rounded-md whitespace-nowrap">Máx: 28 pontos</div>
+                <div className="text-[11px] px-2 py-1 bg-[#ECEEF2] rounded-md whitespace-nowrap">Máx: 20 pontos</div>
             </div>
             <div className="space-y-2 mt-2">
                 <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>Acima de R$ 50.000</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">28pts</div></div>
@@ -185,6 +185,26 @@ export default function Modalcriterios(props: Criteriosprops) {
                 <p className="mt-2 text-sm">Este critério reconhece o esforço financeiro direto da empresa. É uma métrica clara do comprometimento orçamentário como combustível para as ações sociais.</p>
             </div>
         </div>
+
+        {/* Critério: Voluntários Envolvidos */}
+        <div className="border mt-[10px] border-gray-300 p-4 rounded-xl">
+          <div className="flex justify-between items-start font-bold text-black text-[14px]">
+            <h3 className="w-4/5">Quantidade de Voluntários Envolvidos em Ações</h3>
+            <div className="text-[11px] px-2 py-1 bg-[#ECEEF2] rounded-md whitespace-nowrap">Máx: 17 pontos</div>
+          </div>
+          <div className="space-y-2 mt-2">
+            <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>Mais de 13 voluntários</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">17pts</div></div>
+            <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>10 a 12 voluntários</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">11pts</div></div>
+            <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>7 a 9 voluntários</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">7pts</div></div>
+            <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>4 a 6 voluntários</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">4pts</div></div>
+            <div className="h-[40px] w-full bg-[#F9FAFB] rounded-lg flex items-center justify-between px-2"><span>1 a 3 voluntários</span><div className="w-[53px] h-[20px] border border-gray-400 bg-white rounded-md flex justify-center items-center text-sm font-bold">2pts</div></div>
+          </div>
+          <div className="bg-[#EFF6FF] w-full rounded-xl mt-2 p-4">
+            <h4 className="text-[16px] text-black font-bold">Justificativa:</h4>
+            <p className="mt-2 text-sm">Mede a materialização da cultura do voluntariado na prática. A participação ativa dos colaboradores é a prova do sucesso na promoção do engajamento humano e do impacto direto nas iniciativas</p>
+          </div>
+        </div>
+
       </div>
     </div>
   );

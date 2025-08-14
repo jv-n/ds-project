@@ -8,34 +8,44 @@ export interface propspontos {
   ptsacoesdeconscientizacao: string;
   ptsodsscomatuacao: string;
   ptsongsatingidas: string;
+  ptsvoluntarios: string;
   ptscolaboradoresengajados: string;
   ptsorcamentodestinado: string;
 }
 
 const qtdodsscomatuacao: Record<string, string> = {
-  "40": "Mais de 9 ODSs",
-  "32": "7 a 8 ODSs",
-  "24": "5 a 6 ODSs",
-  "16": "3 a 4 ODSs",
+  "33": "Mais de 9 ODSs",
+  "25": "7 a 8 ODSs",
+  "18": "5 a 6 ODSs",
+  "12": "3 a 4 ODSs",
   "8": "1 a 2 ODSs",
   "0": "Nenhuma atuação em ODSs",
 };
 
 const qtdongsatingidas: Record<string, string> = {
-  "32": "Mais de 7 ONGs",
-  "24": "5 a 6 ONGs",
-  "16": "3 a 4 ONGs",
+  "30": "Mais de 7 ONGs",
+  "22": "5 a 6 ONGs",
+  "14": "3 a 4 ONGs",
   "8": "1 a 2 ONGs",
   "0": "Nenhuma ONG atingida",
 };
 
 const qtdorcamentodestinado: Record<string, string> = {
-  "28": "Acima de R$ 50.000",
-  "19": "Acima de R$ 25.000",
-  "13": "Acima de R$ 10.000",
-  "7": "Acima de R$ 5.000",
+  "20": "Acima de R$ 50.000",
+  "11": "Acima de R$ 25.000",
+  "8": "Acima de R$ 10.000",
+  "5": "Acima de R$ 5.000",
   "1": "Acima de R$ 1.000",
   "0": "Nenhum orçamento destinado",
+};
+
+const qtdvoluntariosenvolvidos: Record<string, string> = {
+  "17": "Mais que 13 voluntários",
+  "11": "Entre 10 a 12 voluntários",
+  "7": "Entre 7 e 9 voluntários",
+  "4": "Entre 4 e 6 voluntários",
+  "2": "Entre 1 e 3 voluntários",
+  "0": "Nenhum voluntário registrado",
 };
 
 const textonivel: Record<string, string> = {
@@ -62,7 +72,8 @@ export default function Cardpontos(props: propspontos) {
   const total =
     (parseInt(props.ptsongsatingidas) || 0) +
     (parseInt(props.ptsodsscomatuacao) || 0) +
-    (parseInt(props.ptsorcamentodestinado) || 0);
+    (parseInt(props.ptsorcamentodestinado) || 0) +
+    (parseInt(props.ptsvoluntarios) || 0);;
 
   const medalha =
     props.nivel === "goldenmedal"
@@ -114,43 +125,64 @@ export default function Cardpontos(props: propspontos) {
             </button>
           </div>
 
-          {/* Detalhes dos Pontos */}
-          {mostrarpontos === "aberto" && (
-            <div className="w-[950px]">
-              {/* Pontuação ODSs */}
-              <div className="w-full bg-white h-[65px] border border-gray-300 rounded-xl flex items-center px-4 mb-3">
-                <div>
-                  <div className="text-[14px] text-black font-bold">ODSs com atuação</div>
-                  <div className="text-[12px] text-[#4A5565] font-bold">{qtdodsscomatuacao[props.ptsodsscomatuacao] || "Nenhum ponto registrado"}</div>
-                </div>
-                <div className="ml-auto w-[53px] h-[20px] border border-gray-400 rounded-md flex justify-center items-center text-black font-bold text-[14px]">
-                  {props.ptsodsscomatuacao}pts
+        {/* Detalhes dos Pontos */}
+        {mostrarpontos === "aberto" && (
+          <div className="w-[950px]">
+            {/* Pontuação ODSs */}
+            <div className="w-full bg-white h-[65px] border border-gray-300 rounded-xl flex items-center px-4 mb-3">
+              <div>
+                <div className="text-[14px] text-black font-bold">ODSs com atuação</div>
+                <div className="text-[12px] text-[#4A5565] font-bold">
+                  {qtdodsscomatuacao[props.ptsodsscomatuacao] || "Nenhum ponto registrado"}
                 </div>
               </div>
-              
-              {/* Pontuação ONGs */}
-              <div className="w-full bg-white h-[65px] border border-gray-300 rounded-xl flex items-center px-4 mb-3">
-                <div>
-                  <div className="text-[14px] text-black font-bold">ONGs atingidas</div>
-                  <div className="text-[12px] text-[#4A5565] font-bold">{qtdongsatingidas[props.ptsongsatingidas] || "Nenhum ponto registrado"}</div>
-                </div>
-                <div className="ml-auto w-[53px] h-[20px] border border-gray-400 rounded-md flex justify-center items-center text-black font-bold text-[14px]">
-                  {props.ptsongsatingidas}pts
-                </div>
-              </div>
-
-              {/* Pontuação Orçamento */}
-              <div className="w-full bg-white h-[65px] border border-gray-300 rounded-xl flex items-center px-4 mb-3">
-                <div>
-                  <div className="text-[14px] text-black font-bold">Orçamento Destinado a Doações</div>
-                  <div className="text-[12px] text-[#4A5565] font-bold">{qtdorcamentodestinado[props.ptsorcamentodestinado] || "Nenhum ponto registrado"}</div>
-                </div>
-                <div className="ml-auto w-[53px] h-[20px] border border-gray-400 rounded-md flex justify-center items-center text-black font-bold text-[14px]">
-                  {props.ptsorcamentodestinado}pts
-                </div>
+              <div className="ml-auto w-[53px] h-[20px] border border-gray-400 rounded-md flex justify-center items-center text-black font-bold text-[14px]">
+                {props.ptsodsscomatuacao}pts
               </div>
             </div>
-          )}
+        
+            {/* Pontuação ONGs */}
+            <div className="w-full bg-white h-[65px] border border-gray-300 rounded-xl flex items-center px-4 mb-3">
+              <div>
+                <div className="text-[14px] text-black font-bold">ONGs atingidas</div>
+                <div className="text-[12px] text-[#4A5565] font-bold">
+                  {qtdongsatingidas[props.ptsongsatingidas] || "Nenhum ponto registrado"}
+                </div>
+              </div>
+              <div className="ml-auto w-[53px] h-[20px] border border-gray-400 rounded-md flex justify-center items-center text-black font-bold text-[14px]">
+                {props.ptsongsatingidas}pts
+              </div>
+            </div>
+        
+            {/* Pontuação Orçamento */}
+            <div className="w-full bg-white h-[65px] border border-gray-300 rounded-xl flex items-center px-4 mb-3">
+              <div>
+                <div className="text-[14px] text-black font-bold">Orçamento Destinado a Doações</div>
+                <div className="text-[12px] text-[#4A5565] font-bold">
+                  {qtdorcamentodestinado[props.ptsorcamentodestinado] || "Nenhum ponto registrado"}
+                </div>
+              </div>
+              <div className="ml-auto w-[53px] h-[20px] border border-gray-400 rounded-md flex justify-center items-center text-black font-bold text-[14px]">
+                {props.ptsorcamentodestinado}pts
+              </div>
+            </div>
+        
+            {/* Pontuação Voluntários */}
+            <div className="w-full bg-white h-[65px] border border-gray-300 rounded-xl flex items-center px-4 mb-3">
+              <div>
+                <div className="text-[14px] text-black font-bold">Quantidade de Voluntários Envolvidos</div>
+                <div className="text-[12px] text-[#4A5565] font-bold">
+                  {qtdvoluntariosenvolvidos[props.ptsvoluntarios] || "Nenhum voluntário registrado"}
+                </div>
+              </div>
+              <div className="ml-auto w-[53px] h-[20px] border border-gray-400 rounded-md flex justify-center items-center text-black font-bold text-[14px]">
+                {props.ptsvoluntarios}pts
+              </div>
+            </div>
+          </div>
+        )}
+
+
 
           {/* Barra de Total */}
           <div className="w-[950px] bg-[#009FE3] h-[55px] border rounded-xl flex items-center px-4 mt-1">
