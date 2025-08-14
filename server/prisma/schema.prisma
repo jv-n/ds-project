@@ -8,7 +8,6 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-
 generator dbml {
   provider = "prisma-dbml-generator"
 }
