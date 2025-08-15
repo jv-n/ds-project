@@ -3,11 +3,11 @@ version: "3.9"
 services:
   backend:
     build:
-      context: ./backend
+      context: ./server
       dockerfile: Dockerfile
     container_name: app-backend
     env_file:
-      - ./backend/.env
+      - ./server/.env
     environment:
       - PORT=3001
     expose:
@@ -22,11 +22,11 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./client
       dockerfile: Dockerfile
     container_name: app-frontend
     env_file:
-      - ./frontend/.env
+      - ./client/.env
     environment:
       - PORT=3000
       - NEXT_PUBLIC_API_BASE=/api
