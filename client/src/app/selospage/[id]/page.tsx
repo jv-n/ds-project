@@ -94,26 +94,11 @@ export default function SelosPage() {
 
       <div className="w-full flex items-center justify-center mt-[50px]">
         <div className="flex items-center justify-between">
-          <CardMedalhaBronze
-            categoria="Nível Bronze"
-            pontuacao="5 a 45 pontos"
-            descricao="Empresas em fase inicial ou com nível básico de engajamento social."
-            criterios="Ver Critérios"
-          />
+          <CardMedalhaBronze abrirModal={Setcriterios} />
           <div className="ml-[15px] mr-[15px]">
-            <CardMedalhaPrata
-            categoria="Nível Prata"
-            pontuacao="46 a 80 pontos"
-            descricao="Empresas com nível intermediário de engajamento social."
-            criterios="Ver Critérios"
-          />
+            <CardMedalhaPrata abrirModal={Setcriterios} />
           </div>
-          <CardMedalhaOuro 
-            categoria="Nível Ouro"
-            pontuacao="81 a 100 pontos"
-            descricao="Empresas com alto nível de engajamento social."
-            criterios="Ver Critérios"
-          />
+          <CardMedalhaOuro abrirModal={Setcriterios} />
         </div>
       </div>
 
