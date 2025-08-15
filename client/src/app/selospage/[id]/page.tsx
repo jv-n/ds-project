@@ -1,20 +1,21 @@
-'use client';
-
-import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
-import DetalhesPontuacao from "@/components/accordion-detalhes-pontuacao";
+"use client";
+import Rodape from "@/components/rodape";
+import { useCallback, useEffect, useState /*, useEffect*/ } from "react";
+import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
-import CardMedalhaPrata from "@/components/card-medalha-prata";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
-import { Bronze, Prata, Ouro } from "@/assets"; 
-import ModalCertificado from "@/components/modal-certificado";
+import CardMedalhaPrata from "@/components/card-medalha-prata";
+import Cardpontos from "@/components/pontos-esmpresa";
+import Navbar from "@/components/navbar";
+import api from "@/services/api";
 import { CertificateProps } from "@/components/certificate";
 import { useParams } from "next/navigation";
-import api from "@/services/api";
 
 export default function SelosPage() {
 
-  interface companyProps {
+  const [mostrarcriterios, Setcriterios] = useState("off");
+
+    interface companyProps {
     nome: string;
     pontos: number;
     selo_nivel: string;
@@ -24,119 +25,124 @@ export default function SelosPage() {
         cnpj: string;
     }
   }
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  function abrirModal() {
-    setIsModalOpen(true);  
-  }
-  function fecharModal() {
-    setIsModalOpen(false);
-  }
 
-  const { id } = useParams();
+    const { id } = useParams();
+
+    interface sealProps {
+        nivel: string;
+        ptsodsscomatuacao: string;
+        ptsongsatingidas: string;
+        ptscolaboradoresengajados: string;
+        ptsorcamentodestinado: string;
+    }
+
+  const [seal, setSeal] = useState({} as sealProps);
+
+  const fetchSeal = useCallback(async () => {
+    const response = await api.get<sealProps>(`//${id}`);
+    setSeal(response.data);
+  }, [id]);
 
   const [company, setCompany] = useState({} as companyProps);
 
   const fetchCompany = useCallback(async () => {
-    const response = await api.get<companyProps>(`/company/${id}`);
+    const response = await api.get<companyProps>(`//${id}`);
     setCompany(response.data);
   }, [id]);
 
   useEffect(() => {
+    fetchSeal();
     fetchCompany();
-  }, [fetchCompany]);
+  }, [fetchSeal, fetchCompany]);
+
 
   const certificado: CertificateProps = {
-    id: id as string,
-    level: company.selo_nivel,
-    data_emissao: new Date().toISOString(),
-    empresa: company.nome,
-  };
+      id: id as string,
+      level: seal.nivel,
+      data_emissao: new Date().toISOString(),
+      empresa: company.nome,
+    };
 
-  const seloIcon = () => {
-    if(company.selo_nivel === "Bronze") {
-      return Bronze
-    }
-    if(company.selo_nivel === "Prata") {
-      return Prata
-    }
-    if(company.selo_nivel === "Ouro") {
-      return Ouro
-    } else return Bronze
-  }
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100 p-8">
-      {/* Cabeçalho do Selo */}
-      <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8 mb-8">
-        <h1 className="text-3xl font-bold text-[#1B2029]">Selo de Impacto Social</h1>
-        <p className="text-gray-600 mt-2">
-          Avalie o nível de responsabilidade social da sua empresa e veja os critérios para cada nível do selo
-        </p>
+    <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
+      <Navbar ativo="selos" />
 
-        {/* Nível Atual e Botão */}
-        <div className="flex flex-col md:flex-row items-center justify-between mt-8">
-          <div className="flex flex-col items-center md:items-start">
-            {/* Ícone do Selo Prata*/}
-            <Image src={seloIcon()} alt="Ícone de Selo" width={50} height={50} className="mb-2" />
-            <h2 className="text-2xl font-bold text-[#1B2029]">Nível {company.selo_nivel}</h2>
-            <p className="text-gray-600">Pontuação Atual: {company.pontos} pontos</p>
-            <p className="text-gray-600 text-sm mt-1">
-              Empresas com bom nível de engajamento e programas sociais consistentes.
-            </p>
-          </div>
-          <button onClick={abrirModal} className="bg-[#009FE3] text-white px-6 py-3 rounded-lg flex items-center gap-2 mt-4 md:mt-0 hover:bg-[#007BB5] transition-colors duration-200 hover:cursor-pointer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
-              />
-            </svg>
-            Baixar Certificado
-          </button>
+      <div className="font-sans font-bold text-[32px] text-black mt-[25px] flex justify-center mr-[620px]">
+        <div>Selo de Impacto Social</div>
+      </div>
+
+      <div className="font-sans text-[14px] text-black mt-[5px] mb-[30px] flex justify-center mr-[350px]">
+        <div>
+          Avalie o nível de responsabilidade social da sua empresa e veja os
+          critérios para cada nível do selo
         </div>
       </div>
 
-      {/* Detalhamento da Pontuação */}
-      <DetalhesPontuacao />
+      {/* 🔧 Exibe os pontos simulados */}
+      <Cardpontos
+        nivel={seal.nivel}
+        ptsodsscomatuacao={seal.ptsodsscomatuacao}
+        ptsongsatingidas={seal.ptsongsatingidas}
+        ptscolaboradoresengajados={seal.ptscolaboradoresengajados}
+        ptsorcamentodestinado={seal.ptsorcamentodestinado}
+        certificado={certificado}
+      />
 
-      {/* Níveis de Selo */}
-      <div className="w-full max-w-4xl mt-8">
-        <h2 className="text-2xl font-bold text-[#1B2029] mb-6">Níveis de Selo</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="font-sans font-bold text-[32px] text-black mr-[630px] mt-[25px] flex justify-center">
+        <div>Selo de Impacto Social</div>
+      </div>
+
+      <div className="w-full flex items-center justify-center mt-[50px]">
+        <div className="flex items-center justify-between">
           <CardMedalhaBronze
             categoria="Nível Bronze"
             pontuacao="5 a 45 pontos"
             descricao="Empresas em fase inicial ou com nível básico de engajamento social."
-            criterios="Ver Criterios"
+            criterios="Ver Critérios"
           />
-          <CardMedalhaPrata
+          <div className="ml-[15px] mr-[15px]">
+            <CardMedalhaPrata
             categoria="Nível Prata"
-            pontuacao="46 a 74 pontos"
-            descricao="Empresas com bom nível de engajamento e programas sociais consistentes."
-            criterios="Ver Criterios"
+            pontuacao="46 a 80 pontos"
+            descricao="Empresas com nível intermediário de engajamento social."
+            criterios="Ver Critérios"
           />
-          <CardMedalhaOuro
+          </div>
+          <CardMedalhaOuro 
             categoria="Nível Ouro"
-            pontuacao="75 a 100 pontos"
-            descricao="Empresas líderes em responsabilidade social com impacto significativo e cultura de engajamento enraizada."
-            criterios="Ver Criterios"
+            pontuacao="81 a 100 pontos"
+            descricao="Empresas com alto nível de engajamento social."
+            criterios="Ver Critérios"
           />
         </div>
       </div>
-      <ModalCertificado
-          certificado={certificado}
-          isOpen={isModalOpen}
-          onClose={fecharModal}
-      />
+
+      <div>
+        <div className="flex-grow flex justify-center items-center">
+          {mostrarcriterios == "bronzemedal" && (
+            <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
+              <Modalcriterios nivel="bronzemedal" fecharmodal={Setcriterios} />
+            </div>
+          )}
+
+          {mostrarcriterios == "goldenmedal" && (
+            <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
+              <Modalcriterios nivel="goldenmedal" fecharmodal={Setcriterios} />
+            </div>
+          )}
+
+          {mostrarcriterios == "silvermedal" && (
+            <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
+              <Modalcriterios nivel="silvermedal" fecharmodal={Setcriterios} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="h-[100px]" />
+
+      <Rodape />
+      
     </div>
   );
 }
