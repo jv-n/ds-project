@@ -1,14 +1,16 @@
 // src/controllers/company-controller.ts
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { CompanyRepository } from '../repositories/CompanyRepository';
+import { Company, Company_Update } from '../DTOs';
 
 const repository = new CompanyRepository();
 
 export class CompanyController {
   async create(req: Request, res: Response) {
     try {
-      const { nome, usuarioId } = req.body;
-      const empresa = await repository.create({ nome, usuarioId });
+      const companyData = Company.parse(req.body);
+      const empresa = await repository.create(companyData);
+
       res.status(201).json(empresa);
     } catch (err) {
       res.status(400).json({ error: 'Erro ao criar empresa', details: err });
@@ -25,22 +27,24 @@ export class CompanyController {
     }
   }
 
-  async getById(req: Request, res: Response) {
+  async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.params.id);
       const empresa = await repository.findById(id);
       if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada' });
       res.json(empresa);
+      return next();
     } catch (err) {
       console.error('Erro ao buscar empresas:', err);
       res.status(500).json({ error: 'Erro ao buscar empresa' });
+      return next(err);
     }
   }
 
   async update(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);
-      const data = req.body;
+      const data = Company_Update.parse(req.body);
       const empresa = await repository.update(id, data);
       res.json(empresa);
     } catch (err) {

@@ -3,4 +3,4 @@ import TokenRepository from './tokenRepository';
 import CookieRepository from './cookieRepository';
 import FileRepository from './fileRepository';
 
-export { UserRepository, TokenRepository, CookieRepository, FileRepository, DonationRepository };
+export { UserRepository, TokenRepository, CookieRepository, FileRepository };

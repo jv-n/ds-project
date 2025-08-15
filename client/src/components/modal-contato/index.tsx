@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
-import { createPortal } from "react-dom";
 import { balao, balaopopup, confirma, emailpopup } from "@/assets";
 
 export interface propspopup {
@@ -90,12 +89,12 @@ export default function Modalcontatos(props: propspopup) {
             <div className="text-[16px] ml-[5px]"> Entrar em contato</div>
           </div>
 
-          <div className="text-[13px] text-[#717182] flex mt-[5px] flex-wrap">
-            <div>Entre em contato com&nbsp;</div>
-            <div className="font-bold">{props.nomedaong}</div>
-            <div>&nbsp;sobre a ação&nbsp;</div>
-            <div className="font-bold">{props.nomeacao}</div>
-          </div>
+      <div className="text-[13px] text-[#717182] flex mt-[5px] flex-wrap">
+        <div>Entre em contato com &nbsp;</div>
+        <div className="font-bold">{props.nomedaong}</div>
+        <div>&nbsp; sobre a ação &nbsp;</div>
+        <div className="font-bold">{props.nomeacao}</div>
+      </div>
 
           {/* CARD DE E-MAIL — VISUAL IDÊNTICO, MAS O CLIQUE ABRE O GMAIL */}
           <div
@@ -149,7 +148,7 @@ export default function Modalcontatos(props: propspopup) {
             </div>
           </a>
 
-          <div className="bg-gray-200 w-[400px] h-[1px] mt-[14px]" />
+      <div className="bg-gray-200 w-[400px] h-[1px] mt-[14px]"></div>
 
           <div className="flex mt-[12px]">
             <button
@@ -170,7 +169,6 @@ export default function Modalcontatos(props: propspopup) {
           </div>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }

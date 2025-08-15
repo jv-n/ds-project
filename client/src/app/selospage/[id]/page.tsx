@@ -1,12 +1,15 @@
 "use client";
 import Rodape from "@/components/rodape";
-import { useState /*, useEffect*/ } from "react";
+import { useCallback, useEffect, useState /*, useEffect*/ } from "react";
 import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
 import Cardpontos from "@/components/pontos-esmpresa";
 import Navbar from "@/components/navbar";
+import ModalCertificado from "@/components/modal-certificado";
+import api from "@/services/api";
+import { CertificateProps } from "@/components/certificate";
 // import { useParams } from "next/navigation";
 
 export default function SelosPage() {
@@ -14,23 +17,48 @@ export default function SelosPage() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarcriterios, Setcriterios] = useState("off");
 
-  // const [dadosSelo, setDadosSelo] = useState(null);
+    interface companyProps {
+    nome: string;
+    pontos: number;
+    selo_nivel: string;
+    usuario: {
+        id: string;
+        nome: string;
+        cnpj: string;
+    }
+  }
 
-  // useEffect(() => {
-  //   async function fetchSelo() {
-  //     try {
-  //       const res = await fetch(`/api/seal/empresa/${id}`);
-  //       const data = await res.json();
-  //       setDadosSelo(data);
-  //     } catch (error) {
-  //       console.error("Erro ao buscar selo:", error);
-  //     }
-  //   }
 
-  //   if (id) fetchSelo();
-  // }, [id]);
 
-  // 🔧 MOCK: dados simulados da API
+    const { id } = useParams();
+
+    interface sealProps {
+        nivel: string;
+        ptsodsscomatuacao: string;
+        ptsongsatingidas: string;
+        ptscolaboradoresengajados: string;
+        ptsorcamentodestinado: string;
+    }
+
+  const [seal, setSeal] = useState({} as sealProps);
+
+  const fetchSeal = useCallback(async () => {
+    const response = await api.get<sealProps>(`//${id}`);
+    setSeal(response.data);
+  }, [id]);
+
+  const [company, setCompany] = useState({} as companyProps);
+
+  const fetchCompany = useCallback(async () => {
+    const response = await api.get<companyProps>(`//${id}`);
+    setCompany(response.data);
+  }, [id]);
+
+  useEffect(() => {
+    fetchSeal();
+    fetchCompany();
+  }, [fetchSeal, fetchCompany]);
+
   const dadosSelo = {
     nivel: "bronzemedal",
     ptsodsscomatuacao: "14",
@@ -38,6 +66,13 @@ export default function SelosPage() {
     ptscolaboradoresengajados: "9",
     ptsorcamentodestinado: "8"
   };
+
+  const certificado: CertificateProps = {
+      id: id as string,
+      level: seal.nivel,
+      data_emissao: new Date().toISOString(),
+      empresa: company.nome,
+    };
 
   function abrirModal() {
     setMostrarModal(true);
@@ -69,6 +104,7 @@ export default function SelosPage() {
         ptsongsatingidas={dadosSelo.ptsongsatingidas}
         ptscolaboradoresengajados={dadosSelo.ptscolaboradoresengajados}
         ptsorcamentodestinado={dadosSelo.ptsorcamentodestinado}
+        certificado={certificado}
       />
 
       <div className="font-sans font-bold text-[32px] text-black mr-[630px] mt-[25px] flex justify-center">
@@ -110,6 +146,7 @@ export default function SelosPage() {
       <div className="h-[100px]" />
 
       <Rodape />
+      
     </div>
   );
 }

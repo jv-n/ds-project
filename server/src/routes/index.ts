@@ -1,4 +1,3 @@
-// src/routes/router.ts
 import { Router } from 'express';
 import UserRouter from './userRoutes';
 import AuthRouter from './authRoutes';
@@ -14,6 +13,7 @@ router.use('/selo', sealRoutes);
 router.use('/user', UserRouter);
 router.use('/sessions', AuthRouter);
 router.use('/file', FileRouter);
+router.use('/company', CompanyRouter);
 router.route('/').get((_, res) => {
   res.status(200).send('Running...');
 });

@@ -1,17 +1,8 @@
+import { Empresa, Prisma } from '@prisma/client';
 import prisma from '../database';
 
-interface CreateCompanyDTO {
-  nome: string;
-  usuarioId: number;
-}
-
-interface UpdateCompanyDTO {
-  nome?: string;
-  pontos?: number;
-}
-
 export class CompanyRepository {
-  async create(data: CreateCompanyDTO) {
+  async create(data: Prisma.EmpresaCreateInput): Promise<Empresa> {
     return prisma.empresa.create({
       data,
       include: {
@@ -43,20 +34,23 @@ export class CompanyRepository {
     });
   }
 
-  async update(id: number, data: UpdateCompanyDTO) {
-    const prismaData: any = {};
-    if (data.nome !== undefined) prismaData.nome = data.nome;
-    if (data.pontos !== undefined) prismaData.pontos = data.pontos;
 
-    return prisma.empresa.update({
+  async update(id: number, data: Prisma.EmpresaUpdateInput) {
+
+   const company = await prisma.empresa.update({
       where: { id },
-      data: prismaData,
+      data,
       include: {
         usuario: true,
         criterios: true,
         apoios: true,
       },
     });
+
+    if (!company) {
+      throw new Error('Company not found');
+    }
+    return company;
   }
 
   async delete(id: number) {
