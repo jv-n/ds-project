@@ -21,9 +21,6 @@ const dm_sans = DM_Sans({
     variable: '--font-dm-sans'
 });
 
-export function downloadCertificate(certificado: CertificateProps) {
-    console.log(`Baixando certificado da empresa: ${certificado.empresa}`);
-}
 
 export default function ModalCertificado({ certificado, isOpen, onClose }: ModalCertificadoProps) {
     
