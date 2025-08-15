@@ -2,13 +2,12 @@
 import Image from "next/image";
 import { useState } from "react";
 import {
-  logoamassada,
   goldenmedal,
   silvermedal,
   bronzemedal,
   setapbaixo,
   setapcima,
-  downloadicon
+  download
 } from "@/assets";
 import ModalCertificado from "../modal-certificado";
 import { CertificateProps } from "../certificate";
@@ -101,7 +100,7 @@ export default function Cardpontos(props: propspontos) {
           <div className="flex items-center w-full mb-4 ml-[935px]">
             <Image src={imagensPorNivel[props.nivel]} alt="" />
             <button onClick={abrirModal} className="w-[170px] h-[40px] bg-[#009FE3] rounded-lg flex items-center justify-center text-white text-[15px] cursor-pointer ml-[300px]">
-              <Image src={downloadicon} alt="" className="mr-[5px]" />
+              <Image src={download} alt="" className="mr-[5px]" />
               Baixar Certificado
             </button>
           </div>

@@ -67,3 +67,20 @@ export { close };
 import lupa from "./lupa.svg";
 export { lupa };
 
+import goldenmedal from "./goldenmedal.svg";
+export { goldenmedal };
+
+import silvermedal from "./silvermedal.svg";
+export { silvermedal };
+
+import bronzemedal from "./bronzemedal.svg";
+export { bronzemedal };
+
+import setapbaixo from "./setapbaixo.svg";
+export { setapbaixo };
+
+import setapcima from "./setapcima.svg";
+export { setapcima };
+
+import download from "./download.svg";
+export { download };

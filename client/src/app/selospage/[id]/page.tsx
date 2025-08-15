@@ -7,14 +7,12 @@ import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
 import Cardpontos from "@/components/pontos-esmpresa";
 import Navbar from "@/components/navbar";
-import ModalCertificado from "@/components/modal-certificado";
 import api from "@/services/api";
 import { CertificateProps } from "@/components/certificate";
-// import { useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function SelosPage() {
-  // const { id } = useParams();
-  const [mostrarModal, setMostrarModal] = useState(false);
+
   const [mostrarcriterios, Setcriterios] = useState("off");
 
     interface companyProps {
@@ -27,8 +25,6 @@ export default function SelosPage() {
         cnpj: string;
     }
   }
-
-
 
     const { id } = useParams();
 
@@ -59,13 +55,6 @@ export default function SelosPage() {
     fetchCompany();
   }, [fetchSeal, fetchCompany]);
 
-  const dadosSelo = {
-    nivel: "bronzemedal",
-    ptsodsscomatuacao: "14",
-    ptsongsatingidas: "10",
-    ptscolaboradoresengajados: "9",
-    ptsorcamentodestinado: "8"
-  };
 
   const certificado: CertificateProps = {
       id: id as string,
@@ -73,14 +62,6 @@ export default function SelosPage() {
       data_emissao: new Date().toISOString(),
       empresa: company.nome,
     };
-
-  function abrirModal() {
-    setMostrarModal(true);
-  }
-
-  function fecharModal() {
-    setMostrarModal(false);
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
@@ -99,11 +80,11 @@ export default function SelosPage() {
 
       {/* 🔧 Exibe os pontos simulados */}
       <Cardpontos
-        nivel={dadosSelo.nivel}
-        ptsodsscomatuacao={dadosSelo.ptsodsscomatuacao}
-        ptsongsatingidas={dadosSelo.ptsongsatingidas}
-        ptscolaboradoresengajados={dadosSelo.ptscolaboradoresengajados}
-        ptsorcamentodestinado={dadosSelo.ptsorcamentodestinado}
+        nivel={seal.nivel}
+        ptsodsscomatuacao={seal.ptsodsscomatuacao}
+        ptsongsatingidas={seal.ptsongsatingidas}
+        ptscolaboradoresengajados={seal.ptscolaboradoresengajados}
+        ptsorcamentodestinado={seal.ptsorcamentodestinado}
         certificado={certificado}
       />
 
