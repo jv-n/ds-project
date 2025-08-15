@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { Ouro, Prata, Bronze } from "@/assets";
+import { Ouro, Prata, Bronze, close } from "@/assets";
+import { Dispatch, SetStateAction } from "react";
 
 export interface Criteriosprops {
-  nivel: "Ouro" | "Prata" | "Bronze";
+  nivel: string;
+  fecharmodal: Dispatch<SetStateAction<string>>;
 }
 
 const imagensPorNivel = {
@@ -37,30 +39,40 @@ const descricao = {
 };
 
 export default function Modalcriterios(props: Criteriosprops) {
+
+  const porNivel = () =>{
+    if(props.nivel == "Ouro" )
+      return "Ouro";
+    else if(props.nivel == "Prata" )
+      return "Prata";
+    else
+      return "Bronze";
+  }
+
   return (
     <div className="w-[700px] flex flex-col bg-white rounded-xl shadow p-4 font-sans">
       <div className="mr-auto flex">
         <Image
-          src={imagensPorNivel[props.nivel]}
+          src={imagensPorNivel[porNivel()]}
           alt={`Selo ${props.nivel}`}
         />
         <div className="ml-[5px]">
           <div className="flex">
             <div
-              style={{ color: coresPorNivel[props.nivel] }}
+              style={{ color: coresPorNivel[porNivel()] }}
               className="font-bold text-[20px]"
             >
-              Nível {nomesPorNivel[props.nivel]}
+              Nível {porNivel()}
             </div>
             <Image
               onClick={() => props.fecharmodal("off")}
-              src={xsair}
+              src={close}
               alt=""
               className="ml-[485px] cursor-pointer"
             />
           </div>
           <div className="text-[#4A5565] mt-[-5px]">
-            {pontosPorNivel[props.nivel]}
+            {pontosPorNivel[porNivel()]}
           </div>
         </div>
       </div>
@@ -71,9 +83,9 @@ export default function Modalcriterios(props: Criteriosprops) {
 
       <div
         className="flex w-[640px] text-[#364153] rounded-xl items-center pd-[5px] mt-[10px]"
-        style={{ backgroundColor: cordescricaopornivel[props.nivel] }}
+        style={{ backgroundColor: cordescricaopornivel[porNivel()] }}
       >
-        <div className="ml-[10px] mt-[10px] mb-[10px]">{descricao[props.nivel]}</div>
+        <div className="ml-[10px] mt-[10px] mb-[10px]">{descricao[porNivel()]}</div>
       </div>
 
       <div className="text-[16px] text-black font-bold mt-[10px]">
