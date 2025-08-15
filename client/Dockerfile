@@ -1,21 +1,24 @@
-
-FROM node:18 AS build
+FROM node:20-alpine AS deps
 WORKDIR /app
+COPY package*.json ./
+RUN npm ci
 
-
-COPY package.json package-lock.json ./
-RUN npm install
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
 RUN npm run build
 
 
-FROM node:18 AS runtime
+FROM node:20-alpine AS runner
 WORKDIR /app
-COPY --from=build /app ./
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./ 
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
 
-EXPOSE 3008
+EXPOSE 3000
+ENV PORT=3000
+ENV NEXT_PUBLIC_API_BASE=/api
 
-ENV PORT=3008
-
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
