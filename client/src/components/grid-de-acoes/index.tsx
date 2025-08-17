@@ -105,8 +105,8 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
         }
 
         if (!cancelado) setAcoes(Array.isArray(list) ? list : []);
-      } catch (e: any) {
-        if (!cancelado) setErro(e?.message ?? "Falha ao carregar ações.");
+      } catch (e: unknown) {
+        if (!cancelado) setErro((e as Error)?.message ?? "Falha ao carregar ações.");
       } finally {
         if (!cancelado) setLoading(false);
       }
@@ -115,7 +115,7 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
     return () => {
       cancelado = true;
     };
-  }, [debouncedText, odsIds.join(",")]);
+  }, [debouncedText, odsIds]);
 
   // ===== Filtro LOCAL (funciona mesmo se o backend não filtrar) =====
   const filtered = useMemo(() => {

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { balao, balaopopup, confirma, emailpopup } from "@/assets";
 
@@ -68,7 +68,7 @@ export default function Modalcontatos(props: propspopup) {
   const mailDisabled = gmailHref === "#";
   const waDisabled = waHref === "#";
 
-  return createPortal(
+  return (
     <div
       className="fixed inset-0 z-[1000] flex items-center justify-center"
       role="dialog"

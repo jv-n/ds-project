@@ -3,12 +3,19 @@ import Image from "next/image";
 
 type Btprops = {
   ativo?: string;
-  setAtivo?: (valor: string) => void;
+  setAtivo?: (valor: string) => void ;
   variant?: 'default' | 'logout'; 
   onLogout?: () => void;
 };
 
 export default function Navbar({ ativo, setAtivo, variant = 'default', onLogout }: Btprops) {
+
+  const handleSetAtivo = (valor: string) => {
+    if (!setAtivo){
+      return (() => {})
+    } else return setAtivo(valor);
+  };
+
   return (
     <div className="w-full h-[88px] bg-[#009FE3] flex items-center">
       <Image src={logoprefeitura} alt="" className="ml-[100px]" />
@@ -29,7 +36,7 @@ export default function Navbar({ ativo, setAtivo, variant = 'default', onLogout 
           <>
         <div
           className={`relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200`}
-          onClick={() => setAtivo("acoes")}
+          onClick={() => handleSetAtivo("acoes") || (() => {})}
         >
           Ações
           {ativo === "acoes" && (
@@ -39,7 +46,7 @@ export default function Navbar({ ativo, setAtivo, variant = 'default', onLogout 
 
         <div
           className={`relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200`}
-          onClick={() => setAtivo("minhas doacoes")}
+          onClick={() => handleSetAtivo("minhas doacoes")}
         >
           Minhas doações
           {ativo === "minhas doacoes" && (
@@ -49,7 +56,7 @@ export default function Navbar({ ativo, setAtivo, variant = 'default', onLogout 
 
         <div
           className={`relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200 `}
-          onClick={() => setAtivo("selos")}
+          onClick={() => handleSetAtivo("selos")}
         >
           Selos
           {ativo === "selos" && (
