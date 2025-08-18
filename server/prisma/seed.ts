@@ -3,88 +3,103 @@ import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-async function seed() {
-  const saltRounds = 6;
+async function main() {
+  console.log('Iniciando o processo de seed completo...');
 
-  await prisma.user.createMany({
-    data: [
-      {
-        id: 'c1a5e3c8-8240-41c1-8b0b-8cfd94b50d3a',
-        name: 'Alice Johnson',
-        phone: '555-1234',
-        email: 'alice@example.com',
-        password: await hash('alicepassword123', saltRounds), // Senha real: 'alicepassword123'
+  // --- 1. Limpeza Completa do Banco (na ordem 100% correta) ---
+  console.log('Limpando dados antigos...');
+  // Apagamos os "filhos" e dependentes primeiro
+  await prisma.documento.deleteMany();
+  await prisma.doacao.deleteMany();
+  await prisma.acaoEmpresa.deleteMany();
+  await prisma.selo.deleteMany();
+  
+  // Agora podemos apagar os "pais"
+  await prisma.empresa.deleteMany();
+  await prisma.usuario.deleteMany();
+  console.log('Dados antigos limpos com sucesso.');
+
+  // --- 2. Criação de um Usuário e Empresa de Teste ---
+  console.log('Criando usuário e empresa de teste...');
+  const senhaHash = await hash('senha.forte123', 6);
+
+  const empresaCriada = await prisma.empresa.create({
+    data: {
+      nome: 'Tech for Good Brasil',
+      pontuacao: 120,
+      numColaboradores: 42,
+      odsId: [4, 8, 10],
+      usuario: {
+        create: {
+          cnpj: '12.345.678/0001-99',
+          email: 'contato@techforgood.com.br',
+          senha: senhaHash,
+          telefone: '11987654321',
+          perfil: 'empresa',
+        },
       },
-      {
-        id: 'd9f2e709-9b6f-4e3b-b8d5-218b3b6f9d8d',
-        name: 'Bob Smith',
-        phone: null,
-        email: 'bob@example.com',
-        password: await hash('bobpassword456', saltRounds), // Senha real: 'bobpassword456'
-      },
-      {
-        id: 'ec69f192-6d5e-49f6-a09b-6a57c3282dcf',
-        name: 'Charlie Davis',
-        phone: '555-5678',
-        email: 'charlie@example.com',
-        password: await hash('charliepassword789', saltRounds), // Senha real: 'charliepassword789'
-      },
-      {
-        id: 'f3a61b62-e1d6-42d2-9bbf-f1e6c0e52b91',
-        name: 'Diana Prince',
-        phone: '555-9876',
-        email: 'diana@example.com',
-        password: await hash('dianapassword321', saltRounds), // Senha real: 'dianapassword321'
-      },
-      {
-        id: 'a2d67db2-6d5e-49f6-a19b-6a57c3283dac',
-        name: 'Eve Thompson',
-        phone: '555-4321',
-        email: 'eve@example.com',
-        password: await hash('evepassword654', saltRounds), // Senha real: 'evepassword654'
-      },
-      {
-        id: 'b5f7f0a9-5f6e-41fc-baa8-8fd842fd738d',
-        name: 'Frank Castle',
-        phone: '555-8765',
-        email: 'frank@example.com',
-        password: await hash('frankpassword987', saltRounds), // Senha real: 'frankpassword987'
-      },
-      {
-        id: 'e4b7f2a4-22d6-48d6-a16a-9b5e94b61d23',
-        name: 'Grace Hopper',
-        phone: '555-7654',
-        email: 'grace@example.com',
-        password: await hash('gracepassword852', saltRounds), // Senha real: 'gracepassword852'
-      },
-      {
-        id: 'f4c8e2b1-47c5-4d7a-b18b-3a2d929c64f7',
-        name: 'Henry Cavill',
-        phone: '555-1235',
-        email: 'henry@example.com',
-        password: await hash('henrypassword963', saltRounds), // Senha real: 'henrypassword963'
-      },
-      {
-        id: 'g9a7c1a1-48d8-4e9b-9d2f-9f1a8b2d6e8f',
-        name: 'Irene Adler',
-        phone: null,
-        email: 'irene@example.com',
-        password: await hash('irenepassword741', saltRounds), // Senha real: 'irenepassword741'
-      },
-      {
-        id: 'h1b8f2c5-61f7-4d8d-b19f-2a5e92b64f8d',
-        name: 'John Wick',
-        phone: '555-1478',
-        email: 'john@example.com',
-        password: await hash('johnpassword369', saltRounds), // Senha real: 'johnpassword369'
-      },
-    ],
+    },
+    include: { usuario: true },
+  });
+  console.log(`Empresa "${empresaCriada.nome}" criada.`);
+
+  // --- 3. Criação de uma Ação de Teste para a Empresa ---
+  console.log('Criando ação de doação...');
+  const acaoCriada = await prisma.acaoEmpresa.create({
+    data: {
+      acaoId: 1, // ID fixo para a campanha
+      nome: 'Campanha do Agasalho 2025',
+      descricao: 'Arrecadação de fundos para a compra de cobertores.',
+      nomeOng: 'ONG Noites Felizes',
+      emailOng: 'contato@noitesfelizes.org',
+      telefoneOng: '21912345678',
+      odsAcao: [1, 10],
+      empresaId: empresaCriada.id,
+    },
+  });
+  console.log(`Ação "${acaoCriada.nome}" criada.`);
+
+  // --- 4. Criação de Selos, Doações Aprovadas, Reprovadas e Pendentes ---
+  console.log('Criando selos e doações de teste...');
+
+  await prisma.selo.create({
+    data: { nivel: 'Bronze', descricao: 'Selo de Compromisso', pontuacaoMin: 100, empresaId: empresaCriada.id },
+  });
+  
+  // Doação já Aprovada
+  await prisma.doacao.create({
+    data: { data: new Date('2025-08-14T10:00:00Z'), valor: 75.5, tipo: 'Cartão', status: 'Aprovada', empresaId: empresaCriada.id, acaoId: acaoCriada.acaoId, documentos: { create: { storedName: 'doc_aprovado.pdf', mimetype: 'application/pdf', size: 123, path: 'uploads/doc.pdf' } } },
   });
 
-  console.log('Users created successfully');
+  // Doação já Reprovada
+  await prisma.doacao.create({
+    data: { data: new Date('2025-08-13T11:00:00Z'), valor: 200.0, tipo: 'TED', status: 'Reprovada', motivoReprovacao: 'Comprovante ilegível.', empresaId: empresaCriada.id, acaoId: acaoCriada.acaoId, documentos: { create: { storedName: 'doc_reprovado.jpg', mimetype: 'image/jpeg', size: 123, path: 'uploads/doc.jpg' } } },
+  });
+
+  // 5 Doações Pendentes
+  for (let i = 1; i <= 5; i++) {
+    await prisma.doacao.create({
+      data: {
+        data: new Date(),
+        valor: 100 + i * 10,
+        tipo: 'PIX',
+        status: 'Pendente',
+        empresaId: empresaCriada.id,
+        acaoId: acaoCriada.acaoId,
+        documentos: { create: { storedName: `doc_pendente_${i}.png`, mimetype: 'image/png', size: 123, path: `uploads/doc_${i}.png` } },
+      },
+    });
+  }
+  console.log('Selos e 7 doações (1 aprovada, 1 reprovada, 5 pendentes) criadas com sucesso!');
 }
 
-seed().then(() => {
-  console.log('Database successfully seeded');
-  prisma.$disconnect();
-});
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log('Seed finalizado com sucesso. Banco de dados populado do zero.');
+  })
+  .catch(async (e) => {
+    console.error('Ocorreu um erro durante o processo de seed:', e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

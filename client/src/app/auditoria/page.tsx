@@ -1,144 +1,153 @@
-'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import RowAuditoria, { type RowAuditoriaProps } from '@/components/row-auditoria';
-import ModalRevisao from '@/components/modal-revisao';
-import Navbar from '@/components/navbar';
-import Rodape from '@/components/rodape';
-import { Search } from 'lucide-react';
+"use client";
 
-type FilterKey = 'aguardando' | 'aprovada' | 'reprovada' | 'todos';
+import { useState, useEffect, useCallback } from "react";
+import RowAuditoria, {
+  type RowAuditoriaProps,
+} from "@/components/row-auditoria";
+import ModalRevisao from "@/components/modal-revisao";
+import Navbar from "@/components/navbar";
+import Rodape from "@/components/rodape";
+import { Search } from "lucide-react";
+import axios from 'axios';
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '');
+type Auditoria = RowAuditoriaProps;
 
-const mapStatusToApi = (s?: FilterKey) => {
-  if (!s || s === 'todos') return undefined;
-  return s === 'aguardando' ? 'pending' : s === 'aprovada' ? 'approved' : 'rejected';
+
+const mapStatus = (status: string): 'aguardando' | 'aprovada' | 'reprovada' => {
+  switch (status.toLowerCase()) {
+    case 'pendente':
+      return 'aguardando';
+
+    // Se o status for 'aprovado' OU 'aprovada', ele executará o código abaixo
+    case 'aprovado':
+    case 'aprovada': 
+      return 'aprovada';
+
+    // Se o status for 'reprovado' OU 'reprovada', ele executará o código abaixo
+    case 'reprovado': 
+    case 'reprovada':
+      return 'reprovada';
+      
+    default:
+      return 'aguardando';
+  }
 };
-const mapStatusFromApi = (s?: string): RowAuditoriaProps['status'] => {
-  if (!s) return 'aguardando';
-  const low = s.toLowerCase();
-  if (low.startsWith('pend')) return 'aguardando';
-  if (low.startsWith('approv') || low.startsWith('aprov')) return 'aprovada';
-  if (low.startsWith('reject') || low.startsWith('reprov')) return 'reprovada';
-  return 'aguardando';
-};
 
-function normalizeDonation(api: any): RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null } {
-  return {
-    id: api.id ?? api._id,
-    nomeEmpresa: api.nomeEmpresa ?? api.companyName ?? api.company ?? '',
-    emailEmpresa: api.emailEmpresa ?? api.companyEmail ?? api.email ?? '',
-    nomeONG: api.nomeONG ?? api.ngoName ?? api.organization ?? '',
-    tipoDoacao: api.tipoDoacao ?? api.donationType ?? '',
-    valorDoacao: api.valorDoacao ?? api.donationValue ?? '',
-    dataDoacao: api.dataDoacao ?? api.donationDate ?? api.createdAt ?? new Date().toISOString(),
-    status: mapStatusFromApi(api.status),
-    documentos:
-      api.documentos ??
-      api.documents ??
-      api.files?.map((f: any) => ({
-        id: f.id ?? f._id ?? f.name,
-        nome: f.nome ?? f.name ?? 'Documento',
-        tipo: f.tipo ?? f.type ?? 'Arquivo',
-        dataEnvio: f.dataEnvio ?? f.uploadedAt ?? api.updatedAt ?? new Date().toISOString(),
-        url: f.url ?? `${BASE_URL}/donations/${api.id ?? api._id}/audit/documents/${f.id ?? f._id ?? f.name}`,
-      })) ??
-      [],
-    acao: api.acao ?? api.action ?? undefined,
-    motivoReprovacao: api.motivoReprovacao ?? api.rejectReason ?? api.reason ?? null,
-  };
-}
 
 export default function AuditoriaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAuditoria, setSelectedAuditoria] = useState<(RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null }) | null>(null);
-  const [activeFilter, setActiveFilter] = useState<FilterKey>('aguardando');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [auditorias, setAuditorias] = useState<(RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null })[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const [selectedAuditoria, setSelectedAuditoria] = useState<Auditoria | null>(null);
+  const [activeFilter, setActiveFilter] = useState("aguardando");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dadosAuditoria, setDadosAuditoria] = useState<Auditoria[]>([]);
 
-  const handleFilterClick = (filterName: Exclude<FilterKey, 'todos'>) => {
-    setActiveFilter((prev) => (prev === filterName ? 'todos' : filterName));
+  const carregarDadosDeAuditoria = useCallback(async () => {
+    const baseURL = 'https://vigilant-spork-qwr7grqg564c6x5j-3001.app.github.dev';
+    try {
+      const responseDoacoes = await axios.get(`${baseURL}/donations/audit`);
+      const doacoesIncompletas: any[] = responseDoacoes.data;
+
+      const dadosMapeadosPromises = doacoesIncompletas.map(async (item) => {
+        try {
+          const [responseAcoes, responseEmpresa] = await Promise.all([
+            axios.get(`${baseURL}/actions/company/${item.empresaId}`),
+            axios.get(`${baseURL}/company/${item.empresaId}`)
+          ]);
+
+          const todasAcoesDaEmpresa = responseAcoes.data;
+          const dadosDaEmpresa = responseEmpresa.data;
+          const acaoCompleta = todasAcoesDaEmpresa.find(acao => acao.acaoId === item.acaoId);
+
+          if (!acaoCompleta) {
+            console.warn(`Ação com ID ${item.acaoId} não foi encontrada.`);
+            return null;
+          }
+
+          const nomeDaEmpresa = dadosDaEmpresa?.nome ?? 'Empresa sem nome';
+          const emailDaEmpresa = dadosDaEmpresa?.usuario?.email ?? 'Email não informado';
+
+          return {
+            id: `aud-${item.id}`,
+            nomeEmpresa: nomeDaEmpresa,
+            emailEmpresa: emailDaEmpresa,
+            nomeONG: acaoCompleta.nomeOng ?? 'ONG não informada',
+            acao: acaoCompleta.nome ?? 'Ação sem nome',
+            tipoDoacao: item.tipo,
+            dataDoacao: item.data,
+            valorDoacao: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.valor),
+            status: mapStatus(item.status), // Agora a tradução vai funcionar
+            motivoReprovacao: item.motivoReprovacao,
+            documentos: item.documentos ?? [],
+          };
+
+        } catch (error) {
+          console.error(`Falha ao processar doação ID ${item.id}:`, error);
+          return null;
+        }
+      });
+
+      const dadosMapeados = (await Promise.all(dadosMapeadosPromises)).filter(Boolean);
+      setDadosAuditoria(dadosMapeados as Auditoria[]);
+
+    } catch (error) {
+      console.error('Erro geral ao carregar dados da auditoria:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    carregarDadosDeAuditoria();
+  }, [carregarDadosDeAuditoria]);
+
+  const handleUpdateStatus = (newStatus: 'aprovada' | 'reprovada') => {
+    if (!selectedAuditoria) return;
+
+    setDadosAuditoria(currentData =>
+      currentData.map(item =>
+        item.id === selectedAuditoria.id
+          ? { ...item, status: newStatus }
+          : item
+      )
+    );
   };
 
-  function openModal(auditoria: RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null }) {
+  const filteredAuditorias = dadosAuditoria.filter((auditoria) => {
+    const statusMatch =
+      activeFilter === "todos" ||
+      auditoria.status.toLowerCase() === activeFilter.toLowerCase();
+    
+    const searchMatch =
+      (auditoria.nomeEmpresa?.toLowerCase() ?? '').includes(searchTerm.toLowerCase()) ||
+      (auditoria.nomeONG?.toLowerCase() ?? '').includes(searchTerm.toLowerCase());
+
+    return statusMatch && searchMatch;
+  });
+
+  const handleFilterClick = (filterName: string) => {
+    setActiveFilter(activeFilter === filterName ? "todos" : filterName);
+  };
+
+  function openModal(auditoria: Auditoria) {
     setSelectedAuditoria(auditoria);
     setIsModalOpen(true);
   }
+
   function closeModal() {
     setIsModalOpen(false);
   }
 
-  const debouncedSearch = useDebouncedValue(searchTerm, 300);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        if (abortRef.current) abortRef.current.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
-
-        const statusApi = mapStatusToApi(activeFilter);
-        const path = statusApi
-          ? `/donations/audit/status/${encodeURIComponent(statusApi)}/`
-          : `/donations/audit/`;
-
-        const url = `${BASE_URL}${path}`;
-        // ⬇️ sem credentials e sem headers para evitar preflight
-        const res = await fetch(url, { method: 'GET', signal: controller.signal });
-
-        if (!res.ok) {
-          let body: any = null;
-          try { body = await res.json(); } catch {}
-          throw new Error(body?.message || body?.error || `HTTP ${res.status} ${res.statusText}`);
-        }
-
-        const data = (await res.json()) as any[];
-        setAuditorias((Array.isArray(data) ? data : []).map(normalizeDonation));
-      } catch (e: any) {
-        if (e?.name === 'AbortError') return;
-        setError(e?.message || 'Falha ao carregar auditorias.');
-      } finally {
-        setLoading(false);
-      }
-    })();
-
-    return () => {
-      if (abortRef.current) abortRef.current.abort();
-    };
-  }, [activeFilter]);
-
-  const filteredAuditorias = useMemo(() => {
-    return auditorias.filter((auditoria) => {
-      const statusMatch =
-        activeFilter === 'todos' ||
-        auditoria.status.toLowerCase() === activeFilter.toLowerCase();
-      const searchMatch =
-        auditoria.nomeEmpresa.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        auditoria.nomeONG.toLowerCase().includes(debouncedSearch.toLowerCase());
-      return statusMatch && searchMatch;
-    });
-  }, [auditorias, activeFilter, debouncedSearch]);
-
-  function handleUpdated(updated: RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null }) {
-    setAuditorias((current) =>
-      current.map((a) => (a.id === updated.id ? { ...a, ...updated } : a))
-    );
-  }
-
   return (
     <div className="bg-[#F5F5F5] flex flex-col min-h-screen">
-      <Navbar ativo="sair" />
-      <main className="px-[52px] py-8 flex-grow gap-9">
+      <Navbar variant="logout" onLogout={() => alert("Saindo...")} />
+
+      <main className="px-[52px] pb-8 pt-[80px] flex-grow gap-9">
         <div className="max-w-7xl py-8 flex flex-col gap-9">
           <div>
-            <h1 className="text-black font-sans text-[32px] font-bold ">Auditoria de doações</h1>
-            <p className="text-[#1F1F1F] font-sans text-[16px] font-normal">Aprove ou reprove as documentações submetidas pelas empresas</p>
+            <h1 className="text-black font-sans text-[32px] font-bold ">
+              Auditoria de doações
+            </h1>
+            <p className="text-[#1F1F1F] font-sans text-[16px] font-normal">
+              Aprove ou reprove as documentações submetidas pelas empresas
+            </p>
           </div>
 
           <div className="flex flex-col gap-[16px]">
@@ -156,23 +165,25 @@ export default function AuditoriaPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button onClick={() => handleFilterClick('aguardando')}
-                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === 'aguardando'
-                  ? 'bg-[#1D71B8] text-white border-[#1D71B8]' : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'}`}>
+              <button
+                onClick={() => handleFilterClick("aguardando")}
+                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === "aguardando" ? "bg-[#1D71B8] text-white border-[#1D71B8]" : "bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50"}`}
+              >
                 Aguardando Revisão
               </button>
-              <button onClick={() => handleFilterClick('aprovada')}
-                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === 'aprovada'
-                  ? 'bg-[#1D71B8] text-white border-[#1D71B8]' : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'}`}>
+              <button
+                onClick={() => handleFilterClick("aprovada")}
+                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === "aprovada" ? "bg-[#1D71B8] text-white border-[#1D71B8]" : "bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50"}`}
+              >
                 Aprovados
               </button>
-              <button onClick={() => handleFilterClick('reprovada')}
-                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === 'reprovada'
-                  ? 'bg-[#1D71B8] text-white border-[#1D71B8]' : 'bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50'}`}>
+              <button
+                onClick={() => handleFilterClick("reprovada")}
+                className={`border rounded-3xl flex items-center px-3 py-1 text-[12px] font-medium transition-colors ${activeFilter === "reprovada" ? "bg-[#1D71B8] text-white border-[#1D71B8]" : "bg-white text-[#1D71B8] border-[#1D71B8] hover:bg-blue-50"}`}
+              >
                 Reprovados
               </button>
             </div>
-
             <hr className=" border-[#DBDBDB]" />
           </div>
 
@@ -185,41 +196,23 @@ export default function AuditoriaPage() {
               <div className="w-[146px]"><span className="font-sans text-[12px] font-semibold text-[#6A7282]">STATUS</span></div>
               <div className="w-[125px]"><span className="font-sans text-[12px] font-semibold text-[#6A7282]">AÇÃO</span></div>
             </div>
-
-            {loading && <div className="p-6 text-sm text-[#6A7282]">Carregando auditorias...</div>}
-            {error && <div className="p-6 text-sm text-red-600">Erro: {error}</div>}
-
-            {!loading && !error && (
-              <div className="flex flex-col rounded-b-lg shadow">
-                {filteredAuditorias.map((auditoria) => (
-                  <RowAuditoria key={auditoria.id} {...auditoria} onClick={() => openModal(auditoria)} />
-                ))}
-                {filteredAuditorias.length === 0 && (
-                  <div className="p-6 text-sm text-[#6A7282]">Nenhum resultado.</div>
-                )}
-              </div>
-            )}
+            <div className="flex flex-col rounded-b-lg shadow">
+              {filteredAuditorias.map((auditoria) => (
+                <RowAuditoria key={auditoria.id} {...auditoria} onClick={() => openModal(auditoria)} />
+              ))}
+            </div>
           </div>
         </div>
 
-        <ModalRevisao
-          isOpen={isModalOpen}
-          onClose={closeModal}
+        <ModalRevisao 
+          isOpen={isModalOpen} 
+          onClose={closeModal} 
           auditoria={selectedAuditoria}
-          onUpdated={handleUpdated}
+          onSuccess={handleUpdateStatus}
         />
       </main>
 
       <Rodape />
     </div>
   );
-}
-
-function useDebouncedValue<T>(value: T, delay = 300) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
 }

@@ -4,22 +4,30 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import expressWinston from 'express-winston';
 import helmet from 'helmet';
+import path from 'path';
 import routes from './routes';
 import swaggerDocument from './docs';
 import { requestHandler, errorHandler, requestLogger } from './middlewares';
 
 const app: Express = express();
 
+app.use(cors()); 
+
 app.use(helmet());
 
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: [
+    'http://localhost:3000', 
+    'https://vigilant-spork-qwr7grqg564c6x5j-3000.app.github.dev' 
+  ]
   }),
 );
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+const uploadsPath = path.resolve(__dirname, '..', 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 app.use(
   expressWinston.logger({ winstonInstance: requestLogger, statusLevels: true }),
 );

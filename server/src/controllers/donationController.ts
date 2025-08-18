@@ -118,7 +118,7 @@ export class DonationController {
     }
   };
 
-  private async notifyStatusChange(donationId: number, status: 'Aprovada' | 'Reprovada') {
+  private async notifyStatusChange(donationId: number, status: 'Aprovado' | 'Reprovado') {
     const donation = await this.repository.findById(donationId);
 
     if (!donation) {
@@ -134,7 +134,7 @@ export class DonationController {
       throw new Error('Empresa or email not found');
     }
 
-    const subject = status === 'Aprovada' 
+    const subject = status === 'Aprovado' 
       ? 'Doação Aprovada - Selo de Responsa' 
       : 'Doação Reprovada - Selo de Responsa';
 
@@ -158,10 +158,10 @@ export class DonationController {
       const donationId = Number(req.params.id);
       if (isNaN(donationId)) return res.status(400).json({ error: 'Invalid donation ID' });
 
-      const updatedDonation = await this.repository.updateStatus(donationId, 'Aprovada');
+      const updatedDonation = await this.repository.updateStatus(donationId, 'Aprovado');
 
       // Envia notificação por email
-      await this.notifyStatusChange(donationId, 'Aprovada');
+      await this.notifyStatusChange(donationId, 'Aprovado');
 
       res.json(updatedDonation);
     } catch (error) {
@@ -178,7 +178,7 @@ export class DonationController {
       const updatedDonation = await this.repository.updateStatus(donationId, 'Reprovada');
 
       // Envia notificação por email
-      await this.notifyStatusChange(donationId, 'Reprovada');
+      await this.notifyStatusChange(donationId, 'Reprovado');
 
       res.json(updatedDonation);
     } catch (error) {

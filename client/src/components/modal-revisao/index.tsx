@@ -1,233 +1,230 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-import { format } from "date-fns";
-import { X, File, Download, CheckCircle2, XCircle } from "lucide-react";
-import { type RowAuditoriaProps } from "@/components/row-auditoria";
-import Chip from "@/components/chip-status";
-
-const BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(
-  /\/$/,
-  ""
-);
-
-const mapStatusFromApi = (s?: string): RowAuditoriaProps["status"] => {
-  if (!s) return "aguardando";
-  const low = s.toLowerCase();
-  if (low.startsWith("pend")) return "aguardando";
-  if (low.startsWith("approv") || low.startsWith("aprov")) return "aprovada";
-  if (low.startsWith("reject") || low.startsWith("reprov")) return "reprovada";
-  return "aguardando";
-};
-
-function normalizeDonation(
-  api: any
-): RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null } {
-  return {
-    id: api.id ?? api._id,
-    nomeEmpresa: api.nomeEmpresa ?? api.companyName ?? api.company ?? "",
-    emailEmpresa: api.emailEmpresa ?? api.companyEmail ?? api.email ?? "",
-    nomeONG: api.nomeONG ?? api.ngoName ?? api.organization ?? "",
-    tipoDoacao: api.tipoDoacao ?? api.donationType ?? "",
-    valorDoacao: api.valorDoacao ?? api.donationValue ?? "",
-    dataDoacao:
-      api.dataDoacao ??
-      api.donationDate ??
-      api.createdAt ??
-      new Date().toISOString(),
-    status: mapStatusFromApi(api.status),
-    documentos: [],
-    acao: api.acao ?? api.action ?? undefined,
-    motivoReprovacao:
-      api.motivoReprovacao ?? api.rejectReason ?? api.reason ?? null,
-  };
-}
-
-type Documento = {
-  id: string;
-  nome: string;
-  tipo: string;
-  dataEnvio: string;
-  url: string;
-};
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import { X, File, Download, CheckCircle2, XCircle } from 'lucide-react';
+import { type RowAuditoriaProps } from '@/components/row-auditoria';
+import Button from '@/components/button';
+import Chip from '@/components/chip-status'
 
 interface ModalRevisaoProps {
   isOpen: boolean;
   onClose: () => void;
-  auditoria:
-    | (RowAuditoriaProps & { acao?: string; motivoReprovacao?: string | null })
-    | null;
-  onUpdated?: (
-    updated: RowAuditoriaProps & {
-      acao?: string;
-      motivoReprovacao?: string | null;
-    }
-  ) => void;
+  auditoria: RowAuditoriaProps | null;
+  onSuccess: (newStatus: 'aprovada' | 'reprovada') => void;
 }
 
-export default function ModalRevisao({
-  isOpen,
-  onClose,
-  auditoria,
-  onUpdated,
-}: ModalRevisaoProps) {
+export default function ModalRevisao({ isOpen, onClose, auditoria, onSuccess }: ModalRevisaoProps) {
   const [isReproving, setIsReproving] = useState(false);
-  const [motivo, setMotivo] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [docs, setDocs] = useState<Documento[]>([]);
-  const [loadingDocs, setLoadingDocs] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // URL do Backend construída dinamicamente
+  const getBaseURL = () => {
+    if (typeof window !== 'undefined') {
+      return `https://${window.location.hostname.replace('3000', '3001')}`;
+    }
+    return '';
+  };
 
   useEffect(() => {
-    if (!isOpen || !auditoria?.id) return;
+    if (!isOpen) {
+      setTimeout(() => {
+        setIsReproving(false);
+        setRejectionReason('');
+      }, 300);
+    }
+  }, [isOpen]);
 
-    let cancelled = false;
-    const controller = new AbortController();
-    (async () => {
-      try {
-        setLoadingDocs(true);
-        const url = `${BASE_URL}/donations/${auditoria.id}/audit/documents/`;
-        // ⬇️ sem credentials e sem headers (GET simples)
-        const res = await fetch(url, {
-          method: "GET",
-          signal: controller.signal,
-        });
-        if (!res.ok) {
-          setDocs(
-            (auditoria.documentos || []).map((d) => ({
-              id: d.id,
-              nome: d.nome,
-              tipo: d.tipo,
-              dataEnvio: d.dataEnvio,
-              url:
-                d.url ||
-                `${BASE_URL}/donations/${auditoria.id}/audit/documents/${d.id}`,
-            }))
-          );
-          return;
-        }
-        const data = (await res.json()) as any[];
-        if (cancelled) return;
-        const mapped =
-          (data || []).map((f: any) => ({
-            id: f.id ?? f._id ?? f.name,
-            nome: f.nome ?? f.name ?? "Documento",
-            tipo: f.tipo ?? f.type ?? "Arquivo",
-            dataEnvio: f.dataEnvio ?? f.uploadedAt ?? new Date().toISOString(),
-            url: `${BASE_URL}/donations/${auditoria.id}/audit/documents/${
-              f.id ?? f._id ?? f.name
-            }`,
-          })) ?? [];
-        setDocs(mapped);
-      } catch {
-        setDocs(
-          (auditoria.documentos || []).map((d) => ({
-            id: d.id,
-            nome: d.nome,
-            tipo: d.tipo,
-            dataEnvio: d.dataEnvio,
-            url:
-              d.url ||
-              `${BASE_URL}/donations/${auditoria.id}/audit/documents/${d.id}`,
-          }))
-        );
-      } finally {
-        setLoadingDocs(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
-  }, [isOpen, auditoria?.id]);
-
-  if (!isOpen || !auditoria) return null;
-
-  const formattedDate = useMemo(
-    () => format(new Date(auditoria.dataDoacao), "dd/MM/yyyy"),
-    [auditoria.dataDoacao]
-  );
+  if (!auditoria) return null;
 
   const handleClose = () => {
-    setIsReproving(false);
-    setMotivo("");
+    if (isSubmitting) return;
     onClose();
   };
 
-  async function handleAprovar() {
+  const handleApprove = async () => {
+    if (!auditoria) return;
+    setIsSubmitting(true);
     try {
-      setSubmitting(true);
-      const res = await fetch(
-        `${BASE_URL}/donations/${auditoria.id}/audit/approve/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (!res.ok) {
-        let body: any = null;
-        try {
-          body = await res.json();
-        } catch {}
-        throw new Error(
-          body?.message || body?.error || `HTTP ${res.status} ${res.statusText}`
-        );
-      }
-      const data = await res.json();
-      const updated = normalizeDonation(data);
-      onUpdated?.({ ...auditoria, ...updated });
-      handleClose();
-    } catch (e) {
-      alert((e as Error).message || "Erro ao aprovar auditoria");
-    } finally {
-      setSubmitting(false);
-    }
-  }
+      const numericId = auditoria.id.replace('aud-', '');
+      const response = await fetch(`${getBaseURL()}/donations/${numericId}/audit/approve/`, {
+        method: 'PATCH',
+      });
 
-  async function handleReprovar() {
-    if (!motivo.trim()) {
-      alert("Informe um motivo para reprovação.");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Falha ao aprovar a doação');
+      }
+      onSuccess('aprovada');
+      handleClose();
+    } catch (error) {
+      console.error("Erro ao aprovar:", error);
+      alert(`Ocorreu um erro ao aprovar a doação: ${error instanceof Error ? error.message : 'Tente novamente.'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!auditoria || !rejectionReason.trim()) {
+      alert("Por favor, descreva o motivo da reprovação.");
       return;
     }
+    setIsSubmitting(true);
     try {
-      setSubmitting(true);
-      const res = await fetch(
-        `${BASE_URL}/donations/${auditoria.id}/audit/reject/`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ reason: motivo.trim() }),
-        }
-      );
-      if (!res.ok) {
-        let body: any = null;
-        try {
-          body = await res.json();
-        } catch {}
-        throw new Error(
-          body?.message || body?.error || `HTTP ${res.status} ${res.statusText}`
-        );
-      }
-      const data = await res.json();
-      const updated = normalizeDonation(data);
-      onUpdated?.({
-        ...auditoria,
-        ...updated,
-        motivoReprovacao: updated.motivoReprovacao ?? motivo.trim(),
+      const numericId = auditoria.id.replace('aud-', '');
+      const response = await fetch(`${getBaseURL()}/donations/${numericId}/audit/reject/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ motivo: rejectionReason }),
       });
-      handleClose();
-    } catch (e) {
-      alert((e as Error).message || "Erro ao reprovar auditoria");
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
-  const renderDetailsAndDocuments = () => <>{/* ... resto inalterado ... */}</>;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Falha ao reprovar a doação');
+      }
+      onSuccess('reprovada');
+      handleClose();
+    } catch (error) {
+      console.error("Erro ao reprovar:", error);
+      alert(`Ocorreu um erro ao reprovar a doação: ${error instanceof Error ? error.message : 'Tente novamente.'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderDetailsAndDocuments = () => (
+    <>
+      <div className='flex gap-3 p-4 bg-[#F9FAFB] rounded-[6px]'>
+        <div className='flex flex-col gap-1.5 items-start w-1/2'>
+          <h3 className='font-sans text-[14px] font-semibold text-[#101828]'>Detalhes da Doação</h3>
+          <div className='text-left'>
+            <p className='font-sans text-[14px] font-normal text-[#0A0A0A]'><span className="font-semibold">Empresa:</span> {auditoria.nomeEmpresa}</p>
+            <p className='font-sans text-[14px] font-normal text-[#0A0A0A]'><span className="font-semibold">Email:</span> {auditoria.emailEmpresa}</p>
+            <p className='font-sans text-[14px] font-normal text-[#0A0A0A]'><span className="font-semibold">ONG Beneficiada:</span> {auditoria.nomeONG}</p>
+          </div>
+        </div>
+        <div className='flex flex-col gap-1.5 items-start w-1/2'>
+          <h3 className='font-sans text-[14px] font-semibold text-[#101828]'>Informações da Doação</h3>
+          <div className='text-left'>
+            <p className='font-sans text-[14px] font-normal text-[#0A0A0A]'><span className="font-semibold">Ação:</span> {auditoria.acao || 'Não informado'}</p>
+            <p className='font-sans text-[14px] font-normal text-[#0A0A0A]'><span className="font-semibold">Tipo:</span> {auditoria.tipoDoacao}</p>
+            <p className='font-sans text-[14px] font-normal text-[#0A0A0A]'><span className="font-semibold">Valor/Quantidade:</span> {auditoria.valorDoacao}</p>
+          </div>
+        </div>
+      </div>
+      <div className='flex flex-col gap-4 flex-1 min-h-0'>
+        <h4 className='font-sans text-[16px] font-semibold text-[#101828]'>Documentos Anexados ({auditoria.documentos.length})</h4>
+        <div className="flex flex-col gap-2.5 h-full overflow-y-auto pr-4">
+          {auditoria.documentos.map((doc) => {
+            // ================== CORREÇÃO APLICADA AQUI ==================
+            const docUrl = `${getBaseURL()}/${doc.path}`; // Constrói a URL de download
+            
+            return (
+              <div key={doc.id} className="flex justify-between items-center p-4 border border-[#E5E7EB] rounded-[8px]"> 
+                <div className="flex items-center gap-3 text-left"> 
+                  <div className='flex-shrink-0 flex items-center justify-center w-[34px] h-[34px] bg-[#EFF6FF] rounded-[4px]'><File size={20} className='text-[#1474FF]' /></div> 
+                  <div>
+                    {/* Usa a propriedade correta 'storedName' */}
+                    <p className="font-sans text-[#101828] text-[14px] font-semibold">{doc.storedName}</p>
+                    <p className="font-sans text-[#6A7282] text-[12px] font-normal">
+                      {/* Usa a propriedade correta 'mimetype' */}
+                      {doc.mimetype} • Enviado em {format(new Date(auditoria.dataDoacao), 'dd/MM/yyyy')}
+                    </p>
+                  </div>
+                </div>
+                {/* Usa a URL construída e o nome correto para o download */}
+                <a href={docUrl} download={doc.storedName} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-3 py-1.5 rounded-md font-semibold text-xs transition-colors bg-white text-gray-800 border border-gray-300 hover:bg-gray-100 flex-shrink-0">
+                  <Download size={14} className="mr-2" /> <span>Baixar</span>
+                </a>
+              </div>
+            );
+            // ============================================================
+          })}
+        </div>
+      </div>
+    </>
+  );
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-      {/* ... resto inalterado (UI do modal) ... */}
-    </div>
+    <Transition appear show={isOpen}>
+      <Dialog as="div" className="relative z-10" onClose={handleClose}>
+        <div className="fixed inset-0 bg-black/30" />
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="w-full max-w-3xl transform overflow-hidden rounded-[8px] bg-white p-6 text-left shadow-xl transition-all flex flex-col gap-6 max-h-[95vh]">
+              <div className='flex justify-between items-start gap-4'>
+                <div className="flex items-center gap-4">
+                  <h2 className="font-sans text-[20px] text-black font-bold">Revisão de Documentos</h2>
+                  {auditoria.status !== 'aguardando' && <Chip status={auditoria.status} />}
+                </div>
+                <button onClick={handleClose} className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-50" disabled={isSubmitting}>
+                  <X size={20} className='text-[#0A0A0A]' />
+                </button>
+              </div>
+              
+              {auditoria.status === 'aguardando' && (
+                isReproving ? (
+                  <div className="flex flex-col rounded-[8px] border border-[#D1D5DC] gap-3 p-4 bg-white">
+                    <label htmlFor="motivo" className="font-sans text-[14px] font-semibold text-[#101828]">Motivo da Reprovação</label>
+                    <textarea
+                      id="motivo"
+                      rows={6}
+                      className="w-full rounded-[8px] border border-[#D1D5DC] shadow-sm text-[#858585] focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+                      placeholder="Descreva o motivo da reprovação dos documentos..."
+                      value={rejectionReason}
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                ) : ( renderDetailsAndDocuments() )
+              )}
+
+              {auditoria.status === 'reprovada' && (
+                 <div className="flex flex-col overflow-y-auto gap-6">
+                   <div className="flex flex-col gap-2 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 className="font-sans text-[14px] font-semibold text-red-800 flex items-center gap-2"><XCircle size={16}/> Motivo da Reprovação</h4>
+                    <p className="font-sans text-sm text-red-700">{auditoria.motivoReprovacao || 'Nenhum motivo foi fornecido.'}</p>
+                   </div>
+                   {renderDetailsAndDocuments()}
+                </div>
+              )}
+
+              {auditoria.status === 'aprovada' && (
+                <div className="flex flex-col overflow-y-auto gap-6">
+                  <div className="flex flex-col gap-2 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h4 className="font-sans text-[14px] font-semibold text-green-800 flex items-center gap-2"><CheckCircle2 size={16}/> Documentação Aprovada</h4>
+                    <p className="font-sans text-sm text-green-700">Todos os documentos foram verificados e aprovados com sucesso.</p>
+                  </div>
+                  {renderDetailsAndDocuments()}
+                </div>
+              )}
+
+              {auditoria.status === 'aguardando' && (
+                <div className="flex justify-end gap-4 border-t border-gray-200 pt-6">
+                  {isReproving ? (
+                    <>
+                      <Button variant="secondary" className="flex-1" onClick={() => setIsReproving(false)} disabled={isSubmitting}>Voltar</Button>
+                      <Button variant="primary" className="flex-1" onClick={handleReject} disabled={isSubmitting}>
+                        {isSubmitting ? 'Reprovando...' : 'Reprovar e notificar'}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="secondary" className="flex-1" onClick={() => setIsReproving(true)} disabled={isSubmitting}>Reprovar</Button>
+                      <Button variant="primary" className="flex-1" onClick={handleApprove} disabled={isSubmitting}>
+                        {isSubmitting ? 'Aprovando...' : 'Aprovar e notificar'}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
   );
 }
