@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-// Ajuste o caminho de import do componente conforme sua estrutura
 import CadastroDoacao from 'src/components/formulario-doacao';
 
 /** Mocks dos filhos para testes controlados */
