@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function seed() {
   const saltRounds = 6;
 
-  await prisma.user.createMany({
+  await prisma.usuario.createMany({
     data: [
       {
        

@@ -56,13 +56,13 @@ export default class DonationRepository {
   }
 
   async findDocumentsByDonationId(donationId: number) {
-    return prisma.file.findMany({
+    return prisma.documento.findMany({
       where: { doacaoId: donationId },
     });
   }
 
   async findDocumentById(documentId: string) {
-    return prisma.file.findUnique({
+    return prisma.documento.findUnique({
       where: { id: documentId },
     });
   }

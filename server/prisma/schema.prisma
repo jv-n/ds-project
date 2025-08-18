@@ -60,7 +60,7 @@ model Doacao {
   data         DateTime
   valor        Float
   tipo         String
-  documentos   File[]
+  documentos   Documento[]
   status       String @default("Pendente") // pendente, aprovado, reprovado
   motivoReprovacao String?
   empresaId    Int
@@ -82,13 +82,12 @@ model Selo {
   empresa    Empresa    @relation(fields: [empresaId], references: [id])
 }
 
-model File {
+model Documento {
   id         String   @id @default(uuid())
   storedName String
   mimetype   String
   size       Int
   path       String
-  status     String @default("Pendente")
   createdAt  DateTime @default(now())
   doacaoId    Int?
 

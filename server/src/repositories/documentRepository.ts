@@ -1,8 +1,9 @@
 import path from 'path';
 import { Express } from 'express';
 import fs from 'fs';
-import { File } from '@prisma/client';
+import { Documento } from '@prisma/client';
 import prisma from '../database';
+
 
 
 class DocumentRepository {
@@ -21,13 +22,13 @@ class DocumentRepository {
         }
     }
 
-    async uploadFile(file: Express.Multer.File, filename?: string): Promise<File> {
+    async uploadFile(file: Express.Multer.File, filename?: string): Promise<Documento> {
         const { originalname, mimetype, size } = file;
         const storedName = filename || `${Date.now().toString()}-${originalname}`;
         const filePath = path.join(this.uploadFolder, storedName);
 
         // Save file info to database
-        const savedFile = await prisma.file.create({
+        const savedFile = await prisma.documento.create({
             data: {
                 storedName,
                 mimetype,
@@ -51,7 +52,7 @@ class DocumentRepository {
             }
 
             // Remove the file info from the database
-            await prisma.file.delete({
+            await prisma.documento.delete({
                 where: { id },
             });
             

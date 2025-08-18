@@ -48,7 +48,7 @@ Table Doacao {
   data DateTime [not null]
   valor Float [not null]
   tipo String [not null]
-  documentos File [not null]
+  documentos Documento [not null]
   status String [not null, default: 'Pendente']
   motivoReprovacao String
   empresaId Int [not null]
@@ -68,13 +68,12 @@ Table Selo {
   empresa Empresa [not null]
 }
 
-Table File {
+Table Documento {
   id String [pk]
   storedName String [not null]
   mimetype String [not null]
   size Int [not null]
   path String [not null]
-  status String [not null, default: 'Pendente']
   createdAt DateTime [default: `now()`, not null]
   doacaoId Int
   doacao Doacao
@@ -88,4 +87,4 @@ Ref: Doacao.(acaoId, empresaId) > AcaoEmpresa.(acaoId, empresaId)
 
 Ref: Selo.empresaId > Empresa.id
 
-Ref: File.doacaoId > Doacao.id
+Ref: Documento.doacaoId > Doacao.id

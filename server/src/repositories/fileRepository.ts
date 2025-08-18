@@ -12,7 +12,7 @@ class FileRepository {
         const storedName = filename || `${Date.now().toString()}-${originalname}`;
         const filePath = path.join(this.uploadFolder, storedName);
 
-        await prisma.file.create({
+        await prisma.documento.create({
           data: {
             storedName,
             mimetype: file.mimetype,
@@ -47,7 +47,7 @@ class FileRepository {
     }
 
     // Remove the file info from the database
-    await prisma.file.delete({
+    await prisma.documento.delete({
       where: { id },
     });
   }
