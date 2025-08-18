@@ -92,7 +92,7 @@ export class SealService {
       empresaId: empresa.id,
       pontuacaoTotal,
       nivelSelo,
-      valorTotalDoado: this.totalDoadoEmDinheiro(acoesComDoacoesAprovadas).toFixed(2),
+      valorTotalDoado: this.totalDoadoEmDinheiro(acoesComDoacoesAprovadas),
       criterios: [
         { nome: 'ODSs com atuação', pontuacao: pontODS, detalhe: `${qtdODS} ODSs` },
         { nome: 'ONGs atingidas', pontuacao: pontONGs, detalhe: `${this.totalONGs(acoesComDoacoesAprovadas)} ONGs` },

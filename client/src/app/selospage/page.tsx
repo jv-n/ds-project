@@ -1,43 +1,44 @@
 "use client";
 import Rodape from "@/components/rodape";
-import { useState /*, useEffect*/ } from "react";
+import { useState , useEffect } from "react";
 import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
 import Cardpontos from "@/components/pontos-esmpresa";
 import Navbar from "@/components/navbar";
-// import { useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function SelosPage() {
-  // const { id } = useParams();
+  //const { id } = useParams();
+  const id = 1; //modificar essa parte foi so pra testar
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarcriterios, Setcriterios] = useState("off");
 
-  // const [dadosSelo, setDadosSelo] = useState(null);
+  const [dadosSelo, setDadosSelo] = useState(null);
 
-  // useEffect(() => {
-  //   async function fetchSelo() {
-  //     try {
-  //       const res = await fetch(`/api/seal/company/${id}`);
-  //       const data = await res.json();
-  //       setDadosSelo(data);
-  //     } catch (error) {
-  //       console.error("Erro ao buscar selo:", error);
-  //     }
-  //   }
+  useEffect(() => {
+    async function fetchSelo() {
+      try {
+        const res = await fetch(`http://localhost:3001/seal/company/1`); //modificar essa parte foi so pra testar
+        const data = await res.json();
+        setDadosSelo(data);
+      } catch (error) {
+        console.error("Erro ao buscar selo:", error);
+      }
+    }
+  if (id) fetchSelo();
+}, [id]);
 
-  //   if (id) fetchSelo();
-  // }, [id]);
-
+  
   // 🔧 MOCK: dados simulados da API
-  const dadosSelo = {
-    nivel: "bronzemedal",
-    ptsodsscomatuacao: "14",
-    ptsongsatingidas: "10",
-    ptscolaboradoresengajados: "9",
-    ptsorcamentodestinado: "8"
-  };
+  //const dadosSelo = {
+  //  nivel: "bronzemedal",
+  //  ptsodsscomatuacao: "14",
+  //  ptsongsatingidas: "10",
+  //  ptscolaboradoresengajados: "9",
+  //  ptsorcamentodestinado: "8"
+  //};
 
   function abrirModal() {
     setMostrarModal(true);
@@ -62,14 +63,18 @@ export default function SelosPage() {
         </div>
       </div>
 
-      {/* 🔧 Exibe os pontos simulados */}
-      <Cardpontos
-        nivel={dadosSelo.nivel}
-        ptsodsscomatuacao={dadosSelo.ptsodsscomatuacao}
-        ptsongsatingidas={dadosSelo.ptsongsatingidas}
-        ptscolaboradoresengajados={dadosSelo.ptscolaboradoresengajados}
-        ptsorcamentodestinado={dadosSelo.ptsorcamentodestinado}
-      />
+      {!dadosSelo ? (
+        <div className="text-center mt-10">Carregando dados...</div>
+      ) : (
+        <Cardpontos
+          nivel={dadosSelo.nivel}
+          ptsodsscomatuacao={dadosSelo.ptsodsscomatuacao}
+          ptsongsatingidas={dadosSelo.ptsongsatingidas}
+          ptscolaboradoresengajados={dadosSelo.ptscolaboradoresengajados}
+          ptsorcamentodestinado={dadosSelo.ptsorcamentodestinado}
+        />
+      )}
+
 
       <div className="font-sans font-bold text-[32px] text-black mr-[630px] mt-[25px] flex justify-center">
         <div>Selo de Impacto Social</div>

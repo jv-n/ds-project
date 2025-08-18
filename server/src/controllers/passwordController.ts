@@ -12,13 +12,14 @@ export class PasswordController {
         this.repository = new UserRepository();
     }
     
-    public async forgotPassword(req: Request, res: Response): Promise<Response> {
+    public forgotPassword = async (req: Request, res: Response): Promise<Response> => {
         const { email } = req.body;
 
         try {
             const user = await this.repository.findByEmail(email);
-      
+
             if (!user) {
+                console.error("Nenhum usuário encontrado para o email:", email);
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
     
@@ -31,7 +32,7 @@ export class PasswordController {
                 resetPasswordExpires: now,
             });
     
-            const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`;
+            const resetURL = `http://localhost:3000/password/reset-password?token=${resetToken}`;
     
             try {
                 await restartEmail({
@@ -41,20 +42,24 @@ export class PasswordController {
                 });
 
             } catch (err) {
+                console.error("Erro ao enviar e-mail:", err);
                 await this.repository.update(user.id, {
-                    resetPasswordToken: null,
-                    resetPasswordExpires: null,
+                resetPasswordToken: null,
+                resetPasswordExpires: null,
             });
-            return res.status(500).json({ error: 'Internal server error.' });
+
+
+            return res.status(500).json({ error: 'Internal server error1.' });
             }
     
             return res.status(200).json();
         } catch (error) {
+            console.error("Erro ao processar forgot-password:", error); 
             return res.status(500).json({ error: 'Internal server error.' });
         }
     }
 
-    public async resetPassword(req: Request, res: Response): Promise<Response> {
+     public resetPassword = async (req: Request, res: Response): Promise<Response> => {
       const { token } = req.query;
       const { password } = req.body;
 
@@ -79,7 +84,7 @@ export class PasswordController {
     
         return res.status(200).json({ message: 'Senha alterada com sucesso!' });
       } catch (error) {
-        return res.status(500).json({ error: 'Internal server error.' });
+        return res.status(500).json({ error: 'Internal server error3.' });
       }
     }
 }
