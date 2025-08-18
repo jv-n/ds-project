@@ -18,7 +18,6 @@ class FileRepository {
             mimetype: file.mimetype,
             size: file.size,
             path: filePath,
-            status: "pendente"
           },
         });
         

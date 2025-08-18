@@ -1,6 +1,5 @@
 import prisma from '../database';
 
-
 interface CreateDonationDTO {
   data: Date;
   valor: number;
@@ -16,7 +15,7 @@ interface CreateDonationDTO {
   }[];
 }
 
-export class DonationRepository {
+export default class DonationRepository {
   async create(data: CreateDonationDTO) {
     const { documentos, ...donationData } = data;
 
@@ -57,26 +56,40 @@ export class DonationRepository {
   }
 
   async findDocumentsByDonationId(donationId: number) {
-    return prisma.documento.findMany({
+    return prisma.file.findMany({
       where: { doacaoId: donationId },
     });
   }
 
   async findDocumentById(documentId: string) {
-    return prisma.documento.findUnique({
+    return prisma.file.findUnique({
       where: { id: documentId },
     });
   }
 
+  
   async updateStatus(donationId: number, status: string, motivoReprovacao?: string) {
+    const dataToUpdate: { status: string; motivoReprovacao?: string | null } = {
+      status,
+    };
+
+    if (status === 'Aprovada') {
+      
+      dataToUpdate.motivoReprovacao = null;
+    } else if (status === 'Reprovada' && motivoReprovacao) {
+      
+      dataToUpdate.motivoReprovacao = motivoReprovacao;
+    }
+
     return prisma.doacao.update({
       where: { id: donationId },
-      data: { status, motivoReprovacao },
+      data: dataToUpdate,
       include: {
         documentos: true,
       },
     });
   }
+ 
 
   async findById(id: number) {
     return prisma.doacao.findUnique({
@@ -91,5 +104,3 @@ export class DonationRepository {
     });
   }
 }
-
-export default new DonationRepository();

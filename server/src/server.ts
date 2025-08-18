@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import '@database';
+import './database';
 import './env';
 import app from './app';
 

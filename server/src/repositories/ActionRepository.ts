@@ -1,4 +1,4 @@
-import prisma from '@database';
+import prisma from '../database';
 
 interface CreateActionDTO {
   data: Date;
@@ -20,7 +20,7 @@ interface UpdateActionDTO {
   prefeituraId?: number;
 }
 
-export class ActionRepository {
+export default class ActionRepository {
   async create(data: CreateActionDTO) {
     return prisma.apoio.create({ data });
   }
