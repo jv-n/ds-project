@@ -20,6 +20,9 @@ model Usuario {
   telefone   String?
   perfil     String @default("empresa") // empresa, prefeitura
 
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
   empresa    Empresa?
 }
 
@@ -75,8 +78,9 @@ model Selo {
   nivel         String
   descricao     String
   pontuacaoMin  Int
+  ano           Int
   createdAt     DateTime   @default(now())
-  empresaId     Int
+  empresaId     Int     
 
   empresa    Empresa    @relation(fields: [empresaId], references: [id])
 }

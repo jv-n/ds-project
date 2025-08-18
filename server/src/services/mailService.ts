@@ -12,6 +12,12 @@ interface DonationEmailData {
   telefoneOng: string;
 }
 
+type EmailParams = {
+  to: string;
+  subject: string;
+  text: string;
+};
+
 export function generateDonationEmailTemplate(data: DonationEmailData): string {
   const statusColor = data.status === 'Aprovada' ? '#4CAF50' 
                     : data.status === 'Reprovada' ? '#F44336' 
@@ -92,4 +98,20 @@ function env(key: string): string {
     throw new Error(`Environment variable ${key} is not set.`);
   }
   return value;
+}
+
+export async function restartEmail({ to, subject, text }: EmailParams): Promise<void> {
+  try {
+    const info = await transporter.sendMail({
+      from: '"Sistema Selo de Responsa" <seloderesponsa@gmail.com>',
+      to,
+      subject,
+      text,
+    });
+
+    console.log('Email enviado: %s', info.messageId);
+  } catch (error) {
+    console.error('Erro ao enviar e-mail:', error);
+    throw error;
+  }
 }

@@ -9,6 +9,8 @@ Table Usuario {
   senha String [not null]
   telefone String
   perfil String [not null, default: 'empresa']
+  resetPasswordToken String
+  resetPasswordExpires DateTime
   empresa Empresa
 }
 
@@ -63,6 +65,7 @@ Table Selo {
   nivel String [not null]
   descricao String [not null]
   pontuacaoMin Int [not null]
+  ano Int [not null]
   createdAt DateTime [default: `now()`, not null]
   empresaId Int [not null]
   empresa Empresa [not null]
