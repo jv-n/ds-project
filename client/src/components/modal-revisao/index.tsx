@@ -21,7 +21,7 @@ export default function ModalRevisao({ isOpen, onClose, auditoria, onSuccess }: 
   // URL do Backend construída dinamicamente
   const getBaseURL = () => {
     if (typeof window !== 'undefined') {
-      return `https://${window.location.hostname.replace('3000', '3001')}`;
+      return process.env.NEXT_PUBLIC_API_BASE_URL; // ou use uma variável de ambiente se necessário
     }
     return '';
   };
@@ -120,7 +120,7 @@ export default function ModalRevisao({ isOpen, onClose, auditoria, onSuccess }: 
         <div className="flex flex-col gap-2.5 h-full overflow-y-auto pr-4">
           {auditoria.documentos.map((doc) => {
             // ================== CORREÇÃO APLICADA AQUI ==================
-            const docUrl = `${getBaseURL()}/${doc.path}`; // Constrói a URL de download
+            const docUrl = `http://localhost:3001/donations/${auditoria.id}/audit/documents/${doc.id}`;
             
             return (
               <div key={doc.id} className="flex justify-between items-center p-4 border border-[#E5E7EB] rounded-[8px]"> 

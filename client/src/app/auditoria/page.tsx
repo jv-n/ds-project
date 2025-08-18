@@ -42,7 +42,7 @@ export default function AuditoriaPage() {
   const [dadosAuditoria, setDadosAuditoria] = useState<Auditoria[]>([]);
 
   const carregarDadosDeAuditoria = useCallback(async () => {
-    const baseURL = 'https://vigilant-spork-qwr7grqg564c6x5j-3001.app.github.dev';
+    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
     try {
       const responseDoacoes = await axios.get(`${baseURL}/donations/audit`);
       const doacoesIncompletas: any[] = responseDoacoes.data;
