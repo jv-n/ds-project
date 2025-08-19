@@ -1,16 +1,21 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { balao, balaopopup, confirma, emailpopup } from "@/assets";
+import { linkActionToCompany } from "@/services/actionCompany";
 
 export interface propspopup {
   nomedaong: string;
   nomeacao: string;
   emailong: string;
   numeroong: string;
-  onEntrarContato: () => void; // usado como 'onClose'
+  onEntrarContato: () => void; // fecha o modal
+  actionId: number | string; // <- ID da ação selecionada (vem do card/grid)
+  onSuccess?: () => void; // <- opcional: atualizar UI após sucesso
 }
+
+const MOCK_COMPANY_ID = 999; // enquanto login não está integrado
 
 function digitsOnly(s?: string) {
   return (s ?? "").replace(/\D/g, "");
@@ -45,6 +50,9 @@ Obrigado(a)!`,
 }
 
 export default function Modalcontatos(props: propspopup) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") props.onEntrarContato();
@@ -69,6 +77,35 @@ export default function Modalcontatos(props: propspopup) {
   const mailDisabled = gmailHref === "#";
   const waDisabled = waHref === "#";
 
+  async function handleConfirm() {
+    try {
+      setSubmitting(true);
+      setError(null);
+
+      // 🔴 POST: vincula a ação à empresa mockada
+      await linkActionToCompany({
+        actionId: props.actionId,
+        companyId: MOCK_COMPANY_ID,
+        // preencher campos requeridos pelo backend
+        nome: props.nomeacao ?? "",
+        descricao: "", // ajuste se quiser uma descrição padrão
+        nomeOng: props.nomedaong ?? "",
+        emailOng: props.emailong ?? "",
+        telefoneOng: props.numeroong ?? "",
+        odsAcao: [],
+      });
+
+      alert("Contato confirmado com sucesso!");
+      props.onSuccess?.(); // permite o pai atualizar a UI (ex.: remover card)
+      props.onEntrarContato(); // fecha o modal
+    } catch (e: any) {
+      console.error(e);
+      setError(e?.message ?? "Falha ao confirmar contato.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return createPortal(
     <div
       className="fixed inset-0 z-[1000] flex items-center justify-center"
@@ -84,7 +121,7 @@ export default function Modalcontatos(props: propspopup) {
 
       {/* content */}
       <div className="relative z-10">
-        <div className="w-[450px] h-[300px] flex flex-col bg-white rounded-lg shadow p-[22px] font-sans text-[#1B2029]">
+        <div className="w-[450px] h-[auto] flex flex-col bg-white rounded-lg shadow p-[22px] font-sans text-[#1B2029]">
           <div className="flex">
             <Image src={balao} alt="" />
             <div className="text-[16px] ml-[5px]"> Entrar em contato</div>
@@ -97,7 +134,17 @@ export default function Modalcontatos(props: propspopup) {
             <div className="font-bold">{props.nomeacao}</div>
           </div>
 
-          {/* CARD DE E-MAIL — VISUAL IDÊNTICO, MAS O CLIQUE ABRE O GMAIL */}
+          {/* Erro do POST */}
+          {error && (
+            <div
+              className="mt-3 rounded-md bg-red-100 text-red-700 p-3 text-[13px]"
+              style={{ whiteSpace: "pre-wrap" }}
+            >
+              {error}
+            </div>
+          )}
+
+          {/* CARD DE E-MAIL */}
           <div
             role="button"
             tabIndex={0}
@@ -117,7 +164,6 @@ export default function Modalcontatos(props: propspopup) {
             }`}
             title={mailDisabled ? "E-mail indisponível" : "Abrir Gmail"}
           >
-            {/* esquerda: ícone + e-mail */}
             <div className="flex items-center">
               <Image src={emailpopup} alt="" className="ml-[10px]" />
               <div className="flex flex-col ml-[10px]">
@@ -155,17 +201,19 @@ export default function Modalcontatos(props: propspopup) {
             <button
               className="h-[40px] w-[190px] border-gray-200 border-[1px] rounded-md flex items-center justify-center text-[16px] cursor-pointer"
               onClick={props.onEntrarContato}
+              disabled={submitting}
             >
               Cancelar
             </button>
 
             <button
-              className="h-[40px] w-[190px] ml-[20px] rounded-md flex items-center justify-center bg-[#009FE3] text-[16px] text-white cursor-pointer"
-              onClick={props.onEntrarContato}
-              title="Fechar"
+              className="h-[40px] w-[190px] ml-[20px] rounded-md flex items-center justify-center bg-[#009FE3] text-[16px] text-white cursor-pointer disabled:opacity-60"
+              onClick={handleConfirm}
+              disabled={submitting || !props.actionId}
+              title="Confirmar vínculo com a ONG"
             >
               <Image src={confirma} alt="" className="mr-[3px]" />
-              Confirmar contato
+              {submitting ? "Enviando..." : "Confirmar contato"}
             </button>
           </div>
         </div>

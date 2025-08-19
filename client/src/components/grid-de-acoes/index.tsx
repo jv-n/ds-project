@@ -8,6 +8,7 @@ import { ODS_NAME_TO_ID } from "@/types/acao";
 /** ===== Tipos simples do que vem do backend ===== */
 type OdsApi = { id: number; name?: string };
 type OngApi = {
+  id?: number;
   name?: string;
   contact_email?: string;
   contact_phone?: string;
@@ -37,12 +38,20 @@ const safeLower = (s?: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
+// Card pronto para UI, mas guardando o id da ação (e o id da ONG, se precisar)
+type CardForUI = Omit<Cardacaoprops, "onEntrarContato"> & {
+  __actionId: number;
+  __ongId?: number;
+};
+
 export default function GridAcoes({ searchText, odsFilters }: Props) {
   const [modalAberto, setModalAberto] = useState(false);
   const [acaoSelecionada, setAcaoSelecionada] = useState<Omit<
     Cardacaoprops,
     "onEntrarContato"
   > | null>(null);
+  const [selectedActionId, setSelectedActionId] = useState<number | null>(null);
+  const [selectedOngId, setSelectedOngId] = useState<number | null>(null); // opcional
 
   const [acoes, setAcoes] = useState<ActionApi[]>([]);
   const [loading, setLoading] = useState(false);
@@ -149,12 +158,12 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
     });
   }, [acoes, debouncedText, odsFilters]);
 
-  // mapeia para o Card
-  const cards: Omit<Cardacaoprops, "onEntrarContato">[] = useMemo(() => {
+  // mapeia para o Card (guardando __actionId e __ongId)
+  const cards: CardForUI[] = useMemo(() => {
     return filtered
       .map((a) => {
         const nomeacao = (a.title ?? "").trim();
-        const descricao = (a.short_description || a.description || "").trim(); // ✅ texto do card
+        const descricao = (a.short_description || a.description || "").trim(); // texto do card
 
         const odsNomes =
           a.sustainable_development_goals
@@ -169,6 +178,8 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
         if (!nomeacao && !descricao && !nomedaong) return null;
 
         return {
+          __actionId: a.id,
+          __ongId: a.ong?.id,
           nomeacao,
           descricao,
           ods1: odsNomes[0] ?? "",
@@ -178,18 +189,26 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
           nomedaong,
           emailong,
           numeroong,
-        };
+        } as CardForUI;
       })
-      .filter(Boolean) as Omit<Cardacaoprops, "onEntrarContato">[];
+      .filter(Boolean) as CardForUI[];
   }, [filtered]);
 
-  const handleAbrirModal = (acao: Omit<Cardacaoprops, "onEntrarContato">) => {
+  const handleAbrirModal = (
+    acao: Omit<Cardacaoprops, "onEntrarContato">,
+    actionId: number,
+    ongId?: number
+  ) => {
     setAcaoSelecionada(acao);
+    setSelectedActionId(actionId);
+    setSelectedOngId(ongId ?? null);
     setModalAberto(true);
   };
   const handleFecharModal = () => {
     setModalAberto(false);
     setAcaoSelecionada(null);
+    setSelectedActionId(null);
+    setSelectedOngId(null);
   };
 
   return (
@@ -206,24 +225,33 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {cards.map((acao, index) => (
-              <Cardacao
-                key={index}
-                {...acao}
-                onEntrarContato={() => handleAbrirModal(acao)}
-              />
-            ))}
+            {cards.map((c) => {
+              const { __actionId, __ongId, ...cardProps } = c;
+              return (
+                <Cardacao
+                  key={__actionId}
+                  {...cardProps}
+                  onEntrarContato={() =>
+                    handleAbrirModal(cardProps, __actionId, __ongId)
+                  }
+                />
+              );
+            })}
           </div>
         </>
       )}
 
-      {modalAberto && acaoSelecionada && (
+      {modalAberto && acaoSelecionada && selectedActionId !== null && (
         <Modalcontatos
           nomeacao={acaoSelecionada.nomeacao}
           nomedaong={acaoSelecionada.nomedaong}
           emailong={acaoSelecionada.emailong}
           numeroong={acaoSelecionada.numeroong}
           onEntrarContato={handleFecharModal}
+          actionId={selectedActionId} // <-- ID da ação vai para o modal
+          onSuccess={() => {
+            // opcional: atualizar UI, remover card, etc.
+          }}
         />
       )}
     </section>
