@@ -18,10 +18,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-    'http://localhost:3000', 
-    'https://vigilant-spork-qwr7grqg564c6x5j-3000.app.github.dev' 
-  ]
+    origin: '*',
   }),
 );
 app.use(cookieParser());

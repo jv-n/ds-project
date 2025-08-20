@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
-import { ActionCompanyRepository } from '../repositories/actionCompanyRepository';
 import axios from 'axios';
+import { NextFunction, Request, Response } from 'express';
+import ActionCompanyRepository  from '../repositories/actionCompanyRepository';
 
-export class ActionCompanyController {
+
+export default class ActionCompanyController {
   private repository: ActionCompanyRepository;
 
   constructor() {
@@ -43,7 +44,7 @@ export class ActionCompanyController {
     }
   };
 
-  create = async (req: Request, res: Response) => {
+  create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {
         nome,
@@ -72,30 +73,34 @@ export class ActionCompanyController {
       });
 
       res.status(201).json(actionCompany);
+      return actionCompany;
     } catch (error) {
       console.error('Error creating ActionCompany:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return(next(error))
     }
   };
 
-  getByCompanyId = async (req: Request, res: Response) => {
+  getByCompanyId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const companyId = Number(req.params.companyId);
       
       const actions = await this.repository.getByCompanyId(companyId);
       res.json(actions);
+      return actions;
     } catch (error) {
       console.error('Error fetching actions by company ID:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 
-  getById = async (req: Request, res: Response) => {
+  getById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const companyId = Number(req.params.companyId);
       const actionId = Number(req.params.actionId);
 
-      if (isNaN(companyId) || isNaN(actionId)) {
+      if (Number.isNaN(companyId) || Number.isNaN(actionId)) {
         return res.status(400).json({ error: 'Invalid company ID or action ID' });
       }
 
@@ -105,26 +110,30 @@ export class ActionCompanyController {
       }
 
       res.json(actionCompany);
+      return actionCompany;
     } catch (error) {
       console.error('Error fetching action by ID:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error)
     }
   };
 
-  getDonationsById = async (req: Request, res: Response) => {
+  getDonationsById = async (req: Request, res: Response, next: NextFunction) =>  {
     try {
       const companyId = Number(req.params.companyId);
       const actionId = Number(req.params.actionId);
 
-      if (isNaN(companyId) || isNaN(actionId)) {
+      if (Number.isNaN(companyId) || Number.isNaN(actionId)) {
         return res.status(400).json({ error: 'Invalid company ID or action ID' });
       }
 
       const donations = await this.repository.getDonationsById(companyId, actionId);
       res.json(donations);
+      return donations;
     } catch (error) {
       console.error('Error fetching donations:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 }

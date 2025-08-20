@@ -1,14 +1,22 @@
-import { Request, Response } from 'express';
-import { DonationRepository } from '../repositories/donationRepository';
-import { CompanyRepository } from '../repositories/companyRepository';
-import { ActionCompanyRepository } from '../repositories/actionCompanyRepository';
-import { sendEmail } from '../services/mailService';
 import path from 'path';
 import fs from 'fs';
+import { NextFunction, Request, Response, Express } from 'express';
+import DonationRepository from '../repositories/donationRepository';
+
+
+import CompanyRepository from '../repositories/CompanyRepository';
+
+import ActionCompanyRepository from '../repositories/actionCompanyRepository';
+
+import { sendEmail } from '../services/mailService';
+
+
 
 export class DonationController {
   private repository: DonationRepository;
+
   private companyRepository: CompanyRepository;
+
   private actionCompanyRepository: ActionCompanyRepository;
 
   constructor() {
@@ -17,7 +25,7 @@ export class DonationController {
     this.actionCompanyRepository = new ActionCompanyRepository();
   }
 
-  create = async (req: Request, res: Response) => {
+  create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Espera que arquivos foram enviados via multer no campo 'documents'
       const files = req.files as Express.Multer.File[] | undefined;
@@ -51,9 +59,11 @@ export class DonationController {
       });
 
       res.status(201).json(donation);
+      return donation;
     } catch (error) {
       console.error('Error creating donation:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 
@@ -61,61 +71,72 @@ export class DonationController {
     try {
       const donations = await this.repository.findAll();
       res.json(donations);
+      
     } catch (error) {
       console.error('Error fetching all donations:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   };
 
-  getByStatus = async (req: Request, res: Response) => {
+  getByStatus = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const status = req.params.status;
+      const { status } = req.params;
       const donations = await this.repository.findByStatus(status);
       res.json(donations);
+      return donations;
     } catch (error) {
       console.error('Error fetching donations by status:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 
-  getDocumentsByDonationId = async (req: Request, res: Response) => {
+  getDocumentsByDonationId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const donationId = Number(req.params.id);
-      if (isNaN(donationId)) {
+      if (Number.isNaN(donationId)) {
         return res.status(400).json({ error: 'Invalid donation ID' });
       }
 
       const documents = await this.repository.findDocumentsByDonationId(donationId);
       res.json(documents);
+      return documents;
     } catch (error) {
       console.error('Error fetching documents:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 
-  getDocumentById = async (req: Request, res: Response) => {
+  getDocumentById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const documentId = req.params.documentId;
+    const {documentId} = req.params;
 
-    const document = await this.repository.findDocumentById(documentId);
+    const documento = await this.repository.findDocumentById(documentId);
 
-    if (!document) {
-      return res.status(404).json({ error: 'Document not found' });
+    if (!documento) {
+      res.status(404).json({ error: 'Document not found' });
+      return next();
     }
 
-    const filePath = path.resolve(document.path);
+    const filePath = path.resolve(documento.path);
 
     // Verifica se o arquivo existe
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'File not found on server' });
+      res.status(404).json({ error: 'File not found on server' });
+      return next();
     }
 
     // Define o cabeçalho para download com o nome original do arquivo
-    res.download(filePath, document.storedName);
+    res.download(filePath, documento.storedName);
+    return documento;
+    
     } catch (error) {
         console.error('Error downloading document:', error);
         res.status(500).json({ error: 'Internal server error' });
+        return next(error)
     }
+
   };
 
   private async notifyStatusChange(donationId: number, status: 'Aprovado' | 'Reprovado') {
@@ -153,10 +174,10 @@ export class DonationController {
     await sendEmail(company.usuario.email, subject, data);
   }
 
-  approveDonation = async (req: Request, res: Response) => {
+  approveDonation = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const donationId = Number(req.params.id);
-      if (isNaN(donationId)) return res.status(400).json({ error: 'Invalid donation ID' });
+      if (Number.isNaN(donationId)) return res.status(400).json({ error: 'Invalid donation ID' });
 
       const updatedDonation = await this.repository.updateStatus(donationId, 'Aprovado');
 
@@ -164,26 +185,29 @@ export class DonationController {
       await this.notifyStatusChange(donationId, 'Aprovado');
 
       res.json(updatedDonation);
+      return updatedDonation
     } catch (error) {
       console.error('Error approving donation:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error)
     }
   };
 
-  rejectDonation = async (req: Request, res: Response) => {
+  rejectDonation = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const donationId = Number(req.params.id);
-      if (isNaN(donationId)) return res.status(400).json({ error: 'Invalid donation ID' });
+      if (Number.isNaN(donationId)) return res.status(400).json({ error: 'Invalid donation ID' });
 
       const updatedDonation = await this.repository.updateStatus(donationId, 'Reprovada');
 
       // Envia notificação por email
       await this.notifyStatusChange(donationId, 'Reprovado');
-
       res.json(updatedDonation);
+      return updatedDonation;
     } catch (error) {
       console.error('Error rejecting donation:', error);
       res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 }

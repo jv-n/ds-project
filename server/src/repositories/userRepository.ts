@@ -1,5 +1,5 @@
-import { Prisma, Usuario } from '@prisma/client';
-import prisma from '@database';
+import { Usuario } from '@prisma/client';
+import prisma from '../database';
 
 interface CreateUserDTO {
   cnpj: string;           
@@ -15,7 +15,7 @@ interface UpdateUserDTO {
   telefone?: string;
 }
 
-export class UserRepository {
+export default class UserRepository {
   async create(data: CreateUserDTO): Promise<Usuario> {
     const user = await prisma.usuario.create({ data });
     return user;

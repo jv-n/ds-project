@@ -1,69 +1,32 @@
 "use client";
 
-//import { loginOng } from '@/auth/authService';
 import React, { useState } from "react";
 import Input from "@/app/auth/components/ui/Input";
 import Button from "@/app/auth/components/ui/Button";
 import { formatCNPJ, validateCNPJ } from "@/app/auth/utils/cnpjUtils";
+import { useRouter } from "next/navigation";
 
 const LoginFormOng = () => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
-    cnpj: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState({
     cnpj: "",
     password: "",
   });
 
   const validate = () => {
-    const newErrors = { cnpj: "", password: "" };
-    let isValid = true;
-
-    // Validação do CNPJ
-    if (!formData.cnpj) {
-      newErrors.cnpj = "CNPJ é obrigatório";
-      isValid = false;
-    } else if (!validateCNPJ(formData.cnpj)) {
-      newErrors.cnpj = "CNPJ inválido";
-      isValid = false;
-    }
-
-    // Validação da senha
-    if (!formData.password) {
-      newErrors.password = "Senha é obrigatória";
-      isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Senha deve ter pelo menos 6 caracteres";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
+    if (!formData.cnpj || !validateCNPJ(formData.cnpj)) return false;
+    if (!formData.password || formData.password.length < 6) return false;
+    return true;
   };
 
-  //função de teste. Trocar pela de baixo quando o bd estiver pronto
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Login válido para ONG:", formData);
-      alert("Login simulado para ONG");
+      // Redirecionar para /acoes
+      router.push("/acoes");
     }
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (!validate()) return; // Se a validação falhar, não prossegue
-
-  //   try {
-  //     const ongData = await loginOng(formData.cnpj, formData.password);
-  //     console.log('Login bem-sucedido:', ongData);
-  //     // Redirecionar ou armazenar o token (ex: localStorage, context, etc.)
-  //   } catch (error) {
-  //     console.error('Erro no login:', error);
-  //     setErrors({ ...errors, password: 'CNPJ ou senha incorretos' }); // Mostra erro genérico
-  //   }
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,10 +40,9 @@ const LoginFormOng = () => {
         name="cnpj"
         type="text"
         mask={formatCNPJ}
-        placeholder="Digite seu CNPJ"
+        placeholder="00.000.000/0000-00"
         value={formData.cnpj}
         onChange={handleChange}
-        error={errors.cnpj}
       />
 
       <Input
@@ -90,7 +52,6 @@ const LoginFormOng = () => {
         placeholder="••••••"
         value={formData.password}
         onChange={handleChange}
-        error={errors.password}
       />
 
       <div className="flex items-center justify-between">
@@ -120,8 +81,13 @@ const LoginFormOng = () => {
       </div>
 
       <div className="pt-4 text-center">
-        <Button type="submit" variant="primary" className="w-93">
-          Entrar como ONG
+        <Button
+          type="button"
+          variant="primary"
+          className="w-[300px]"
+          onClick={() => router.push("/auditoria")}
+        >
+          Entrar
         </Button>
       </div>
     </form>

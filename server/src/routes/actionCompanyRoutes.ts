@@ -1,6 +1,6 @@
 // src/routes/company-routes.ts
 import { Router } from 'express';
-import { ActionCompanyController } from '../controllers/actionCompanyController';
+import ActionCompanyController from '../controllers/actionCompanyController';
 
 const router = Router();
 const controller = new ActionCompanyController();

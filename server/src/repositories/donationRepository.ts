@@ -15,7 +15,7 @@ interface CreateDonationDTO {
   }[];
 }
 
-export class DonationRepository {
+export default class DonationRepository {
   async create(data: CreateDonationDTO) {
     const { documentos, ...donationData } = data;
 

@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Iniciando o processo de seed completo...');
-
   // --- 1. Limpeza Completa do Banco (na ordem 100% correta) ---
   console.log('Limpando dados antigos...');
   // Apagamos os "filhos" e dependentes primeiro
@@ -37,6 +36,7 @@ async function main() {
           telefone: '11987654321',
           perfil: 'empresa',
         },
+ 
       },
     },
     include: { usuario: true },

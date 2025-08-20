@@ -5,49 +5,25 @@ import Input from "@/app/auth/components/ui/Input";
 import Button from "@/app/auth/components/ui/Button";
 import { formatCNPJ, validateCNPJ } from "@/app/auth/utils/cnpjUtils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const LoginFormEmpresa = () => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     cnpj: "",
     password: "",
   });
+
   const [errors, setErrors] = useState({
     cnpj: "",
     password: "",
   });
 
-  const validate = () => {
-    const newErrors = { cnpj: "", password: "" };
-    let isValid = true;
-
-    // Validação do CNPJ
-    if (!formData.cnpj) {
-      newErrors.cnpj = "CNPJ é obrigatório";
-      isValid = false;
-    } else if (!validateCNPJ(formData.cnpj)) {
-      newErrors.cnpj = "CNPJ inválido";
-      isValid = false;
-    }
-
-    // Validação da senha
-    if (!formData.password) {
-      newErrors.password = "Senha é obrigatória";
-      isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Senha deve ter pelo menos 6 caracteres";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validate()) {
-      console.log("Login válido para Empresa:", formData);
-      alert("Login simulado para Empresa");
-    }
+    // ignora validações e navega direto
+    router.push("/acoes");
   };
 
   const handleChange = (e) => {
@@ -104,17 +80,16 @@ const LoginFormEmpresa = () => {
         </div>
       </div>
 
-      <div className="pt-4 text-center">
+      <div className="pt-4 text-center cursor-pointer">
         <Button
           type="submit"
           variant="primary"
-          className=" w-95 py-3 text-base"
+          className=" w-[350px] py-3 text-base"
         >
           Entrar como Empresa
         </Button>
       </div>
 
-      {/* Seção de cadastro para empresas */}
       <div className="mt-10 text-center">
         <p className="text-sm text-gray-600">Não possui cadastro?</p>
         <Link
