@@ -77,7 +77,7 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
         if (debouncedText.trim()) qs.set("search", debouncedText.trim());
         if (odsIds.length) qs.set("ods", odsIds.join(",")); // se a API ignorar, filtramos no front
 
-        const url = `${BASE || "http://localhost:3001"}/actions${
+        const url = `${BASE || "http://localhost:3001"}/action-company${
           qs.toString() ? `?${qs.toString()}` : ""
         }`;
 
@@ -106,7 +106,8 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
 
         if (!cancelado) setAcoes(Array.isArray(list) ? list : []);
       } catch (e: unknown) {
-        if (!cancelado) setErro((e as Error)?.message ?? "Falha ao carregar ações.");
+        if (!cancelado)
+          setErro((e as Error)?.message ?? "Falha ao carregar ações.");
       } finally {
         if (!cancelado) setLoading(false);
       }
