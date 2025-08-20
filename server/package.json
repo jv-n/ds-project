@@ -49,17 +49,20 @@
     "test": "cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/boilerplate-test' prisma db push && cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/boilerplate-test' jest --runInBand --forceExit",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "devDependencies": {
     "@google/generative-ai": "^0.21.0",
     "@swc/jest": "^0.2.34",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.6",
-    "@types/cors": "^2.8.17",
+    "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^1.4.11",
-    "@types/node": "20.11.16",
+    "@types/node": "^20.11.16",
     "@types/nodemailer": "^6.4.17",
     "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
@@ -84,6 +87,6 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.9.2"
   }
 }

@@ -202,7 +202,6 @@ export class DonationController {
 
       // Envia notificação por email
       await this.notifyStatusChange(donationId, 'Reprovado');
-      
       res.json(updatedDonation);
       return updatedDonation;
     } catch (error) {
