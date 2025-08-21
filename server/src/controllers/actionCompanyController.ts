@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
-import ActionCompanyRepository  from '../repositories/actionCompanyRepository';
-
+import ActionCompanyRepository from '../repositories/actionCompanyRepository';
 
 export default class ActionCompanyController {
   private repository: ActionCompanyRepository;
@@ -10,7 +9,7 @@ export default class ActionCompanyController {
     this.repository = new ActionCompanyRepository();
   }
 
-    getAllActions = async (req: Request, res: Response) => {
+  getAllActions = async (req: Request, res: Response) => {
     try {
       const { ods } = req.body;
       let odsList: number[] = [];
@@ -19,7 +18,6 @@ export default class ActionCompanyController {
         // Caso o usuário envie um array de ODS no body
         odsList = ods.map(Number);
       } else {
-
         odsList = [1]; // fallback para ODS ID 1
       }
 
@@ -37,7 +35,6 @@ export default class ActionCompanyController {
       const allActions = results.flat();
 
       res.json(allActions);
-
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Erro ao buscar ações das ODS.' });
@@ -54,10 +51,19 @@ export default class ActionCompanyController {
         telefoneOng,
         acaoId,
         empresaId,
-        odsAcao
+        odsAcao,
       } = req.body;
 
-      if (!nome || !descricao || !nomeOng || !emailOng || !telefoneOng || !acaoId || !empresaId || !odsAcao) {
+      if (
+        !nome ||
+        !descricao ||
+        !nomeOng ||
+        !emailOng ||
+        !telefoneOng ||
+        !acaoId ||
+        !empresaId ||
+        odsAcao === undefined
+      ) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
@@ -69,22 +75,31 @@ export default class ActionCompanyController {
         telefoneOng,
         acaoId: Number(acaoId),
         empresaId: Number(empresaId),
-        odsAcao, // opcional, se não for enviado, será um array vazio
+        odsAcao,
       });
 
       res.status(201).json(actionCompany);
       return actionCompany;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating ActionCompany:', error);
+      // em dev envie stack + mensagem pra facilitar debug
+      if (process.env.NODE_ENV !== 'production') {
+        return res
+          .status(500)
+          .json({
+            error: error?.message ?? 'Internal server error',
+            stack: error?.stack,
+          });
+      }
       res.status(500).json({ error: 'Internal server error' });
-      return(next(error))
+      return next(error);
     }
   };
 
   getByCompanyId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const companyId = Number(req.params.companyId);
-      
+
       const actions = await this.repository.getByCompanyId(companyId);
       res.json(actions);
       return actions;
@@ -101,7 +116,9 @@ export default class ActionCompanyController {
       const actionId = Number(req.params.actionId);
 
       if (Number.isNaN(companyId) || Number.isNaN(actionId)) {
-        return res.status(400).json({ error: 'Invalid company ID or action ID' });
+        return res
+          .status(400)
+          .json({ error: 'Invalid company ID or action ID' });
       }
 
       const actionCompany = await this.repository.findById(companyId, actionId);
@@ -114,20 +131,29 @@ export default class ActionCompanyController {
     } catch (error) {
       console.error('Error fetching action by ID:', error);
       res.status(500).json({ error: 'Internal server error' });
-      return next(error)
+      return next(error);
     }
   };
 
-  getDonationsById = async (req: Request, res: Response, next: NextFunction) =>  {
+  getDonationsById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const companyId = Number(req.params.companyId);
       const actionId = Number(req.params.actionId);
 
       if (Number.isNaN(companyId) || Number.isNaN(actionId)) {
-        return res.status(400).json({ error: 'Invalid company ID or action ID' });
+        return res
+          .status(400)
+          .json({ error: 'Invalid company ID or action ID' });
       }
 
-      const donations = await this.repository.getDonationsById(companyId, actionId);
+      const donations = await this.repository.getDonationsById(
+        companyId,
+        actionId,
+      );
       res.json(donations);
       return donations;
     } catch (error) {
