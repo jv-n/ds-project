@@ -43,7 +43,7 @@ export default function RowAuditoria(props: RowAuditoriaProps) {
         <div className='w-[146px] flex justify-start'>
             <Chip status={props.status} />
         </div>
-        <div className='w-[125px]'>
+        <div className='w-[135px]'>
             <Button 
                 variant="secondary" 
                 onClick={(event) => {
