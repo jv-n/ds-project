@@ -1,126 +1,132 @@
 "use client";
+
 import React, { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import AuthHeader from "@/app/auth/AuthHeader";
-import Input from "@/app/auth/components/ui/Input";
+import FloatingInput from "@/components/floating-input";
 import Button from "@/app/auth/components/ui/Button";
 import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
-import { BackButton } from "@/app/auth/components/ui/BackButton";
+import { BackButton } from "../../components/ui/BackButton";
 
-export default function NewPassword() {
-  const [formData, setFormData] = useState({
-    password: "",
-    comparyPassword: "",
-  });
+export default function NewPasswordPage() {
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("id"); // pega o id da query string
 
-  const [errors, setErrors] = useState({});
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
+  const [errors, setErrors] = useState({ password: "", confirmPassword: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setErrors(prev => ({ ...prev, [field]: "" }));
   };
 
   const validate = () => {
-    const newErrors = {};
+    const newErrors = { password: "", confirmPassword: "" };
+    let isValid = true;
 
     if (!formData.password) {
       newErrors.password = "Senha é obrigatória";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "A senha deve ter pelo menos 8 caracteres";
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Senha deve ter pelo menos 6 caracteres";
+      isValid = false;
     }
 
-    if (!formData.comparyPassword) {
-      newErrors.comparyPassword = "Confirmação de senha é obrigatória";
-    } else if (formData.password !== formData.comparyPassword) {
-      newErrors.comparyPassword = "As senhas não coincidem";
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Confirmação de senha é obrigatória";
+      isValid = false;
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "As senhas não coincidem";
+      isValid = false;
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
 
-    if (validate()) {
-      console.log("Nova senha definida:", formData.password);
-      // Aqui é pra chamar a API
+    if (!userId) {
+      setErrors(prev => ({ ...prev, password: "ID do usuário não encontrado" }));
+      return;
+    }
 
-      setIsSuccessModalOpen(true);
+    try {
+      const res = await fetch(`http://localhost:3001/user/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senha: formData.password })
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao atualizar senha");
+      }
+
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error("Erro ao atualizar senha:", err);
+      setErrors(prev => ({ ...prev, password: "Erro inesperado ao alterar a senha" }));
     }
   };
 
-  const handleSuccessModalClose = () => {
-    setIsSuccessModalOpen(false);
-    () => window.history.go(-2);
-  };
-
   return (
-    <div className="min-h-screen bg-blue-100 flex flex-col justify-center py-12 sm:px-40 lg:px-140">
+    <div className="min-h-screen bg-[#CBEFFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-40 relative">
       <BackButton />
-      <Card variant="elevated" className="py-27">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md px-12 mb-6">
-          <AuthHeader
-            title="Nova senha"
-            description="Escolha uma nova senha para acessar sua conta"
-          />
-        </div>
 
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="flex flex-col  items-center gap-6"
-        >
-          <Input
-            label="Nova senha"
-            name="password"
-            type="password"
-            placeholder="Digite uma senha de 8 ou mais dígitos"
-            onChange={handleChange}
-            value={formData.password}
-            error={errors.password}
-            className="py-3 w-95"
-          />
-
-          <Input
-            label="Confirmar senha"
-            name="comparyPassword"
-            type="password"
-            placeholder="Repita a senha"
-            onChange={handleChange}
-            value={formData.comparyPassword}
-            error={errors.comparyPassword}
-            className="py-3 w-95"
-          />
-
-          <Button
-            type="submit"
-            variant="primary"
-            className="w-95 py-3 text-base mt-2"
-          >
-            Confirmar
-          </Button>
-        </form>
-
-        <Modal isOpen={isSuccessModalOpen} onClose={handleSuccessModalClose}>
-          <div className="sm:mx-auto px-10 sm:w-full sm:max-w-md">
+      <div className="w-full flex justify-center">
+        <Card variant="elevated" className="w-full max-w-md py-10 px-6 sm:py-12 sm:px-8">
+          <div className="mx-auto w-full">
             <AuthHeader
-              title="Senha alterada com sucesso!"
-              description="Agora você pode fazer login com sua nova senha."
+              title="Nova Senha"
+              description="Preencha os campos abaixo para definir sua nova senha"
             />
-            <div className="mt-4 flex justify-center">
-              <Button
-                variant="primary"
-                onClick={handleSuccessModalClose}
-                className="w-full"
-              >
-                Ir ao login
-              </Button>
-            </div>
           </div>
-        </Modal>
-      </Card>
+
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col items-center gap-6 mt-6 w-full"
+          >
+            <FloatingInput
+              label="Nova senha"
+              value={formData.password}
+              onChange={(v) => handleChange("password", v)}
+              placeholder="Digite sua nova senha"
+              error={errors.password}
+              type="password"
+              className="w-full"
+            />
+
+            <FloatingInput
+              label="Confirme a senha"
+              value={formData.confirmPassword}
+              onChange={(v) => handleChange("confirmPassword", v)}
+              placeholder="Confirme sua senha"
+              error={errors.confirmPassword}
+              type="password"
+              className="w-full"
+            />
+
+            <Button type="submit" variant="primary" className="w-full py-3 text-base">
+              Alterar senha
+            </Button>
+          </form>
+
+          <Modal isOpen={isModalOpen}>
+            <div className="sm:mx-auto px-6 sm:w-full sm:max-w-md">
+              <AuthHeader
+                title="Senha alterada com sucesso!"
+                description="Agora você pode usar a nova senha para acessar sua conta."
+              />
+            </div>
+          </Modal>
+        </Card>
+      </div>
     </div>
   );
 }
+

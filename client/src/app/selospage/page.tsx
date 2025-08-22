@@ -1,26 +1,67 @@
 "use client";
 import Rodape from "@/components/rodape";
-import { useState } from "react";
+import { useCallback, useEffect, useState /*, useEffect*/ } from "react";
 import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
 import Cardpontos from "@/components/pontos-esmpresa";
 import Navbar from "@/components/navbar";
+import api from "@/services/api";
+import { CertificateProps } from "@/components/certificate";
+import { useParams } from "next/navigation";
 
 export default function SelosPage() {
-  const [ativo, setAtivo] = useState("acoes");
-  const [ativocontato, setAtivoContato] = useState("acoes");
-  const [mostrarModal, setMostrarModal] = useState(false);
+
   const [mostrarcriterios, Setcriterios] = useState("off");
 
-  function abrirModal() {
-    setMostrarModal(true);
+    interface companyProps {
+    nome: string;
+    pontos: number;
+    selo_nivel: string;
+    usuario: {
+        id: string;
+        nome: string;
+        cnpj: string;
+    }
   }
 
-  function fecharModal() {
-    setMostrarModal(false);
-  }
+    const { id } = useParams();
+
+    interface sealProps {
+        nivel: string;
+        ptsodsscomatuacao: string;
+        ptsongsatingidas: string;
+        ptscolaboradoresengajados: string;
+        ptsorcamentodestinado: string;
+    }
+
+  const [seal, setSeal] = useState({} as sealProps);
+
+  const fetchSeal = useCallback(async () => {
+    const response = await api.get<sealProps>(`//${id}`);
+    setSeal(response.data);
+  }, [id]);
+
+  const [company, setCompany] = useState({} as companyProps);
+
+  const fetchCompany = useCallback(async () => {
+    const response = await api.get<companyProps>(`//${id}`);
+    setCompany(response.data);
+  }, [id]);
+
+  useEffect(() => {
+    fetchSeal();
+    fetchCompany();
+  }, [fetchSeal, fetchCompany]);
+
+
+  const certificado: CertificateProps = {
+      id: id as string,
+      level: seal.nivel,
+      data_emissao: new Date().toISOString(),
+      empresa: company.nome,
+    };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
@@ -37,13 +78,14 @@ export default function SelosPage() {
         </div>
       </div>
 
+      {/* 🔧 Exibe os pontos simulados */}
       <Cardpontos
-        nivel="silvermedal"
-        ptsacoesdeconscientizacao="30"
-        ptsodsscomatuacao="10"
-        ptsongsatingidas="10"
-        ptscolaboradoresengajados="15"
-        ptsorcamentodestinado="10"
+        nivel={seal.nivel}
+        ptsodsscomatuacao={seal.ptsodsscomatuacao}
+        ptsongsatingidas={seal.ptsongsatingidas}
+        ptscolaboradoresengajados={seal.ptscolaboradoresengajados}
+        ptsorcamentodestinado={seal.ptsorcamentodestinado}
+        certificado={certificado}
       />
 
       <div className="font-sans font-bold text-[32px] text-black mr-[630px] mt-[25px] flex justify-center">
@@ -85,6 +127,7 @@ export default function SelosPage() {
       <div className="h-[100px]" />
 
       <Rodape />
+      
     </div>
   );
 }

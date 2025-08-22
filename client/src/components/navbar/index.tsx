@@ -5,9 +5,10 @@ import Image from "next/image";
 
 type NavbarProps = {
   ativo: string; // "acoes", "minhas doacoes" ou "selos" ou "sair"
+  companyId: number; // 🔹 id da empresa logada
 };
 
-export default function Navbar({ ativo }: NavbarProps) {
+export default function Navbar({ ativo, companyId }: NavbarProps) {
   const router = useRouter();
 
   return (
@@ -37,7 +38,7 @@ export default function Navbar({ ativo }: NavbarProps) {
 
             <div
               className="relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200"
-              onClick={() => router.push("/doacoespage")}
+              onClick={() => router.push(`/doacoespage/${companyId}`)} // ✅ agora vai pra rota dinâmica
             >
               Minhas doações
               {ativo === "minhas doacoes" && (
@@ -47,7 +48,7 @@ export default function Navbar({ ativo }: NavbarProps) {
 
             <div
               className="relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200"
-              onClick={() => router.push("/selospage")}
+              onClick={() => router.push(`/selospage/${companyId}`)} // ✅ mesma lógica
             >
               Selos
               {ativo === "selos" && (
@@ -70,3 +71,4 @@ export default function Navbar({ ativo }: NavbarProps) {
     </div>
   );
 }
+

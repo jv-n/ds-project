@@ -1,7 +1,7 @@
+// src/components/OdsImages.tsx
 "use client";
 
 import { useState } from "react";
-
 import React from "react";
 
 const ODS_DESCRIPTIONS = {
@@ -50,10 +50,15 @@ const OdsImages = ({
       onMouseLeave={() => setShowTooltip(false)}
       onMouseMove={handleMouseMove}
     >
-      {/* Container principal*/}
-      <div className="relative ">
-        {/* Checkbox*/}
-        <div className="absolute -top-2 -right-2 ">
+      <label
+        htmlFor={id}
+        className="relative flex flex-col items-center cursor-pointer"
+      >
+        {/*
+          Div que contém o checkbox.
+          Ele está posicionado de forma absoluta em relação à <label>
+        */}
+        <div className="absolute -top-1 -left-6 z-10">
           <input
             id={id}
             name={name}
@@ -62,38 +67,34 @@ const OdsImages = ({
             onChange={onChange}
             disabled={disabled}
             required={required}
-            className={`h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${
+            className={`h-4 w-4 rounded border-[#1474FF] text-blue-600 focus:ring-blue-500 ${
               disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
             }`}
           />
         </div>
 
         {/* Imagem e label */}
-        <div className="flex flex-col items-center">
-          <div className="flex-shrink-0">
-            <img
-              src={imageUrl}
-              alt={imageAlt}
-              className={`h-20 w-20 object-contain
-               ${disabled ? "opacity-50" : ""}`}
-            />
-          </div>
-
-          {label && (
-            <label
-              htmlFor={id}
-              className={`mt-1 text-sm text-center ${
-                disabled ? "text-gray-400" : "text-gray-700"
-              }`}
-            >
-              {label}
-              {required && <span className="text-red-500 ml-1">*</span>}
-            </label>
-          )}
+        <div className="flex-shrink-0">
+          <img
+            src={imageUrl}
+            alt={imageAlt}
+            className={`h-25 w-25 object-contain ${disabled ? "opacity-50" : ""}`}
+          />
         </div>
-      </div>
 
-      {/* Tooltip */}
+        {label && (
+          <p
+            className={`mt-1 text-sm text-center ${
+              disabled ? "text-gray-400" : "text-gray-700"
+            }`}
+          >
+            {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </p>
+        )}
+      </label>
+
+      {/* Tooltip ... (código permanece o mesmo) */}
       {showTooltip && !disabled && (
         <div
           className="fixed bg-white p-3 rounded-lg shadow-xl border border-gray-200 z-50 max-w-xs pointer-events-none"

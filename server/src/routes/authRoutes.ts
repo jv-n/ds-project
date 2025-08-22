@@ -4,9 +4,14 @@ import { AuthController } from '../controllers/authController';
 const AuthRouter = Router();
 const controller = new AuthController();
 
-AuthRouter.route('/')
+AuthRouter.route('/empresa')
   .post(
-    controller.login,
+    controller.loginEmpresa,
+  );
+
+  AuthRouter.route('/prefeitura')
+  .post(
+    controller.loginPrefeitura,
   );
 
 AuthRouter.route('/')

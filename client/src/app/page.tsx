@@ -1,16 +1,8 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
-import Cardacao from "@/components/card-de-acao";
-import Cardcontatos from "@/components/card-cadastrar-doacao";
 import { useState } from "react";
-import Cardcadastrado from "@/components/card-acao-cadastrada";
-import Modalcontatos from "@/components/modal-contato";
-import Modalcriterios from "@/components/modal-criterios";
-import SelosPage from "@/app/selospage/page";
-import DoacoesPage from "@/app/doacoespage/page";
 
 export default function Home() {
   const [ativo, setAtivo] = useState("acoes");

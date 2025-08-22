@@ -1,6 +1,4 @@
-// server/src/DTOs.ts (Exemplo de como deve ser o seu arquivo DTO)
 import { z } from 'zod';
-import { StatusApoio } from '@prisma/client'; // Ou o caminho correto para o seu StatusApoio
 
 export const Donation = z.object({
   valor: z.coerce.number(), 

@@ -18,9 +18,9 @@ export class UserController {
         return res.status(400).json({ error: 'CNPJ, email and password are required' });
       }
 
-      const existingUser = await this.repository.findByEmail(email);
+      const existingUser = await this.repository.findByCnpj(cnpj);
       if (existingUser) {
-        return res.status(409).json({ error: 'Email already registered' });
+        return res.status(409).json({ error: 'CNPJ already registered' });
       }
 
       const hashedPassword = await bcrypt.hash(senha, 10);
@@ -64,6 +64,54 @@ export class UserController {
       res.status(500).json({ error: 'Internal server error' });
     }
   };
+
+getByCnpj = async (req: Request, res: Response) => {
+  try {
+    const cnpj = req.query.value as string;
+    const perfil = req.query.perfil as string | undefined; // perfil opcional
+
+    if (!cnpj) {
+      return res.status(400).json({ error: "CNPJ não fornecido" });
+    }
+
+    // Busca pelo CNPJ e, se informado, pelo perfil
+    const user = await this.repository.findByCnpj(cnpj, perfil);
+
+    if (!user) {
+      return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este CNPJ` : "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+getByEmail = async (req: Request, res: Response) => {
+  try {
+    const email = req.query.value as string;
+    const perfil = req.query.perfil as string | undefined; // perfil opcional
+
+    if (!email) {
+      return res.status(400).json({ error: "Email não fornecido" });
+    }
+
+    // Busca pelo email e, se informado, pelo perfil
+    const user = await this.repository.findByEmail(email, perfil);
+
+    if (!user) {
+      return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este email` : "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
   update = async (req: Request, res: Response) => {
     try {

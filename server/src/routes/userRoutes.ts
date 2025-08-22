@@ -7,6 +7,8 @@ const controller = new UserController();
 
 router.post('/', controller.create);
 router.get('/', controller.getAll);
+router.get("/cnpj", controller.getByCnpj);
+router.get("/email", controller.getByEmail);
 router.get('/:id', controller.getById);
 router.put('/:id', controller.update);
 router.delete('/:id', controller.delete);

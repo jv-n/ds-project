@@ -1,9 +1,9 @@
 import AuthHeader from "@/app/auth/AuthHeader";
-import LoginFormEmpresa from "./components/LoginForm";
+import LoginFormPrefeitura from "./components/LoginForm";
 import { Card } from "@/app/auth/components/ui/Card";
 import { BackButton } from "@/app/auth/components/ui/BackButton";
 
-export default function LoginEmpresaPage() {
+export default function LoginPrefeituraPage() {
   return (
     <div className="min-h-screen bg-[#CBEFFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-40 relative">
       <BackButton />
@@ -15,11 +15,10 @@ export default function LoginEmpresaPage() {
           </div>
 
           <div className="mt-6 mx-auto w-full">
-            <LoginFormEmpresa />
+            <LoginFormPrefeitura />
           </div>
         </Card>
       </div>
     </div>
   );
 }
-

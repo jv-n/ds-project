@@ -7,6 +7,7 @@ import Rodape from "@/components/rodape";
 import SearchBar from "@/components/searchbar";
 import SuccessModal from "@/components/sucess-modal";
 import DoacoesPageSemAcoes from "@/app/doacoespage/pages/sem_acoes";
+import api from "@/services/api";
 import { useState, useEffect, useCallback } from "react";
 
 interface AcaoData {
@@ -46,15 +47,22 @@ export default function DoacoesPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [companyId, setCompanyId] = useState<number | null>(null);
+
+  // Ler companyId do localStorage
+  useEffect(() => {
+    const storedId = localStorage.getItem("companyId");
+    if (storedId) setCompanyId(Number(storedId));
+  }, []);
 
   const fetchAcoes = useCallback(async () => {
+    if (!companyId) return; // só faz a chamada se companyId existir
     setIsLoading(true);
     setError(null);
-    const companyId = 1;
+
     try {
-      const response = await fetch(`http://localhost:3001/actions/company/${companyId}`);
-      if (!response.ok) throw new Error("Falha ao buscar as doações");
-      const data: AcaoData[] = await response.json();
+      const response = await api.get<AcaoData[]>(`/actions/company/${companyId}`);
+      const data = response.data;
 
       if (Array.isArray(data)) {
         const mappedAcoes: AcaoData[] = data.map((item) => {
@@ -87,12 +95,13 @@ export default function DoacoesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [companyId]);
 
   useEffect(() => {
     fetchAcoes();
   }, [fetchAcoes]);
 
+  // ---- funções de abrir/fechar cadastro, submit, search ----
   const handleOpenCadastro = (ongName: string, actionName: string, apoioId: number | null) => {
     setSelectedOngName(ongName);
     setSelectedActionName(actionName);
@@ -112,11 +121,7 @@ export default function DoacoesPage() {
     handleCloseCadastro();
   };
 
-  const handleSubmitDonation = async (data: {
-    tipoAjuda: string;
-    valorOuQuantidade: string;
-    documentos: File[];
-  }) => {
+  const handleSubmitDonation = async (data: { tipoAjuda: string; valorOuQuantidade: string; documentos: File[] }) => {
     setIsSubmitting(true);
     try {
       const acaoSelecionada = acoes.find(
@@ -135,20 +140,10 @@ export default function DoacoesPage() {
       formData.append("acaoId", String(acaoSelecionada.acaoId));
 
       if (data.documentos?.length) {
-        data.documentos.forEach((file) => {
-          formData.append("documents", file);
-        });
+        data.documentos.forEach((file) => formData.append("documents", file));
       }
 
-      const res = await fetch("http://localhost:3001/donations", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => null);
-        throw new Error(err?.message || "Erro ao criar doação");
-      }
+      await api.post("/donations", formData, { headers: { "Content-Type": "multipart/form-data" } });
 
       handleCloseCadastro();
       await fetchAcoes();
@@ -179,21 +174,21 @@ export default function DoacoesPage() {
 
   return (
     <div className="pt-[88px] flex flex-col min-h-screen bg-[#F5F5F5]">
-      <Navbar ativo="minhas doacoes" />
+      <Navbar ativo="minhas doacoes" companyId={companyId || 0} />
 
       <div className="flex flex-grow min-h-screen">
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="font-sans font-bold text-[32px] text-black mt-[10px] text-left">
-            Minhas doações
-          </h1>
+          <h1 className="font-sans font-bold text-[32px] text-black mt-[10px] text-left">Minhas doações</h1>
           <p className="font-sans text-[14px] text-black mt-[5px] mb-[30px] text-left">
             Escolha uma ONG conectada e cadastre uma doação para ela
           </p>
+
           {!isLoading && filteredAcoes.length > 0 && (
             <div className={`mt-8 mb-8 relative ${showCadastroDoacaoSidebar ? "" : "lg:pr-6"}`}>
               <SearchBar placeholder="Pesquisar..." onSearch={handleSearch} initialValue="" />
             </div>
           )}
+
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-[25px] ${cardGridColsClass}`}>
             {isLoading ? (
               <p className="text-gray-500 col-span-full text-center">Carregando ações...</p>
@@ -222,9 +217,7 @@ export default function DoacoesPage() {
         </main>
 
         {showCadastroDoacaoSidebar && (
-          <div
-            className={`flex-shrink-0 bg-white shadow-lg transition-all duration-300 ease-in-out w-[450px] p-3 sticky top-[88px] h-screen self-start hidden lg:block`}
-          >
+          <div className="flex-shrink-0 bg-white shadow-lg transition-all duration-300 ease-in-out w-[450px] p-3 sticky top-[88px] h-screen self-start hidden lg:block">
             <div className="h-full w-full overflow-y-auto">
               <div className="p-4 flex flex-col h-full">
                 <CadastroDoacao

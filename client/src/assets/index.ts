@@ -84,3 +84,9 @@ export { portasair };
 
 import maozona from "./maozona.svg";
 export { maozona };
+
+import check from "./check.svg";
+export { check };
+
+import backbutton from "./backbutton.svg";
+export { backbutton };

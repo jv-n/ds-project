@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import FileUploadInput from '../file-uploader';
-import FloatingInput from './components/FloatingInput';
+import FloatingInput from '../floating-input';
 
 interface CadastroDoacaoProps {
   onClose: () => void;
@@ -76,20 +76,22 @@ export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitD
         <div className="space-y-5 flex-grow overflow-y-auto">
           {/* Tipo */}
           <FloatingInput
-			label="Tipo de doação*"
-			value={selectedDonationType || ""}
-			onChange={(v) => setSelectedDonationType(v)}
-			options={donationTypesOptions} // ativa o comportamento de dropdown
-			error={errors.tipo}
-			/>
+            label="Tipo de doação*"
+            value={selectedDonationType || ""}
+            onChange={(v) => setSelectedDonationType(v)}
+            options={donationTypesOptions} // ativa o comportamento de dropdown
+            error={errors.tipo}
+            placeholder='Selecione um tipo de doação'
+            />
 
           {/* Valor */}
           <FloatingInput
-			label="Valor ou quantidade*"
-			value={valueOrQuantity}
-			onChange={setValueOrQuantity}
-			error={errors?.valor}
-		  />
+            label="Valor ou quantidade*"
+            value={valueOrQuantity}
+            onChange={setValueOrQuantity}
+            error={errors?.valor}
+            placeholder='Informe o valor ou quantidade'
+            />
 
           {/* Documentos */}
           <FileUploadInput
