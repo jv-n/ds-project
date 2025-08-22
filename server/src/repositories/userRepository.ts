@@ -1,11 +1,11 @@
-import { Prisma, Usuario } from '@prisma/client';
-import prisma from '@database';
+import { Usuario } from '@prisma/client';
+import prisma from '../database';
 
 interface CreateUserDTO {
   cnpj: string;           
   email: string;           
   senha: string;      
-  telefone: string;   
+  telefone?: string;   
 }
 
 interface UpdateUserDTO {
@@ -61,3 +61,5 @@ async findByCnpj(cnpj: string, perfil?: string): Promise<Usuario | null> {
     return users;
   }
 }
+
+export default new UserRepository();

@@ -49,7 +49,11 @@ export default function SearchbarComFiltrosODS({
   const [dropdownAberto, setDropdownAberto] = useState(false);
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [menuPos, setMenuPos] = useState<{ left: number; top: number; width: number }>({
+  const [menuPos, setMenuPos] = useState<{
+    left: number;
+    top: number;
+    width: number;
+  }>({
     left: 0,
     top: 0,
     width: 320, // ~ w-80
@@ -84,8 +88,10 @@ export default function SearchbarComFiltrosODS({
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as Node;
       if (
-        (btnRef.current && (btnRef.current === target || btnRef.current.contains(target))) ||
-        (menuRef.current && (menuRef.current === target || menuRef.current.contains(target)))
+        (btnRef.current &&
+          (btnRef.current === target || btnRef.current.contains(target))) ||
+        (menuRef.current &&
+          (menuRef.current === target || menuRef.current.contains(target)))
       ) {
         return;
       }

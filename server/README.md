@@ -41,6 +41,12 @@ DATABASE_URL=${DATABASE_TYPE}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE
 # ###### JWT SETTINGS FOR AUTHENTICATION #######
 JWT_ACCESS_SECRET=0551c0ed-6389-46b1-839e-2e28fc191c89 # token for 30sec
 JWT_REFRESH_SECRET=92fba49f6912d14733332bb9ebaac1562f51ee685594acf103d71f685f70868b # token for 7 days
+
+# ###### EMAIL SETTINGS #######
+EMAIL_SERVICE=gmail
+EMAIL_ADDRESS=seloderesponsa@gmail.com
+EMAIL_PASSWORD=twcm ygno tvuo etra
+
 ```
 
 4. Para rodar o servidor, execute:

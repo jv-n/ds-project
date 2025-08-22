@@ -182,8 +182,13 @@ export default {
   // timers: "real",
 
   // A map from regular expressions to paths to transformers
-  transform: {
-    '^.+\\.(t|j)sx?$': '@swc/jest',
+    transform: {
+    '^.+\\.(t|j)s$': ['@swc/jest', {
+      sourceMaps: true, // Ajuda na depuração
+      module: {
+        type: 'commonjs', // Força a compilação para um formato que o Jest entende nativamente
+      },
+    }],
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation

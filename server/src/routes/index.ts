@@ -1,22 +1,26 @@
-// src/routes/router.ts
 import { Router } from 'express';
-import UserRouter from './userRoutes';
-import AuthRouter from './authRoutes';
-import FileRouter from './documentRoutes';
+import UserRouter from './UserRoutes';
+import AuthRouter from './AuthRoutes';
+import FileRouter from './FileRoutes';
 import DonationRouter from './donationRoutes';
-import CompanyRouter from './companyRoutes';
+import CompanyRouter from './CompanyRoutes';
 import ActionCompanyRouter from './actionCompanyRoutes';
+import sealRoutes from './sealRoutes';
+
 const router = Router();
 
+router.use('/selo', sealRoutes);
 router.use('/user', UserRouter);
-router.use('/auth', AuthRouter);
+router.use('/sessions', AuthRouter);
 router.use('/file', FileRouter);
-router.use('/donations', DonationRouter);
-router.use('/actions', ActionCompanyRouter);
 router.use('/company', CompanyRouter);
-
+router.use('/donation', DonationRouter);
+router.use('/action-company', ActionCompanyRouter);
 router.route('/').get((_, res) => {
-  res.status(200).send('Made with 💚 and &lt; &#x0002F; &gt; by CITi');
+  res.status(200).send('Running...');
+});
+router.route('/health').get((_, res) => {
+  res.status(200).send('OK');
 });
 
 export default router;

@@ -4,10 +4,10 @@ import Button from '@/components/button';
 
 export interface Documento {
     id: string;
-    nome: string;
-    tipo: string;
-    dataEnvio: string;
-    url: string;
+    storedName: string;
+    mimetype: string;
+    createdAt: string;
+    path: string;
 }
 
 export interface RowAuditoriaProps {
@@ -43,7 +43,7 @@ export default function RowAuditoria(props: RowAuditoriaProps) {
         <div className='w-[146px] flex justify-start'>
             <Chip status={props.status} />
         </div>
-        <div className='w-[125px]'>
+        <div className='w-[135px]'>
             <Button 
                 variant="secondary" 
                 onClick={(event) => {

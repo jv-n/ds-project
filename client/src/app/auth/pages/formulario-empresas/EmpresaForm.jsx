@@ -5,6 +5,8 @@ import FloatingInput from "@/components/floating-input";
 import NavbarSecundaria from "@/components/navbar-2";
 import Rodape from "@/components/rodape";
 import OdsImages from "./OdsImages";
+import api from "@/services/api";
+import { useRouter } from "next/navigation";
 
 const OdsImageOptions = Array.from({ length: 17 }, (_, i) => ({
   id: String(i + 1),
@@ -22,6 +24,8 @@ export default function EmpresaForm() {
     senha: "",
     confirmarSenha: "",
   });
+
+  const router = useRouter();
 
   const [selectedODS, setSelectedODS] = useState(() => {
     const initialState = {};
@@ -106,16 +110,70 @@ export default function EmpresaForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validate()) {
-      setIsSubmitting(true);
-      setTimeout(() => {
-        alert("Cadastro realizado com sucesso!");
-        setIsSubmitting(false);
-      }, 1000);
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validate()) return;
+
+  console.log("Opções selecionadas:", selectedODS);
+  setIsSubmitting(true);
+
+  const userPayload = {
+    email: formData.email,
+    cnpj: formData.cnpj,
+    telefone: formData.telefone,
+    senha: formData.senha,
   };
+
+  const companyPayload = {
+    nome: formData.nomeEmpresa,
+    numColaboradores: parseInt(formData.nColaboradores),
+    odsId: Object.keys(selectedODS)
+      .filter((key) => selectedODS[key])
+      .map((key) => parseInt(key)),
+  };
+
+  try {
+    // --- VERIFICA SE EMAIL OU CNPJ JÁ EXISTEM ---
+    const [emailRes, cnpjRes] = await Promise.all([
+      api.get("/user/email", { params: { value: userPayload.email } }).catch(() => ({ data: null, status: 204 })),
+      api.get("/user/cnpj", { params: { value: userPayload.cnpj } }).catch(() => ({ data: null, status: 204 })),
+    ]);
+
+    if (emailRes.data) {
+      setErrors((prev) => ({ ...prev, email: "Email já cadastrado" }));
+      return;
+    }
+
+    if (cnpjRes.data) {
+      setErrors((prev) => ({ ...prev, cnpj: "CNPJ já cadastrado" }));
+      return;
+    }
+
+    // --- CRIA USUÁRIO ---  
+    const { data: userData } = await api.post("/user", userPayload);
+    const usuarioId = userData.id;
+
+    // --- CRIA EMPRESA VINCULADA ---
+    const { data: empresaData } = await api.post("/company", {
+      ...companyPayload,
+      usuarioId,
+    });
+
+    console.log("Usuário criado:", userData);
+    console.log("Empresa criada:", empresaData);
+
+    alert("Cadastro realizado com sucesso!");
+    router.push("http://localhost:3000/entrar");
+
+  } catch (error) {
+    console.error("Erro no cadastro:", error.response?.data || error.message);
+    alert("Erro ao cadastrar empresa");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <div className="pt-[88px] flex flex-col min-h-screen bg-[#F5F5F5]">
@@ -301,5 +359,3 @@ export default function EmpresaForm() {
     </div>
   );
 }
-
-

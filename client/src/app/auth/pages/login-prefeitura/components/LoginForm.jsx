@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import FloatingInput from "@/components/floating-input";
 import Button from "@/app/auth/components/ui/Button";
 import { validateEmail } from "@/app/auth/utils/emailUtils";
+import api from "@/services/api"; 
 
 const LoginFormPrefeitura = () => {
   const [formData, setFormData] = useState({
@@ -40,51 +41,50 @@ const LoginFormPrefeitura = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
+    e.preventDefault();
+    if (!validate()) return;
 
-  try {
-    // Verifica se o email existe e se é do perfil "prefeitura"
-    const checkRes = await fetch(
-      `http://localhost:3001/user/email?value=${encodeURIComponent(formData.email)}&perfil=prefeitura`
-    );
+    try {
+      // Verifica se o email existe e se é do perfil "prefeitura"
+      const checkRes = await api.get("/user/email", {
+        params: { value: formData.email, perfil: "prefeitura" },
+      });
 
-    if (checkRes.status === 404) {
-      setErrors({ email: "Email não cadastrado como Prefeitura", password: "" });
-      return;
+      if (checkRes.status === 404) {
+        setErrors({ email: "Email não cadastrado como Prefeitura", password: "" });
+        return;
+      }
+
+      // Email existe e perfil correto, tenta o login
+      const userPayload = {
+        email: formData.email,
+        senha: formData.password,
+        perfil: "prefeitura",
+      };
+
+      const res = await api.post("/auth/prefeitura", userPayload, {
+        withCredentials: true,
+      });
+
+      const data = res.data;
+      console.log("Login Prefeitura realizado com sucesso:", data);
+
+      localStorage.setItem("userId", data.user.id);
+
+      // TODO: redirecionar para o fluxo da auditoria
+      // router.push("/auditoria");
+    } catch (err) {
+      console.error("Erro login Prefeitura:", err.response?.data || err.message);
+
+      if (err.response?.status === 401) {
+        setErrors({ email: "", password: "Senha incorreta" });
+      } else if (err.response?.status === 404) {
+        setErrors({ email: "Email não cadastrado como Prefeitura", password: "" });
+      } else {
+        setErrors({ email: "Erro inesperado ao verificar email", password: "" });
+      }
     }
-
-    if (!checkRes.ok) {
-      throw new Error("Erro ao verificar email");
-    }
-
-    // Email existe e perfil correto, tenta o login
-    const userPayload = { email: formData.email, senha: formData.password, perfil: "prefeitura" };
-
-    const res = await fetch("http://localhost:3001/auth/prefeitura", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(userPayload),
-    });
-
-    if (res.status === 401) {
-      setErrors({ email: "", password: "Senha incorreta" });
-      return;
-    }
-
-    if (!res.ok) throw new Error("Erro no login");
-
-    const data = await res.json();
-    console.log("Login Prefeitura realizado com sucesso:", data);
-    localStorage.setItem("userId", data.user.id);
-
-    // TODO: redirecionar para o fluxo da auditoria
-  } catch (err) {
-    console.error("Erro login Prefeitura:", err.message);
-    setErrors({ email: "Erro inesperado ao verificar email", password: "" });
-  }
-};
+  };
 
 
   const handleEmailChange = (value) => {

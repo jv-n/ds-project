@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { UserRepository } from '../repositories/userRepository';
 import bcrypt from 'bcryptjs';
 
-export class UserController {
+ class UserController {
   private repository: UserRepository;
 
   constructor() {
@@ -65,53 +65,76 @@ export class UserController {
     }
   };
 
-getByCnpj = async (req: Request, res: Response) => {
-  try {
-    const cnpj = req.query.value as string;
-    const perfil = req.query.perfil as string | undefined; // perfil opcional
+  getByCnpj = async (req: Request, res: Response) => {
+    try {
+      const cnpj = req.query.value as string;
+      const perfil = req.query.perfil as string | undefined; // perfil opcional
 
-    if (!cnpj) {
-      return res.status(400).json({ error: "CNPJ não fornecido" });
+      if (!cnpj) {
+        return res.status(400).json({ error: "CNPJ não fornecido" });
+      }
+
+      // Busca pelo CNPJ e, se informado, pelo perfil
+      const user = await this.repository.findByCnpj(cnpj, perfil);
+
+      if (!user) {
+        return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este CNPJ` : "User not found" });
+      }
+
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
+  };
 
-    // Busca pelo CNPJ e, se informado, pelo perfil
-    const user = await this.repository.findByCnpj(cnpj, perfil);
 
-    if (!user) {
-      return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este CNPJ` : "User not found" });
+  getByEmail = async (req: Request, res: Response) => {
+    try {
+      const email = req.query.value as string;
+      const perfil = req.query.perfil as string | undefined; // perfil opcional
+
+      if (!email) {
+        return res.status(400).json({ error: "Email não fornecido" });
+      }
+
+      // Busca pelo email e, se informado, pelo perfil
+      const user = await this.repository.findByEmail(email, perfil);
+
+      if (!user) {
+        return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este email` : "User not found" });
+      }
+
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
+  };
 
-    res.json(user);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+  read = async (req: Request, res: Response) => {
+      try {
+        const { userId } = req.params;
 
+        const id = Number(userId);
 
-getByEmail = async (req: Request, res: Response) => {
-  try {
-    const email = req.query.value as string;
-    const perfil = req.query.perfil as string | undefined; // perfil opcional
+        const user = await this.repository.findById(Number(id));
 
-    if (!email) {
-      return res.status(400).json({ error: "Email não fornecido" });
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.locals = {
+          status: 200,
+          data: user,
+        };
+
+        return;
+      } catch (error) {
+        console.error('Error reading user:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
     }
-
-    // Busca pelo email e, se informado, pelo perfil
-    const user = await this.repository.findByEmail(email, perfil);
-
-    if (!user) {
-      return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este email` : "User not found" });
-    }
-
-    res.json(user);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 
   update = async (req: Request, res: Response) => {
     try {
@@ -155,3 +178,5 @@ getByEmail = async (req: Request, res: Response) => {
     }
   };
 }
+
+export default new UserController();

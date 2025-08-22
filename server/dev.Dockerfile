@@ -20,7 +20,7 @@ FROM base AS builder
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY . .
 

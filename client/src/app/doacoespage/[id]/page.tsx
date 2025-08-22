@@ -61,7 +61,7 @@ export default function DoacoesPage() {
     setError(null);
 
     try {
-      const response = await api.get<AcaoData[]>(`/actions/company/${companyId}`);
+      const response = await api.get<AcaoData[]>(`/action-company/company/${companyId}`);
       const data = response.data;
 
       if (Array.isArray(data)) {
@@ -143,7 +143,7 @@ export default function DoacoesPage() {
         data.documentos.forEach((file) => formData.append("documents", file));
       }
 
-      await api.post("/donations", formData, { headers: { "Content-Type": "multipart/form-data" } });
+      await api.post("/donation", formData, { headers: { "Content-Type": "multipart/form-data" } });
 
       handleCloseCadastro();
       await fetchAcoes();

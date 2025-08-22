@@ -6,6 +6,7 @@ import Button from "@/app/auth/components/ui/Button";
 import { formatCNPJ, validateCNPJ } from "@/app/auth/utils/cnpjUtils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import api from "@/services/api";
 
 
 const LoginFormEmpresa = () => {
@@ -43,45 +44,44 @@ const LoginFormEmpresa = () => {
 
     try {
       // Verifica se o CNPJ existe e se é do perfil "empresa"
-      const checkRes = await fetch(
-        `http://localhost:3001/user/cnpj?value=${encodeURIComponent(formData.cnpj)}&perfil=empresa`
-      );
+      const checkRes = await api.get("/user/cnpj", {
+        params: { value: formData.cnpj, perfil: "empresa" },
+      });
 
-      if (checkRes.status === 404) {
+      if (checkRes.status === 204 || !checkRes.data) {
+        // caso a API retorne 204 ou não tenha dados
         setErrors({ cnpj: "CNPJ não cadastrado como Empresa", password: "" });
         return;
       }
 
-      if (!checkRes.ok) {
-        throw new Error("Erro ao verificar CNPJ");
-      }
-
       // CNPJ existe e perfil correto, tenta o login
-      const userPayload = { cnpj: formData.cnpj, senha: formData.password, perfil: "empresa" };
+      const userPayload = {
+        cnpj: formData.cnpj,
+        senha: formData.password,
+        perfil: "empresa",
+      };
 
-      const res = await fetch("http://localhost:3001/auth/empresa", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(userPayload),
+      const res = await api.post("/sessions/empresa", userPayload, {
+        withCredentials: true, // substitui o credentials: "include"
       });
 
-      if (res.status === 401) {
-        setErrors({ cnpj: "", password: "Senha incorreta" });
-        return;
-      }
-
-      if (!res.ok) throw new Error("Erro no login");
-
-      const data = await res.json();
+      const data = res.data;
       console.log("Login Empresa realizado com sucesso:", data);
-      localStorage.setItem("companyId", data.company.id);
 
-      // TODO: redirecionar para a dashboard da empresa
-      router.push('http://localhost:3000/acoes'); 
+      localStorage.setItem("companyId", data.company.id);
+      localStorage.setItem("userId", data.user.id);
+
+      // redirecionar para a dashboard da empresa
+      router.push("http://localhost:3000/acoes");
     } catch (err) {
-      console.error("Erro login Empresa:", err.message);
-      setErrors({ cnpj: "Erro inesperado ao verificar CNPJ", password: "" });
+      if (err.response?.status === 404) {
+        setErrors({ cnpj: "CNPJ não cadastrado como Empresa", password: "" });
+      } else if (err.response?.status === 401) {
+        setErrors({ cnpj: "", password: "Senha incorreta" });
+      } else {
+        console.error("Erro login Empresa:", err.response?.data || err.message);
+        setErrors({ cnpj: "Erro inesperado ao verificar CNPJ", password: "" });
+      }
     }
   };
 

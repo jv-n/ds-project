@@ -10,7 +10,7 @@ prisma
   .then(() => {
     console.log('📦 Conectado com sucesso ao banco de dados');
   })
-  .catch((error) => {
+  .catch((error: Error) => {
     console.log('❌ Erro ao conectar ao banco de dados', error);
   });
 

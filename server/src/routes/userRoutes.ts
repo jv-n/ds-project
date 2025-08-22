@@ -1,16 +1,39 @@
 import { Router } from 'express';
 import auth from '../middlewares/auth';
-import { UserController } from '../controllers/userController';
+import { UserController } from '../controllers';
 
-const router = Router();
-const controller = new UserController();
+const userRouter = Router();
 
-router.post('/', controller.create);
-router.get('/', controller.getAll);
-router.get("/cnpj", controller.getByCnpj);
-router.get("/email", controller.getByEmail);
-router.get('/:id', controller.getById);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+userRouter.route('/')
+  .post(
+    UserController.create,
+  );
 
-export default router;
+userRouter.route('/cnpj')
+  .get(
+    UserController.getByCnpj,
+  );
+
+userRouter.route('/email')
+  .get(
+    UserController.getByEmail,
+  );
+
+userRouter.route('/:userId')
+  .get(
+    UserController.read,
+  );
+
+userRouter.route('/:userId')
+  .patch(
+    [auth],
+    UserController.update,
+  );
+
+userRouter.route('/:userId')
+  .delete(
+    [auth],
+    UserController.delete,
+  );
+
+export default userRouter;

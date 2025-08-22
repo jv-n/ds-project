@@ -1,10 +1,12 @@
 import React from 'react';
+import { useRef } from 'react';
 import Certificate from '@/components/certificate';
 import { CertificateProps } from '@/components/certificate';
 import { Dialog, Transition } from '@headlessui/react';
 import { DM_Sans } from 'next/font/google';
 import Image from 'next/image';
 import { Fechar, Olho, Download} from '@/assets';
+import html2canvas from 'html2canvas-pro';
 
 export interface ModalCertificadoProps {
     certificado: CertificateProps;
@@ -19,11 +21,30 @@ const dm_sans = DM_Sans({
     variable: '--font-dm-sans'
 });
 
-export function downloadCertificate(certificado: CertificateProps) {
-    console.log(`Baixando certificado da empresa: ${certificado.empresa}`);
-}
 
 export default function ModalCertificado({ certificado, isOpen, onClose }: ModalCertificadoProps) {
+    
+    const componentRef = useRef<HTMLDivElement | null>(null);
+
+   const handleExportImage = async () => {
+    const element = componentRef.current;
+    if (!element) return; // Guard clause to make sure the ref is available
+
+    // Generate the image using html2canvas
+    const canvas = await html2canvas(element);
+    
+    // Convert the canvas to an image data URL (PNG format)
+    const imgData = canvas.toDataURL('image/png');
+    
+    // Create a link element to trigger the download
+    const link = document.createElement('a');
+    link.href = imgData;
+    link.download = 'certificate.png'; // Set the file name for download
+
+    // Programmatically trigger the download
+    link.click();
+};
+
     if (!certificado || !certificado.id) {
         return null; 
     }
@@ -64,11 +85,11 @@ export default function ModalCertificado({ certificado, isOpen, onClose }: Modal
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-center mb-4">
+                                <div className="flex items-center justify-center mb-4" ref={componentRef}>
                                     <Certificate {...certificado} />
                                 </div>
                                 <div className="flex flex-row items-center justify-center w-full pb-3">
-                                    <button className='flex items-center justify-center h-[30px] w-[30px] hover:cursor-pointer rounded-full hover:bg-gray-200' onClick={() => downloadCertificate(certificado)}>
+                                    <button className='flex items-center justify-center h-[30px] w-[30px] hover:cursor-pointer rounded-full hover:bg-gray-200' onClick={() => handleExportImage()}>
                                         <Image src={Download} alt="baixar" width={24} height={24} />
                                     </button>
                                 </div>
