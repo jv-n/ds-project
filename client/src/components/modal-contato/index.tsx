@@ -10,6 +10,7 @@ export interface propspopup {
   emailong: string;
   numeroong: string;
   odsNomes?: string[];
+  odsAcao?: number[]; // ids das ODS (opcional, vindo do grid)
   onEntrarContato: () => void; // usado como 'onClose'
 }
 
@@ -95,11 +96,13 @@ export default function Modalcontatos(props: propspopup) {
         (stored && Number(stored)) ||
         Number(process.env.NEXT_PUBLIC_DEFAULT_EMPRESA_ID || "1");
 
-      // Prepara payload para /action-company
-      const odsAcao =
-        (props.odsNomes ?? [])
-          .map((n) => ODS_NAME_TO_ID[n])
-          .filter((v): v is number => typeof v === "number") || [];
+      // Preferir ids já disponíveis (props.odsAcao). Se não houver, mapear odsNomes -> ids
+      const odsIds =
+        (Array.isArray(props.odsAcao) && props.odsAcao.length
+          ? props.odsAcao
+          : (props.odsNomes ?? [])
+              .map((n) => ODS_NAME_TO_ID[n])
+              .filter((v): v is number => typeof v === "number")) || [];
 
       const payload: Record<string, any> = {
         nome: props.nomeacao ?? "",
@@ -108,16 +111,16 @@ export default function Modalcontatos(props: propspopup) {
         emailOng: props.emailong ?? "",
         telefoneOng: props.numeroong ?? "",
         empresaId,
-        odsAcao,
+        odsAcao: odsIds,
       };
 
       if (props.acaoId != null) {
         payload.acaoId = Number(props.acaoId);
       }
 
-      // Só faz POST se tivermos action id ou dados suficientes
+      // Somente tenta criar se tiver acaoId
       if (payload.acaoId) {
-        const url = `${API_BASE.replace(/\/$/, "")}/action-company`;
+        const url = `${API_BASE}/action-company`;
         const resp = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -132,18 +135,6 @@ export default function Modalcontatos(props: propspopup) {
         console.warn(
           "handleConfirmContact: acaoId ausente — não enviando /action-company"
         );
-      }
-
-      // métrica (mantém comportamento anterior)
-      if (props.acaoId != null) {
-        const murl = `${API_BASE.replace(/\/$/, "")}/metrics/contact`;
-        await fetch(murl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action_id: props.acaoId }),
-        }).catch((err) => {
-          console.warn("metrics/contact post failed:", err);
-        });
       }
     } catch (e) {
       console.warn("Erro em handleConfirmContact:", e);

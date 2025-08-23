@@ -20,6 +20,12 @@ type ActionApi = {
   whatsapp_contact?: string;
   ong?: OngApi;
   sustainable_development_goals?: OdsApi[];
+  // novos campos recebidos pelo GET do seu backend
+  nome?: string;
+  nomeOng?: string;
+  emailOng?: string;
+  telefoneOng?: string;
+  odsAcao?: number[];
 };
 
 type Props = {
@@ -36,12 +42,12 @@ const safeLower = (s?: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
+// Local card type includes optional odsAcao ids so modal can receive them
+type LocalCard = Omit<Cardacaoprops, "onEntrarContato"> & { odsAcao?: number[] };
+
 export default function GridAcoes({ searchText, odsFilters }: Props) {
   const [modalAberto, setModalAberto] = useState(false);
-  const [acaoSelecionada, setAcaoSelecionada] = useState<Omit<
-    Cardacaoprops,
-    "onEntrarContato"
-  > | null>(null);
+  const [acaoSelecionada, setAcaoSelecionada] = useState<LocalCard | null>(null);
 
   const [acoes, setAcoes] = useState<ActionApi[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,6 +60,13 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
         .filter((v): v is number => typeof v === "number"),
     [odsFilters]
   );
+
+  // inverse map: id -> name (usa ODS_NAME_TO_ID)
+  const ODS_ID_TO_NAME = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(ODS_NAME_TO_ID).map(([name, id]) => [String(id), name])
+    ) as Record<string, string>;
+  }, []);
 
   const [debouncedText, setDebouncedText] = useState(searchText);
   useEffect(() => {
@@ -92,14 +105,9 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
         const raw = await resp.json();
 
         // Normalize many possible shapes:
-        // - [] (array of actions)
-        // - [{ actions: [...] }, ...]
-        // - { actions: [...] }
-        // - { data: { items: [...] } } (generic)
         let list: ActionApi[] = [];
 
         if (Array.isArray(raw)) {
-          // if array of wrappers e.g. [{ actions: [...] }]
           const first = raw[0];
           if (first && Array.isArray(first.actions)) {
             list = first.actions as ActionApi[];
@@ -132,17 +140,17 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
       cancelado = true;
       controller.abort();
     };
-  }, [debouncedText, odsIds]);
+  }, [debouncedText, odsIds, ODS_ID_TO_NAME]);
 
   const filtered = useMemo(() => {
     const q = safeLower(debouncedText);
     const odsWanted = odsFilters.map(safeLower);
 
     return acoes.filter((a) => {
-      const title = safeLower(a.title ?? a.title ?? "");
+      const title = safeLower(a.title ?? a.nome ?? "");
       const shortDesc = safeLower(a.short_description);
       const longDesc = safeLower(a.description);
-      const ongName = safeLower(a.ong?.name);
+      const ongName = safeLower(a.ong?.name ?? a.nomeOng);
 
       const odsNames = (a.sustainable_development_goals ?? [])
         .map((g) => safeLower(g?.name))
@@ -163,21 +171,25 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
     });
   }, [acoes, debouncedText, odsFilters]);
 
-  const cards: Omit<Cardacaoprops, "onEntrarContato">[] = useMemo(() => {
+  const cards: LocalCard[] = useMemo(() => {
     return filtered
       .map((a) => {
-        const nomeacao = (a.title ?? "").trim();
+        const nomeacao = (a.title ?? a.nome ?? "").trim();
         const descricao = (a.short_description || a.description || "").trim();
 
-        const odsNomes =
-          a.sustainable_development_goals
-            ?.map((o) => o?.name)
-            .filter(Boolean)
-            .slice(0, 4) ?? [];
+        // first try explicit names, otherwise convert odsAcao ids -> names
+        const odsFromGoals =
+          a.sustainable_development_goals?.map((o) => o?.name).filter(Boolean) ?? [];
 
-        const nomedaong = a.ong?.name ?? "";
-        const emailong = a.ong?.contact_email ?? "";
-        const numeroong = a.whatsapp_contact || a.ong?.contact_phone || "";
+        const odsFromIds = Array.isArray(a.odsAcao)
+          ? a.odsAcao.map((id) => ODS_ID_TO_NAME[String(id)]).filter(Boolean)
+          : [];
+
+        const odsNomes = (odsFromGoals.length ? odsFromGoals : odsFromIds).slice(0, 4);
+
+        const nomedaong = a.ong?.name ?? a.nomeOng ?? "";
+        const emailong = a.ong?.contact_email ?? a.emailOng ?? "";
+        const numeroong = a.whatsapp_contact || a.ong?.contact_phone || a.telefoneOng || "";
 
         if (!nomeacao && !descricao && !nomedaong) return null;
 
@@ -190,15 +202,17 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
           ods3: odsNomes[2] ?? "",
           ods4: odsNomes[3] ?? "",
           odsNomes,
+          // passa também os ids originais para o modal — se existir no GET
+          odsAcao: Array.isArray(a.odsAcao) ? a.odsAcao : [],
           nomedaong,
           emailong,
           numeroong,
-        } as Omit<Cardacaoprops, "onEntrarContato">;
+        } as LocalCard;
       })
-      .filter(Boolean) as Omit<Cardacaoprops, "onEntrarContato">[];
-  }, [filtered]);
+      .filter(Boolean) as LocalCard[];
+  }, [filtered, ODS_ID_TO_NAME]);
 
-  const handleAbrirModal = (acao: Omit<Cardacaoprops, "onEntrarContato">) => {
+  const handleAbrirModal = (acao: LocalCard) => {
     setAcaoSelecionada(acao);
     setModalAberto(true);
   };
@@ -209,9 +223,7 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
 
   return (
     <section className="w-[825px] max-w-6xl mx-auto px-1 py-8">
-      {loading && (
-        <div className="text-sm text-gray-500 mb-3">Carregando ações…</div>
-      )}
+      {loading && <div className="text-sm text-gray-500 mb-3">Carregando ações…</div>}
       {erro && <div className="text-sm text-red-600 mb-3">{erro}</div>}
 
       {!loading && !erro && (
@@ -224,7 +236,17 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
             {cards.map((acao) => (
               <Cardacao
                 key={acao.acaoId ?? acao.nomeacao}
-                {...acao}
+                acaoId={acao.acaoId}
+                nomeacao={acao.nomeacao}
+                descricao={acao.descricao}
+                ods1={acao.ods1}
+                ods2={acao.ods2}
+                ods3={acao.ods3}
+                ods4={acao.ods4}
+                odsNomes={acao.odsNomes}
+                nomedaong={acao.nomedaong}
+                emailong={acao.emailong}
+                numeroong={acao.numeroong}
                 onEntrarContato={() => handleAbrirModal(acao)}
               />
             ))}
@@ -241,6 +263,7 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
           numeroong={acaoSelecionada.numeroong}
           acaoId={acaoSelecionada.acaoId}
           odsNomes={acaoSelecionada.odsNomes}
+          odsAcao={acaoSelecionada.odsAcao}
           onEntrarContato={handleFecharModal}
         />
       )}
