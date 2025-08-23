@@ -57,8 +57,9 @@ export default function Navbar({ ativo, companyId }: NavbarProps) {
             </div>
 
             <div
-              className="relative cursor-pointer flex items-center"
-              onClick={() => router.push("")}
+              className="relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200"
+              onClick={() => router.push("/entrar")}
+
             >
               <Image src={portasair} alt="Sair" />
               {ativo === "sair" && (
