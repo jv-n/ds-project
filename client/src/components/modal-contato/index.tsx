@@ -54,6 +54,7 @@ Atenciosamente.`;
 
 export default function Modalcontatos(props: propspopup) {
   const [sending, setSending] = useState(false);
+  const [empresaIdFromStorage, setEmpresaIdFromStorage] = useState<number | null>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -62,6 +63,14 @@ export default function Modalcontatos(props: propspopup) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [props]);
+
+  // Load empresaId from localStorage on mount (client-side only)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("empresaId");
+      setEmpresaIdFromStorage(stored ? Number(stored) : null);
+    }
+  }, []);
 
   if (typeof window === "undefined") return null;
 
@@ -88,12 +97,8 @@ export default function Modalcontatos(props: propspopup) {
     setSending(true);
     try {
       // Normaliza empresaId: primeiro localStorage (dev), depois env NEXT_PUBLIC_DEFAULT_EMPRESA_ID, por fim fallback 1
-      const stored =
-        typeof window !== "undefined"
-          ? localStorage.getItem("empresaId")
-          : null;
       const empresaId =
-        (stored && Number(stored)) ||
+        (empresaIdFromStorage as number | null) ||
         Number(process.env.NEXT_PUBLIC_DEFAULT_EMPRESA_ID || "1");
 
       // Preferir ids já disponíveis (props.odsAcao). Se não houver, mapear odsNomes -> ids

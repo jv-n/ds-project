@@ -6,6 +6,9 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
+
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -42,7 +45,7 @@ RUN chown -R node:node /home/node/app/prisma/
 
 USER node
 
-EXPOSE 3001
+EXPOSE 3005
 
 CMD [ "node", "dist/src/server.js" ]
 

@@ -137,54 +137,6 @@ async function main() {
     pendingDonations.map((d) => prisma.doacao.create({ data: d })),
   );
 
-  // --- 3. Criação de uma Ação de Teste para a Empresa ---
-  console.log('Criando ação de doação...');
-  const acaoCriada = await prisma.acaoEmpresa.create({
-    data: {
-      acaoId: 1, // ID fixo para a campanha
-      nome: 'Campanha do Agasalho 2025',
-      descricao: 'Arrecadação de fundos para a compra de cobertores.',
-      nomeOng: 'ONG Noites Felizes',
-      emailOng: 'contato@noitesfelizes.org',
-      telefoneOng: '21912345678',
-      odsAcao: [1, 10],
-      empresaId: empresaCriada.id,
-    },
-  });
-  console.log(`Ação "${acaoCriada.nome}" criada.`);
-
-  // --- 4. Criação de Selos, Doações Aprovadas, Reprovadas e Pendentes ---
-  console.log('Criando selos e doações de teste...');
-
-  await prisma.selo.create({
-    data: { nivel: 'Bronze', descricao: 'Selo de Compromisso', pontuacaoMin: 100, empresaId: empresaCriada.id },
-  });
-  
-  // Doação já Aprovada
-  await prisma.doacao.create({
-    data: { data: new Date('2025-08-14T10:00:00Z'), valor: 75.5, tipo: 'Cartão', status: 'Aprovada', empresaId: empresaCriada.id, acaoId: acaoCriada.acaoId, documentos: { create: { storedName: 'doc_aprovado.pdf', mimetype: 'application/pdf', size: 123, path: 'uploads/doc.pdf' } } },
-  });
-
-  // Doação já Reprovada
-  await prisma.doacao.create({
-    data: { data: new Date('2025-08-13T11:00:00Z'), valor: 200.0, tipo: 'TED', status: 'Reprovada', motivoReprovacao: 'Comprovante ilegível.', empresaId: empresaCriada.id, acaoId: acaoCriada.acaoId, documentos: { create: { storedName: 'doc_reprovado.jpg', mimetype: 'image/jpeg', size: 123, path: 'uploads/doc.jpg' } } },
-  });
-
-  // 5 Doações Pendentes
-  for (let i = 1; i <= 5; i++) {
-    await prisma.doacao.create({
-      data: {
-        data: new Date(),
-        valor: 100 + i * 10,
-        tipo: 'PIX',
-        status: 'Pendente',
-        empresaId: empresaCriada.id,
-        acaoId: acaoCriada.acaoId,
-        documentos: { create: { storedName: `doc_pendente_${i}.png`, mimetype: 'image/png', size: 123, path: `uploads/doc_${i}.png` } },
-      },
-    });
-  }
-  console.log('Selos e 7 doações (1 aprovada, 1 reprovada, 5 pendentes) criadas com sucesso!');
 }
 
 main()
@@ -195,5 +147,5 @@ main()
   .catch(async (e) => {
     console.error('Ocorreu um erro durante o processo de seed:', e);
     await prisma.$disconnect();
-    process.exit(1);
+    //process.exit(1);
   });

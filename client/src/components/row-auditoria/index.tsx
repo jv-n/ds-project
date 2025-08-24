@@ -4,10 +4,10 @@ import Button from '@/components/button';
 
 export interface Documento {
     id: string;
-    nome: string;
-    tipo: string;
-    dataEnvio: string;
-    url: string;
+    storedName: string;
+    mimetype: string;
+    createdAt: string;
+    path: string;
 }
 
 export interface RowAuditoriaProps {

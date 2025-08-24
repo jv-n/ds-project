@@ -19,5 +19,8 @@ router.use('/action-company', ActionCompanyRouter);
 router.route('/').get((_, res) => {
   res.status(200).send('Running...');
 });
+router.route('/health').get((_, res) => {
+  res.status(200).send('OK');
+});
 
 export default router;
