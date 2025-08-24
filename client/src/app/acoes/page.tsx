@@ -1,19 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
 import GridAcoes from "@/components/grid-de-acoes";
 import SearchbarComFiltrosODS from "@/components/search-bar-com-filtrosODS";
 
+// ...existing code...
+
 export default function AcoesPage() {
   const [searchText, setSearchText] = useState("");
   const [odsFilters, setOdsFilters] = useState<string[]>([]);
 
+  // --- Novo: garante empresaId no localStorage em ambiente de desenvolvimento ---
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const key = "empresaId";
+    const existing = localStorage.getItem(key);
+    if (!existing) {
+      const defaultId = process.env.NEXT_PUBLIC_DEFAULT_EMPRESA_ID;
+      if (defaultId) {
+        localStorage.setItem(key, defaultId);
+        console.info(`[DEV] empresaId salvo em localStorage: ${defaultId}`);
+      } else {
+        console.info("[DEV] empresaId ausente em localStorage. Execute localStorage.setItem('empresaId','<id>') no console.");
+      }
+    }
+  }, []);
+
   const handleAddOds = (nomeODS: string) => {
-    setOdsFilters((prev) =>
-      prev.includes(nomeODS) ? prev : [...prev, nomeODS]
-    );
+    setOdsFilters((prev) => (prev.includes(nomeODS) ? prev : [...prev, nomeODS]));
   };
   const handleRemoveOds = (nomeODS: string) => {
     setOdsFilters((prev) => prev.filter((x) => x !== nomeODS));
@@ -35,12 +51,10 @@ export default function AcoesPage() {
         <div className="text-black font-sans text-[14px] text-center">
           Aqui é a área do engajamento. Conheça as ações realizadas por ONGs e
           movimentos sociais parceiros do <strong>Bora Impactar</strong> e
-          escolha uma para fazer parte. Entre em campo e ajude a fazer a
-          diferença. Nesse jogo, todo mundo ganha!
+          escolha uma para fazer parte.
         </div>
       </div>
 
-      {/* Bloco fixo (825x111) de busca + filtros */}
       <SearchbarComFiltrosODS
         searchText={searchText}
         onSearchTextChange={setSearchText}
@@ -50,7 +64,6 @@ export default function AcoesPage() {
         onClearAll={handleClearAll}
       />
 
-      {/* Grid recebe os critérios e filtra os cards */}
       <GridAcoes searchText={searchText} odsFilters={odsFilters} />
 
       <Rodape />
