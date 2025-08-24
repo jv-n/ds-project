@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -56,7 +57,7 @@ export default function AuditoriaPage() {
 
           const todasAcoesDaEmpresa = responseAcoes.data;
           const dadosDaEmpresa = responseEmpresa.data;
-          const acaoCompleta = todasAcoesDaEmpresa.find(acao => acao.acaoId === item.acaoId);
+          const acaoCompleta = todasAcoesDaEmpresa.find((acao: { acaoId: any; }) => acao.acaoId === item.acaoId);
 
           if (!acaoCompleta) {
             console.warn(`Ação com ID ${item.acaoId} não foi encontrada.`);
@@ -214,7 +215,6 @@ export default function AuditoriaPage() {
                 onClick={() => openModal(auditoria)}
               />
             ))}
-          </div>
           </div>
 
         </div>
