@@ -32,7 +32,7 @@ export class PasswordController {
                 resetPasswordExpires: now,
             });
     
-            const resetURL = `http://localhost:3000/password/reset-password?token=${resetToken}`;
+            const resetURL = `http://localhost:3000/auth/pages/new-password?token=${resetToken}`;
     
             try {
                 await restartEmail({

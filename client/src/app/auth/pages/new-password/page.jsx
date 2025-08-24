@@ -1,11 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; 
+import { useRouter } from "next/navigation"; 
 import AuthHeader from "@/app/auth/AuthHeader";
 import Input from "@/app/auth/components/ui/Input";
 import Button from "@/app/auth/components/ui/Button";
 import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
 import { BackButton } from "@/app/auth/components/ui/BackButton";
+import axios from "axios";
 
 export default function NewPassword() {
   const [formData, setFormData] = useState({
@@ -15,6 +17,18 @@ export default function NewPassword() {
 
   const [errors, setErrors] = useState({});
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [token, setToken] = useState(null); 
+  const router = useRouter(); 
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tokenFromUrl = params.get("token");
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    } else {
+      console.error("Token não encontrado na URL");
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,20 +54,31 @@ export default function NewPassword() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validate()) {
-      console.log("Nova senha definida:", formData.password);
-      // Aqui é pra chamar a API
+      if (!token) {
+        setErrors({ general: "Token de redefinição inválido ou ausente." });
+        return;
+      }
 
-      setIsSuccessModalOpen(true);
+      try {
+        await axios.post(`http://localhost:3001/password/reset-password?token=${token}`, {
+          password: formData.password,
+        });
+
+        setIsSuccessModalOpen(true);
+      } catch (error) {
+        console.error("Erro ao redefinir a senha:", error);
+        setErrors({ general: "Token inválido, expirado ou erro no servidor." });
+      }
     }
   };
 
   const handleSuccessModalClose = () => {
     setIsSuccessModalOpen(false);
-    () => window.history.go(-2);
+    router.push("/auth/pages/login-empresas");
   };
 
   return (
@@ -72,6 +97,7 @@ export default function NewPassword() {
           noValidate
           className="flex flex-col  items-center gap-6"
         >
+          {errors.general && <p className="text-red-500">{errors.general}</p>}
           <Input
             label="Nova senha"
             name="password"

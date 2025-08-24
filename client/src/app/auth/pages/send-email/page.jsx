@@ -7,21 +7,20 @@ import Link from "next/link";
 import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
 import { BackButton } from "../../components/ui/BackButton";
+import axios from "axios"; 
 
 export default function SendEmailPage() {
   const [formData, setFormData] = useState({ email: "" });
   const [errors, setErrors] = useState({ email: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isNewPasswordOpen, setIsNewPasswordOpen] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // turnOn = false;
 
     const newErrors = {};
     if (!formData.email.trim()) {
@@ -32,16 +31,16 @@ export default function SendEmailPage() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Aqui deve chamar a API para validação do email
-      //seta o retorno da api para turnon para aparecer o erro indicado
-      // turnOn = false;
-      // if (Object.keys(newErrors).length != 0) {
-      //   newErrors.email = "Email não encontrado"
-      // }
+      try {
+        await axios.post('http://localhost:3001/password/forgot-password', {
+          email: formData.email,
+        });
 
-      console.log("E-mail para recuperação enviado:", formData.email);
-
-      setIsModalOpen(true);
+        setIsModalOpen(true);
+      } catch (error) {
+        console.error("Erro ao enviar e-mail:", error);
+        setErrors({ email: "E-mail não encontrado ou erro no servidor." });
+      }
     }
   };
 
@@ -78,15 +77,6 @@ export default function SendEmailPage() {
           >
             Enviar e-mail de recuperação
           </Button>
-          <Link href="/auth/pages/new-password">
-            <Button
-              type="submit"
-              variant="secondary"
-              className="w-95 py-3 text-base"
-            >
-              Ir à página new password
-            </Button>
-          </Link>
         </form>
 
         <Modal isOpen={isModalOpen}>
