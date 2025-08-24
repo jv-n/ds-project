@@ -5,7 +5,7 @@ interface CreateUserDTO {
   cnpj: string;           
   email: string;           
   senha: string;      
-  telefone: string;   
+  telefone?: string;   
 }
 
 interface UpdateUserDTO {
@@ -15,7 +15,7 @@ interface UpdateUserDTO {
   telefone?: string;
 }
 
-export default class UserRepository {
+class UserRepository {
   async create(data: CreateUserDTO): Promise<Usuario> {
     const user = await prisma.usuario.create({ data });
     return user;
@@ -46,3 +46,5 @@ export default class UserRepository {
     return users;
   }
 }
+
+export default new UserRepository();

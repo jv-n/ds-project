@@ -1,5 +1,6 @@
+"use client";
+
 import EmpresaForm from "./EmpresaForm";
-import FormContainer from "./containers/FormContainer";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
 export default function FormularioEmpresasPage() {
