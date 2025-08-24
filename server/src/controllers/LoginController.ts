@@ -4,8 +4,8 @@ import { compare } from 'bcryptjs';
 import {
   UserRepository,
   TokenRepository,
-  CookieRepository,
-} from '@repositories';
+  CookieRepository
+} from '../repositories';
 
 class LoginController {
   async login(req: Request, res: Response, next: NextFunction) {
@@ -21,7 +21,7 @@ class LoginController {
         });
       }
 
-      const checkPassword = await compare(password, user.password);
+      const checkPassword = await compare(password, user.senha);
 
       if (!checkPassword) {
         return next({
@@ -30,12 +30,12 @@ class LoginController {
         });
       }
 
-      const accessToken = TokenRepository.generateAccessToken(user.id, '60s');
-      const refreshToken = TokenRepository.generateRefreshToken(user.id, '5d');
+      const accessToken = TokenRepository.generateAccessToken(user.id.toString());
+      const refreshToken = TokenRepository.generateRefreshToken(user.id.toString());
 
       CookieRepository.setCookie(res, 'refresh_token', refreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { senha: _, ...loggedUser } = user;
 
       res.locals = {
         status: 200,
@@ -91,14 +91,13 @@ class LoginController {
       CookieRepository.clearCookies(res, 'refresh_token');
 
       const newRefreshToken = TokenRepository.generateRefreshToken(
-        user.id,
-        '1d',
+        user.id.toString()
       );
-      const acessToken = TokenRepository.generateAccessToken(user.id, '30s');
+      const acessToken = TokenRepository.generateAccessToken(user.id.toString());
 
       CookieRepository.setCookie(res, 'refresh_token', newRefreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { senha: _, ...loggedUser } = user;
 
       res.locals = {
         status: 200,
