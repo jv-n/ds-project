@@ -1,15 +1,14 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import { hash } from 'bcryptjs';
-import { UserRepository } from '../repositories/userRepository';
+import UserRepository from '../repositories/userRepository';
 import { restartEmail } from '../services/mailService';
 
 export class PasswordController {
-
-    private repository: UserRepository;
+    private repository; 
     
     constructor() {
-        this.repository = new UserRepository();
+        this.repository = UserRepository;
     }
     
     public forgotPassword = async (req: Request, res: Response): Promise<Response> => {
@@ -44,12 +43,11 @@ export class PasswordController {
             } catch (err) {
                 console.error("Erro ao enviar e-mail:", err);
                 await this.repository.update(user.id, {
-                resetPasswordToken: null,
-                resetPasswordExpires: null,
-            });
+                    resetPasswordToken: null,
+                    resetPasswordExpires: null,
+                });
 
-
-            return res.status(500).json({ error: 'Internal server error1.' });
+                return res.status(500).json({ error: 'Internal server error1.' });
             }
     
             return res.status(200).json();

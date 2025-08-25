@@ -3,7 +3,7 @@ CREATE TABLE "public"."Usuario" (
     "id" SERIAL NOT NULL,
     "cnpj" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "senha" TEXT NOT NULL,
     "telefone" TEXT,
     "perfil" TEXT NOT NULL DEFAULT 'empresa',
     "resetPasswordToken" TEXT,
