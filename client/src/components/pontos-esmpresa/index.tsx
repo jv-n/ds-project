@@ -221,23 +221,3 @@ function PontuacaoItem({
     </div>
   );
 }
-
-function PontuacaoItem({
-  titulo,
-  descricao,
-  pontos
-}: {
-  titulo: string;
-  descricao: string;
-  pontos: string | number;
-}) {
-  return (
-    <div className="w-[950px] bg-[#FFFFFF] h-[55px] border-[1px] border-gray-300 rounded-xl flex items-center justify-between px-4 mb-3">
-      <div>
-        <div className="text-[14px] text-black font-bold">{titulo}</div>
-        <div className="text-[12px] text-[#4A5565] font-bold">{descricao}</div>
-      </div>
-      <div className="text-[14px] text-black font-bold">{pontos} pts</div>
-    </div>
-  );
-}
