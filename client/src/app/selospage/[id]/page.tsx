@@ -5,7 +5,7 @@ import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
-import Cardpontos from "@/components/pontos-esmpresa";
+import Cardpontos from "@/components/pontos-empresa";
 import Navbar from "@/components/navbar";
 import api from "@/services/api";
 import { CertificateProps } from "@/components/certificate";
@@ -30,10 +30,10 @@ export default function SelosPage() {
 
     interface sealProps {
         nivel: string;
-        ptsodsscomatuacao: string;
-        ptsongsatingidas: string;
-        ptscolaboradoresengajados: string;
-        ptsorcamentodestinado: string;
+        ptsodsscomatuacao: number;
+        ptsongsatingidas: number;
+        ptscolaboradoresengajados: number;
+        ptsorcamentodestinado: number;
     }
 
   const [seal, setSeal] = useState({} as sealProps);
