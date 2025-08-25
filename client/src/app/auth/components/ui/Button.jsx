@@ -19,7 +19,7 @@ const Button = ({
 
   return (
     <button
-      className={`${baseClasses} ${variants[variant]} ${className}`}
+      className={`${baseClasses} ${variants[variant]} ${className} cursor-pointer`}
       {...props}
     >
       {children}

@@ -12,7 +12,7 @@ interface CreateActionCompanyDTO {
 }
 
 
-export class ActionCompanyRepository {
+export default class ActionCompanyRepository {
   async create(data: CreateActionCompanyDTO) {
     return prisma.acaoEmpresa.create({
       data,

@@ -1,11 +1,11 @@
-import { Prisma, Usuario } from '@prisma/client';
-import prisma from '@database';
+import { Usuario } from '@prisma/client';
+import prisma from '../database';
 
 interface CreateUserDTO {
   cnpj: string;           
   email: string;           
   senha: string;      
-  telefone: string; 
+  telefone?: string; 
   resetPasswordToken?: string | null; 
   resetPasswordExpires?: Date | null;
 }
@@ -19,7 +19,7 @@ interface UpdateUserDTO {
   resetPasswordExpires?: Date | null;
 }
 
-export class UserRepository {
+class UserRepository {
   async create(data: CreateUserDTO): Promise<Usuario> {
     const user = await prisma.usuario.create({ data });
     return user;
@@ -62,3 +62,4 @@ export class UserRepository {
   }
 }
 
+export default new UserRepository();

@@ -1,6 +1,6 @@
 import prisma from '../database';
 
-export class CertificationRepository {
+export default class CertificationRepository {
   async create(data: { nivel: string; descricao: string; pontuacaoMin: number; empresaId: number }) {
     return prisma.selo.create({
       data

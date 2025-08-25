@@ -1,6 +1,9 @@
-import {UserController} from './userController';
-import {AuthController} from './authController';
-import FileController from './documentController';
+import UserController from './UserController';
+import LoginController from './LoginController';
+import FileController from './fileController';
+import ActionCompanyController from './actionCompanyController';
+import { SealController } from './sealController';
+import { CompanyController } from './CompanyController';
 import { PasswordController } from './passwordController';
 
-export { UserController, AuthController, FileController, PasswordController };
+export { UserController, LoginController, FileController, ActionCompanyController, SealController, CompanyController, PasswordController };

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { SealRepository } from '../repositories/sealRepository';
 import { SealService } from '../services/sealService';
 
@@ -6,7 +6,7 @@ const sealRepository = new SealRepository();
 const sealService = new SealService();
 
 export class SealController {
-  async getCompanySeal(req: Request, res: Response) {
+  async getCompanySeal(req: Request, res: Response, next: NextFunction) {
     try {
       const companyId = Number(req.params.id);
       

@@ -2,21 +2,23 @@
 import Image from "next/image";
 import { useState } from "react";
 import {
-  logoamassada,
   goldenmedal,
   silvermedal,
   bronzemedal,
   setapbaixo,
   setapcima,
-  downloadicon
+  download
 } from "@/assets";
+import ModalCertificado from "../modal-certificado";
+import { CertificateProps } from "../certificate";
 
 export interface propspontos {
-  nivel: "goldenmedal" | "silvermedal" | "bronzemedal";
-  ptsodsscomatuacao: number;
-  ptsongsatingidas: number;
-  ptscolaboradoresengajados: number;
-  ptsorcamentodestinado: number;
+  nivel: string;
+  ptsodsscomatuacao:string;
+  ptsongsatingidas: string;
+  ptscolaboradoresengajados: string;
+  ptsorcamentodestinado: string;
+  certificado: CertificateProps;
 }
 
 const qtdodsscomatuacao: Record<string, string> = {
@@ -75,6 +77,8 @@ const coresPorNivel = {
   bronzemedal: "#A56424",
 };
 
+    
+
 export default function Cardpontos(props: propspontos) {
   const total =
     Number(props.ptsodsscomatuacao) +
@@ -82,30 +86,49 @@ export default function Cardpontos(props: propspontos) {
     Number(props.ptscolaboradoresengajados) +
     Number(props.ptsorcamentodestinado);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  function abrirModal() {
+    setIsModalOpen(true);  
+  }
+  function fecharModal() {
+    setIsModalOpen(false);
+  }
+
   const [mostrarpontos, setmomstrarpontos] = useState("aberto");
+
+  const medalhaPorNivel = () => {
+    if (props.nivel === "goldenmedal") {
+      return "goldenmedal";
+    } else if (props.nivel === "silvermedal") {
+      return "silvermedal";
+    } else {
+      return "bronzemedal";
+    }
+  };
 
   return (
     <div className="w-full flex justify-center items-center ml-[15px] font-sans">
       <div className="w-[1020px] min-h-[100px] border-[1px] bg-[#F8FBFF] rounded-lg px-6 py-4">
         <div className="w-full flex flex-col justify-center items-center">
           <div className="flex items-center w-full mb-4 ml-[935px]">
-            <Image src={imagensPorNivel[props.nivel]} alt="" />
-            <div className="w-[170px] h-[40px] bg-[#009FE3] rounded-lg flex items-center justify-center text-white text-[15px] cursor-pointer ml-[300px]">
-              <Image src={downloadicon} alt="" className="mr-[5px]" />
+            <Image src={imagensPorNivel[medalhaPorNivel()]} alt="" />
+            <div onClick={abrirModal} className="w-[170px] h-[40px] bg-[#009FE3] rounded-lg flex items-center justify-center text-white text-[15px] cursor-pointer ml-[300px]">
+              <Image src={download} alt="" className="mr-[5px]" />
               Baixar Certificado
             </div>
           </div>
           <div className="text-[22px] text-[#757575] font-bold">
-            {textonivel[props.nivel]}
+            {textonivel[medalhaPorNivel()]}
           </div>
           <div className="font-sans text-[18px] text-black mt-[15px] mb-[5px]">
             Pontuação Atual: {total} pontos
           </div>
           <div
             className="font-sans text-[14px] text-black mt-[5px] mb-[20px]"
-            style={{ color: coresPorNivel[props.nivel] }}
+            style={{ color: coresPorNivel[medalhaPorNivel()] }}
           >
-            {descricao[props.nivel]}
+            {descricao[medalhaPorNivel()]}
           </div>
 
           {/* Detalhamento da Pontuação */}
@@ -170,6 +193,31 @@ export default function Cardpontos(props: propspontos) {
           </div>
         </div>
       </div>
+      <ModalCertificado
+                  certificado={props.certificado}
+                  isOpen={isModalOpen}
+                  onClose={fecharModal}
+              />
+    </div>
+  );
+}
+
+function PontuacaoItem({
+  titulo,
+  descricao,
+  pontos
+}: {
+  titulo: string;
+  descricao: string;
+  pontos: string | number;
+}) {
+  return (
+    <div className="w-[950px] bg-[#FFFFFF] h-[55px] border-[1px] border-gray-300 rounded-xl flex items-center justify-between px-4 mb-3">
+      <div>
+        <div className="text-[14px] text-black font-bold">{titulo}</div>
+        <div className="text-[12px] text-[#4A5565] font-bold">{descricao}</div>
+      </div>
+      <div className="text-[14px] text-black font-bold">{pontos} pts</div>
     </div>
   );
 }

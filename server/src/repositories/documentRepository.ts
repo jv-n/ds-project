@@ -1,7 +1,10 @@
 import path from 'path';
 import { Express } from 'express';
 import fs from 'fs';
+import { Documento } from '@prisma/client';
 import prisma from '../database';
+
+
 
 class DocumentRepository {
     // Use a consistent upload folder relative to project root
@@ -19,7 +22,7 @@ class DocumentRepository {
         }
     }
 
-    async uploadFile(file: Express.Multer.File, filename?: string): Promise<string> {
+    async uploadFile(file: Express.Multer.File, filename?: string): Promise<Documento> {
         const { originalname, mimetype, size } = file;
         const storedName = filename || `${Date.now().toString()}-${originalname}`;
         const filePath = path.join(this.uploadFolder, storedName);
@@ -35,7 +38,7 @@ class DocumentRepository {
         });
 
         console.log(`📄 File uploaded: ${storedName}`);
-        return filePath;
+        return savedFile;
     }
 
     async deleteFile(storedName: string, id: string): Promise<void> {
