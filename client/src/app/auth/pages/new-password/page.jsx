@@ -8,6 +8,7 @@ import Button from "@/app/auth/components/ui/Button";
 import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
 import { BackButton } from "../../components/ui/BackButton";
+import api from "@/services/api"; 
 
 export default function NewPasswordPage() {
   const searchParams = useSearchParams();
@@ -47,31 +48,33 @@ export default function NewPasswordPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  e.preventDefault();
 
-    if (!userId) {
-      setErrors(prev => ({ ...prev, password: "ID do usuário não encontrado" }));
-      return;
+  if (!validate()) return;
+
+  if (!userId) {
+    setErrors(prev => ({ ...prev, password: "ID do usuário não encontrado" }));
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3001/user/${userId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ senha: formData.password })
+    });
+
+    if (!res.ok) {
+      throw new Error("Erro ao atualizar senha");
     }
 
-    try {
-      const res = await fetch(`http://localhost:3001/user/${userId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ senha: formData.password })
-      });
+    setIsModalOpen(true); // mostra modal de sucesso
+  } catch (err) {
+    console.error("Erro ao atualizar senha:", err);
+    setErrors(prev => ({ ...prev, password: "Erro inesperado ao alterar a senha" }));
+  }
+};
 
-      if (!res.ok) {
-        throw new Error("Erro ao atualizar senha");
-      }
-
-      setIsModalOpen(true);
-    } catch (err) {
-      console.error("Erro ao atualizar senha:", err);
-      setErrors(prev => ({ ...prev, password: "Erro inesperado ao alterar a senha" }));
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#CBEFFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-40 relative">
