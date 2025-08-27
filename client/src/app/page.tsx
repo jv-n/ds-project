@@ -1,36 +1,48 @@
-import React from "react";
+"use client";
 import Link from "next/link";
-import AuthHeader from "@/app/auth/AuthHeader";
+import Navbar from "@/components/navbar";
+import Rodape from "@/components/rodape";
+import { useState } from "react";
 
-export default function EntrarPage() {
+export default function Home() {
+  const [ativo, setAtivo] = useState("acoes");
+  const [ativocontato, setAtivoContato] = useState("acoes");
+  const [mostrarModal, setMostrarModal] = useState(false);
+
+  function abrirModal() {
+    setMostrarModal(true);
+  }
+
+  function fecharModal() {
+    setMostrarModal(false);
+  }
+
   return (
-    <div className="flex items-center relative">
-      <div className="min-h-screen w-1/2 bg-gray-50 flex flex-col justify-center sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md mb-2">
-          <AuthHeader
-            title=""
-            description="Bem vindo! Por favor, selecione abaixo como deseja acessar o portal."
-          />
-        </div>
+    <div className="flex flex-col min-h-screen pt-[88px]">
+      <Navbar ativo="" />
 
-        <div className="mt-1 flex sm:mx-auto sm:h-full sm:w-full sm:max-w-md">
-          <div className="py-10 px-4 sm:px-10">
-            <div className="flex gap-4">
-              <Link href="/auth/pages/login-ong">
-                <button className="w-[180px] h-[140px] bg-[#294BB6] text-white py-14 px-4 rounded-md border-2 hover:bg-blue-700 transition font-medium text-lg cursor-pointer flex flex-col justify-center items-center items-center">
-                  <div>Auditoria</div>
-                </button>
-              </Link>
-              <Link href="/auth/pages/login-empresas">
-                <button className="w-[180px] h-[140px] bg-white text-blue-600 py-14 px-5.5 rounded-md border-2 hover:bg-gray-50 transition font-medium text-lg cursor-pointer flex flex-col justify-center items-center items-center">
-                  <div>Sou uma Empresa </div>
-                </button>
-              </Link>
-            </div>
-          </div>
+      <div className="flex-grow flex flex-col items-center">
+        <div className="flex flex-col sm:flex-row justify-center mt-6 gap-4 p-4">
+          <Link href="/auth/pages/formulario-empresas">
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto text-center">
+              Formulário de Empresas
+            </button>
+          </Link>
+
+          {/* Botão único para entrar */}
+          <Link href="/entrar">
+            <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition w-full sm:w-auto text-center">
+              Entrar
+            </button>
+          </Link>
         </div>
+        {/* <Cardacao
+      <div className="flex-grow bg-gray-100"> 
+
+        {/* O conteúdo dinâmico da página */}
       </div>
-      <div className="w-1/2 bg-blue-500 min-h-screen" />
+
+      <Rodape />
     </div>
   );
 }

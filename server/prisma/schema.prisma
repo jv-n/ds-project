@@ -1,7 +1,6 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -18,7 +17,7 @@ model Usuario {
   id         Int        @id @default(autoincrement())
   cnpj       String     @unique
   email      String     @unique
-  senha      String
+  senha      String     @map("password")
   telefone   String?
   perfil     String @default("empresa") // empresa, prefeitura
 

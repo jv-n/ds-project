@@ -1,102 +1,153 @@
 "use client";
 
 import React, { useState } from "react";
-import Input from "@/app/auth/components/ui/Input";
+import FloatingInput from "@/components/floating-input";
 import Button from "@/app/auth/components/ui/Button";
 import { formatCNPJ, validateCNPJ } from "@/app/auth/utils/cnpjUtils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import api from "@/services/api";
+
 
 const LoginFormEmpresa = () => {
+  const [formData, setFormData] = useState({ cnpj: "", password: "" });
+  const [errors, setErrors] = useState({ cnpj: "", password: "" });
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
-    cnpj: "",
-    password: "",
-  });
+  const validate = () => {
+    const newErrors = { cnpj: "", password: "" };
+    let isValid = true;
 
-  const [errors, setErrors] = useState({
-    cnpj: "",
-    password: "",
-  });
+    if (!formData.cnpj) {
+      newErrors.cnpj = "CNPJ é obrigatório";
+      isValid = false;
+    } else if (!validateCNPJ(formData.cnpj)) {
+      newErrors.cnpj = "CNPJ inválido";
+      isValid = false;
+    }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // ignora validações e navega direto
-    router.push("/acoes");
+    if (!formData.password) {
+      newErrors.password = "Senha é obrigatória";
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Senha deve ter pelo menos 6 caracteres";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      // Verifica se o CNPJ existe e se é do perfil "empresa"
+      const checkRes = await api.get("/user/cnpj", {
+        params: { value: formData.cnpj, perfil: "empresa" },
+      });
+
+      if (checkRes.status === 204 || !checkRes.data) {
+        // caso a API retorne 204 ou não tenha dados
+        setErrors({ cnpj: "CNPJ não cadastrado como Empresa", password: "" });
+        return;
+      }
+
+      // CNPJ existe e perfil correto, tenta o login
+      const userPayload = {
+        cnpj: formData.cnpj,
+        senha: formData.password,
+        perfil: "empresa",
+      };
+
+      const res = await api.post("/sessions/empresa", userPayload, {
+        withCredentials: true, // substitui o credentials: "include"
+      });
+
+      const data = res.data;
+      console.log("Login Empresa realizado com sucesso:", data);
+
+      localStorage.setItem("companyId", data.company.id);
+      localStorage.setItem("userId", data.user.id);
+
+      // redirecionar para a dashboard da empresa
+      router.push("http://localhost:3000/acoes");
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setErrors({ cnpj: "CNPJ não cadastrado como Empresa", password: "" });
+      } else if (err.response?.status === 401) {
+        setErrors({ cnpj: "", password: "Senha incorreta" });
+      } else {
+        console.error("Erro login Empresa:", err.response?.data || err.message);
+        setErrors({ cnpj: "Erro inesperado ao verificar CNPJ", password: "" });
+      }
+    }
+  };
+
+
+  const handleCNPJChange = (value) => {
+    const formatted = formatCNPJ(value);
+    setFormData((prev) => ({ ...prev, cnpj: formatted }));
+  };
+
+  const handleChangePassword = (value) => {
+    setFormData((prev) => ({ ...prev, password: value }));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="CNPJ"
-        name="cnpj"
-        type="text"
-        mask={formatCNPJ}
-        placeholder="Digite seu CNPJ"
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 max-w-sm mx-auto w-full px-4"
+    >
+      {/* CNPJ */}
+      <FloatingInput
+        label="CNPJ*"
         value={formData.cnpj}
-        onChange={handleChange}
+        onChange={handleCNPJChange}
+        placeholder="00.000.000/0000-00"
         error={errors.cnpj}
       />
 
-      <Input
-        label="Senha"
-        name="password"
+      {/* Senha */}
+      <FloatingInput
+        label="Senha*"
         type="password"
-        placeholder="••••••"
         value={formData.password}
-        onChange={handleChange}
+        onChange={handleChangePassword}
+        placeholder="Digite sua senha"
         error={errors.password}
       />
 
-      <div className="flex items-center justify-between">
-        <div className="flex pl-9 items-center">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label
-            htmlFor="remember-me"
-            className="ml-2 block text-sm text-gray-900"
-          >
-            Lembrar-me
-          </label>
-        </div>
-
-        <div className="text-sm pr-8">
-          <a
-            href="/auth/pages/send-email"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            Esqueceu sua senha?
-          </a>
-        </div>
+      {/* Esqueceu senha */}
+      <div className="text-center">
+        <a
+          href="/auth/pages/send-email"
+          className="text-sm text-[#1474FF] hover:underline"
+        >
+          Esqueceu a senha?
+        </a>
       </div>
 
-      <div className="pt-4 text-center cursor-pointer">
-        <Button
-          type="submit"
-          variant="primary"
-          className=" w-[350px] py-3 text-base"
-        >
-          Entrar como Empresa
-        </Button>
-      </div>
+      {/* Botão Entrar */}
+      <Button
+        type="submit"
+        variant="primary"
+        className="w-full bg-[#294BB6] text-white py-3 rounded-sm hover:bg-blue-900 transition cursor-pointer"
+      >
+        Entrar
+      </Button>
 
-      <div className="mt-10 text-center">
-        <p className="text-sm text-gray-600">Não possui cadastro?</p>
-        <Link
-          href="/auth/pages/formulario-empresas"
-          className="inline-block mt-2"
-        >
-          <Button variant="primary">Criar conta para empresa</Button>
+      {/* Criar conta */}
+      <div className="text-center space-y-3 mt-6">
+        <p className="text-base text-gray-600">Não possui cadastro?</p>
+        <Link href="/auth/pages/formulario-empresas" className="block">
+          <Button
+            variant="outline"
+            className="w-full border-2 border-[#294BB6] text-[#294BB6] py-3 rounded-sm hover:bg-gray-50 transition cursor-pointer"
+          >
+            Criar conta
+          </Button>
         </Link>
       </div>
     </form>
