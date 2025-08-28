@@ -28,14 +28,26 @@ export { balaopopup };
 import confirma from "./confirma.svg";
 export { confirma };
 
-import Ouro from "./ouro.svg";
-export { Ouro };
+import goldenmedal from "./goldenmedal.svg";
+export { goldenmedal };
 
-import Prata from "./prata.svg";
-export { Prata };
+import silvermedal from "./silvermedal.svg";
+export { silvermedal };
 
-import Bronze from "./bronze.svg";
-export { Bronze };
+import bronzemedal from "./bronzemedal.svg";
+export { bronzemedal };
+
+import xsair from "./xsair.svg";
+export { xsair };
+
+import setapcima from "./setapcima.svg";
+export { setapcima };
+
+import setapbaixo from "./setapbaixo.svg";
+export { setapbaixo };
+
+import downloadicon from "./downloadicon.svg";
+export { downloadicon };
 
 import Fechar from "./fechar.svg";
 export { Fechar };
@@ -67,20 +79,15 @@ export { close };
 import lupa from "./lupa.svg";
 export { lupa };
 
-import goldenmedal from "./goldenmedal.svg";
-export { goldenmedal };
+import portasair from "./portasair.svg";
+export { portasair };
 
-import silvermedal from "./silvermedal.svg";
-export { silvermedal };
+import maozona from "./maozona.svg";
+export { maozona };
 
-import bronzemedal from "./bronzemedal.svg";
-export { bronzemedal };
+import check from "./check.svg";
+export { check };
 
-import setapbaixo from "./setapbaixo.svg";
-export { setapbaixo };
+import backbutton from "./backbutton.svg";
+export { backbutton };
 
-import setapcima from "./setapcima.svg";
-export { setapcima };
-
-import download from "./download.svg";
-export { download };

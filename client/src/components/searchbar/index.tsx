@@ -27,13 +27,13 @@ export default function Searchbar({ placeholder = 'Pesquisar...', initialValue =
 
   return (
     <div className="border-b border-[#DBDBDB] pb-5 mb-4"> 
-      <form onSubmit={handleSubmit} className="relative">
+      <form onSubmit={handleSubmit} className="relative w-full">
         <input
           type="text"
           placeholder={placeholder}
           value={searchText}
           onChange={handleInputChange}
-          className="w-full pr-10 pl-4 py-2 border-[1.5px] border-[#E8E8E8] rounded-sm focus:outline-none focus:ring-2 focus:ring-[#294BB6] focus:border-transparent bg-white"
+          className="w-full pr-8 pl-4 py-2 border-[1.5px] border-[#E8E8E8] rounded-sm focus:outline-none focus:ring-2 focus:ring-[#294BB6] focus:border-transparent bg-white"
         />
         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
           <Image
