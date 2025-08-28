@@ -13,41 +13,40 @@ import { useParams } from "next/navigation";
 
 // TODO: INTEGRAR A EXTRAÇÃO DO LOGIN FEITA EM NAVBAR NESSA PÁGINA, TALVEZ ALTERAR A LÓGICA DELA QUE UTILIZA O USER ID AO INVÉS DE COMPANY ID
 export default function SelosPage() {
-
   const [mostrarcriterios, Setcriterios] = useState("off");
 
-    interface companyProps {
+  interface companyProps {
     nome: string;
     pontos: number;
     selo_nivel: string;
     usuario: {
-        id: string;
-        nome: string;
-        cnpj: string;
-    }
+      id: string;
+      nome: string;
+      cnpj: string;
+    };
   }
 
-    const { id } = useParams();
+  const { id } = useParams();
 
-    interface sealProps {
-        nivel: string;
-        ptsodsscomatuacao: string;
-        ptsongsatingidas: string;
-        ptscolaboradoresengajados: string;
-        ptsorcamentodestinado: string;
-    }
+  interface sealProps {
+    nivel: string;
+    ptsodsscomatuacao: string;
+    ptsongsatingidas: string;
+    ptscolaboradoresengajados: string;
+    ptsorcamentodestinado: string;
+  }
 
   const [seal, setSeal] = useState({} as sealProps);
 
   const fetchSeal = useCallback(async () => {
-    const response = await api.get<sealProps>(`/selo/empresa/${id}`);
+    const response = await api.get<sealProps>(`//${id}`);
     setSeal(response.data);
   }, [id]);
 
   const [company, setCompany] = useState({} as companyProps);
 
   const fetchCompany = useCallback(async () => {
-    const response = await api.get<companyProps>(`/company/${id}`);
+    const response = await api.get<companyProps>(`//${id}`);
     setCompany(response.data);
   }, [id]);
 
@@ -56,17 +55,16 @@ export default function SelosPage() {
     fetchCompany();
   }, [fetchSeal, fetchCompany]);
 
-
   const certificado: CertificateProps = {
-      id: id as string,
-      level: seal.nivel,
-      data_emissao: new Date().toISOString(),
-      empresa: company.nome,
-    };
+    id: id as string,
+    level: seal.nivel,
+    data_emissao: new Date().toISOString(),
+    empresa: company.nome,
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
-      <Navbar ativo="selos" companyId={Number(id)} />
+      <Navbar ativo="selos" />
 
       <div className="font-sans font-bold text-[32px] text-black mt-[25px] flex justify-center mr-[620px]">
         <div>Selo de Impacto Social</div>
@@ -128,7 +126,6 @@ export default function SelosPage() {
       <div className="h-[100px]" />
 
       <Rodape />
-      
     </div>
   );
 }

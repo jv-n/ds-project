@@ -7,14 +7,14 @@ import {
   bronzemedal,
   setapbaixo,
   setapcima,
-  download
+  Download,
 } from "@/assets";
 import ModalCertificado from "../modal-certificado";
 import { CertificateProps } from "../certificate";
 
 export interface propspontos {
   nivel: string;
-  ptsodsscomatuacao:string;
+  ptsodsscomatuacao: string;
   ptsongsatingidas: string;
   ptscolaboradoresengajados: string;
   ptsorcamentodestinado: string;
@@ -71,13 +71,17 @@ const descricao = {
     "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
 };
 
+const nomeselo = {
+  bronzemedal: "Selo Empresa Aderente",
+  silvermedal: "Selo Empresa Engajada",
+  goldenmedal: "Selo Empresa de Impacto",
+};
+
 const coresPorNivel = {
   goldenmedal: "#F5B800",
   silvermedal: "#757575",
   bronzemedal: "#A56424",
 };
-
-    
 
 export default function Cardpontos(props: propspontos) {
   const total =
@@ -87,9 +91,9 @@ export default function Cardpontos(props: propspontos) {
     Number(props.ptsorcamentodestinado);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   function abrirModal() {
-    setIsModalOpen(true);  
+    setIsModalOpen(true);
   }
   function fecharModal() {
     setIsModalOpen(false);
@@ -113,13 +117,19 @@ export default function Cardpontos(props: propspontos) {
         <div className="w-full flex flex-col justify-center items-center">
           <div className="flex items-center w-full mb-4 ml-[935px]">
             <Image src={imagensPorNivel[medalhaPorNivel()]} alt="" />
-            <div onClick={abrirModal} className="w-[170px] h-[40px] bg-[#009FE3] rounded-lg flex items-center justify-center text-white text-[15px] cursor-pointer ml-[300px]">
-              <Image src={download} alt="" className="mr-[5px]" />
+            <div
+              onClick={abrirModal}
+              className="w-[170px] h-[40px] bg-[#009FE3] rounded-lg flex items-center justify-center text-white text-[15px] cursor-pointer ml-[300px]"
+            >
+              <Image src={Download} alt="" className="mr-[5px]" />
               Baixar Certificado
             </div>
           </div>
-          <div className="text-[22px] text-[#757575] font-bold">
-            {textonivel[medalhaPorNivel()]}
+          <div
+            className="text-[22px] font-bold"
+            style={{ color: coresPorNivel[medalhaPorNivel()] }}
+          >
+            {nomeselo[medalhaPorNivel()]}
           </div>
           <div className="font-sans text-[18px] text-black mt-[15px] mb-[5px]">
             Pontuação Atual: {total} pontos
@@ -194,10 +204,10 @@ export default function Cardpontos(props: propspontos) {
         </div>
       </div>
       <ModalCertificado
-                  certificado={props.certificado}
-                  isOpen={isModalOpen}
-                  onClose={fecharModal}
-              />
+        certificado={props.certificado}
+        isOpen={isModalOpen}
+        onClose={fecharModal}
+      />
     </div>
   );
 }
@@ -205,7 +215,7 @@ export default function Cardpontos(props: propspontos) {
 function PontuacaoItem({
   titulo,
   descricao,
-  pontos
+  pontos,
 }: {
   titulo: string;
   descricao: string;
