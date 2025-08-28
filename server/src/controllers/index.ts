@@ -1,4 +1,4 @@
-import UserController from './UserController';
+import UserController from './userController';
 import LoginController from './LoginController';
 import FileController from './fileController';
 import ActionCompanyController from './actionCompanyController';

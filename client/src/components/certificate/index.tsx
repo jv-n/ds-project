@@ -4,7 +4,7 @@ import * as React from 'react';
 import localFont from 'next/font/local';
 import Header from './certificate_comps/header';
 import Image from 'next/image';
-import {Prata, Ouro, Bronze} from '@/assets';
+import {silvermedal, goldenmedal, bronzemedal} from '@/assets';
 
 import Signature from './certificate_comps/signature';
 // import { useRouter } from 'next/navigation';
@@ -58,14 +58,14 @@ export default function Certificate(props: CertificateProps) {
 
     function getBadge():string {
         if( props.level.toLowerCase() === 'silvermedal'){
-            return Prata;
+            return silvermedal;
         }
         if( props.level.toLowerCase() === 'goldenmedal') {
-            return Ouro;
+            return goldenmedal;
         }
         if( props.level.toLowerCase() === 'bronzemedal') {
-            return Bronze;
-        } else return Prata;
+            return bronzemedal;
+        } else return silvermedal;
     }
 
     function formatName(): string {

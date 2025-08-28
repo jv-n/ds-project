@@ -1,7 +1,8 @@
+/* eslint-disable consistent-return */
 // src/controllers/userController.ts
+import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { UserRepository } from '../repositories/userRepository';
-import bcrypt from 'bcryptjs';
 
  class UserController {
   private repository: UserRepository;
@@ -128,8 +129,6 @@ import bcrypt from 'bcryptjs';
           status: 200,
           data: user,
         };
-
-        return;
       } catch (error) {
         console.error('Error reading user:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -146,7 +145,7 @@ import bcrypt from 'bcryptjs';
         return res.status(404).json({ error: 'User not found' });
       }
 
-      let updateData = { ...rest } as any;
+      const updateData = { ...rest } as any;
 
       if (senha) {
         const hashedPassword = await bcrypt.hash(senha, 10);
