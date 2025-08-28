@@ -6,7 +6,7 @@ const Card = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = " p-6";
+  const baseClasses = "rounded-lg p-6";
 
   const variants = {
     default: "bg-white border border-gray-200",

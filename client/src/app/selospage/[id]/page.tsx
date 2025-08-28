@@ -11,7 +11,6 @@ import api from "@/services/api";
 import { CertificateProps } from "@/components/certificate";
 import { useParams } from "next/navigation";
 
-// TODO: INTEGRAR A EXTRAÇÃO DO LOGIN FEITA EM NAVBAR NESSA PÁGINA, TALVEZ ALTERAR A LÓGICA DELA QUE UTILIZA O USER ID AO INVÉS DE COMPANY ID
 export default function SelosPage() {
 
   const [mostrarcriterios, Setcriterios] = useState("off");

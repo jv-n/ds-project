@@ -7,10 +7,10 @@ const Button = ({
   ...props
 }) => {
   const baseClasses =
-    "py-2 px-4 rounded-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "py-2 px-4 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
 
   const variants = {
-    primary: "bg-[#294BB6] hover:bg-blue-900 text-white focus:ring-blue-500 cursor-pointer",
+    primary: "bg-[#294BB6] hover:bg-blue-700 text-white focus:ring-blue-500",
     secondary:
       "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500",
     outline:

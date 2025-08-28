@@ -3,14 +3,9 @@ import { LoginController } from '../controllers';
 
 const AuthRouter = Router();
 
-AuthRouter.route('/empresa')
+AuthRouter.route('/')
   .post(
-    LoginController.loginEmpresa,
-  );
-
-  AuthRouter.route('/prefeitura')
-  .post(
-    LoginController.loginPrefeitura,
+    LoginController.login,
   );
 
 AuthRouter.route('/')
