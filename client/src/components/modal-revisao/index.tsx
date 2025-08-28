@@ -5,7 +5,6 @@ import { X, File, Download, CheckCircle2, XCircle } from 'lucide-react';
 import { type RowAuditoriaProps } from '@/components/row-auditoria';
 import Button from '@/components/button';
 import Chip from '@/components/chip-status'
-import api from '@/services/api';
 
 interface ModalRevisaoProps {
   isOpen: boolean;
@@ -48,10 +47,13 @@ export default function ModalRevisao({ isOpen, onClose, auditoria, onSuccess }: 
     setIsSubmitting(true);
     try {
       const numericId = auditoria.id.replace('aud-', '');
-      const response = await api.patch(`/donation/${numericId}/audit/approve/`, {});
+      const response = await fetch(`${getBaseURL()}/donations/${numericId}/audit/approve/`, {
+        method: 'PATCH',
+      });
 
-      if (!response) {
-        throw new Error('Falha ao aprovar a doação');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Falha ao aprovar a doação');
       }
       onSuccess('aprovada');
       handleClose();
@@ -71,7 +73,7 @@ export default function ModalRevisao({ isOpen, onClose, auditoria, onSuccess }: 
     setIsSubmitting(true);
     try {
       const numericId = auditoria.id.replace('aud-', '');
-      const response = await fetch(`${getBaseURL()}/donation/${numericId}/audit/reject/`, {
+      const response = await fetch(`${getBaseURL()}/donations/${numericId}/audit/reject/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ export default function ModalRevisao({ isOpen, onClose, auditoria, onSuccess }: 
         <div className="flex flex-col gap-2.5 h-full overflow-y-auto pr-4">
           {auditoria.documentos.map((doc) => {
             // ================== CORREÇÃO APLICADA AQUI ==================
-            const docUrl = `http://localhost:3001/donation/${auditoria.id}/audit/documents/${doc.id}`;
+            const docUrl = `http://localhost:3001/donations/${auditoria.id}/audit/documents/${doc.id}`;
             
             return (
               <div key={doc.id} className="flex justify-between items-center p-4 border border-[#E5E7EB] rounded-[8px]"> 
