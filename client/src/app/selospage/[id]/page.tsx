@@ -66,7 +66,7 @@ export default function SelosPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
-      <Navbar ativo="selos" companyId={Number(id)} />
+      <Navbar ativo="selos" />
 
       <div className="font-sans font-bold text-[32px] text-black mt-[25px] flex justify-center mr-[620px]">
         <div>Selo de Impacto Social</div>

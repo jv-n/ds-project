@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { goldenmedal, silvermedal, bronzemedal, close} from "@/assets";
+import { Ouro, Prata, Bronze, close } from "@/assets";
 import { Dispatch, SetStateAction } from "react";
 
 export interface Criteriosprops {
@@ -8,45 +8,45 @@ export interface Criteriosprops {
 }
 
 const imagensPorNivel = {
-  goldenmedal,
-  silvermedal,
-  bronzemedal,
+  Ouro,
+  Prata,
+  Bronze,
 };
 
 const coresPorNivel = {
-  goldenmedal: "#F5B800",
-  silvermedal: "#757575",
-  bronzemedal: "#A56424",
+  Ouro: "#F5B800",
+  Prata: "#757575",
+  Bronze: "#A56424",
 };
 
 const cordescricaopornivel = {
-  goldenmedal: "#FFF8DC",
-  silvermedal: "#F8F8FF",
-  bronzemedal: "#FDF5E6",
+  Ouro: "#FFF8DC",
+  Prata: "#F8F8FF",
+  Bronze: "#FDF5E6",
 };
 
 const pontosPorNivel = {
-  bronzemedal: "5 a 45 pontos",
-  silvermedal: "46 a 74 pontos",
-  goldenmedal: "75 a 100 pontos",
+  Bronze: "5 a 45 pontos",
+  Prata: "46 a 74 pontos",
+  Ouro: "75 a 100 pontos",
 };
 
 const descricao = {
-  bronzemedal: "Empresas em fase inicial ou com nível básico de engajamento social.",
-  silvermedal:
+  Bronze: "Empresas em fase inicial ou com nível básico de engajamento social.",
+  Prata:
     "Empresas com bom nível de engajamento e programas sociais consistentes.",
-  goldenmedal: "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
+  Ouro: "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
 };
 
 export default function Modalcriterios(props: Criteriosprops) {
 
   const porNivel = () =>{
-    if(props.nivel == "goldenmedal" )
-      return "goldenmedal";
-    else if(props.nivel == "silvermedal" )
-      return "silvermedal";
+    if(props.nivel == "Ouro" )
+      return "Ouro";
+    else if(props.nivel == "Prata" )
+      return "Prata";
     else
-      return "bronzemedal";
+      return "Bronze";
   }
 
   return (

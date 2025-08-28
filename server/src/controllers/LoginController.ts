@@ -1,14 +1,11 @@
-/* eslint-disable consistent-return */
 import { NextFunction, Request, Response } from 'express';
-import { compare } from 'bcryptjs';
 import {
   UserRepository,
   TokenRepository,
   CookieRepository,
   CompanyRepository
 } from '../repositories';
-
-
+import { compare } from 'bcryptjs';
 const companyRepository = new CompanyRepository();
 export class LoginController {
 
@@ -31,7 +28,7 @@ export class LoginController {
         return res.status(401).json({ error: "Senha inválida" });
       }
 
-      const company = await companyRepository.findById(parseInt(user.id.toString(), 10));
+      const company = await companyRepository.findById(parseInt(user.id, 10));
 
       const accessToken = TokenRepository.generateAccessToken(user.id.toString());
       const refreshToken = TokenRepository.generateRefreshToken(user.id.toString());

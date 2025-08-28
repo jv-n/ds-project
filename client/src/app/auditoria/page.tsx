@@ -9,7 +9,7 @@ import ModalRevisao from "@/components/modal-revisao";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
 import { Search } from "lucide-react";
-import api from '@/services/api';
+import axios from 'axios';
 
 type Auditoria = RowAuditoriaProps;
 
@@ -34,14 +34,6 @@ const mapStatus = (status: string): 'aguardando' | 'aprovada' | 'reprovada' => {
   }
 };
 
-interface companyType {
-  nome: string,
-  usuario: {
-    email: string,
-    nome: string,
-    telefone: string
-  }
-}
 
 export default function AuditoriaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,7 +45,7 @@ export default function AuditoriaPage() {
   const carregarDadosDeAuditoria = useCallback(async () => {
     const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
     try {
-      const responseDoacoes = await api.get<any[]>(`${baseURL}/donation/audit`);
+      const responseDoacoes = await axios.get(`${baseURL}/donation/audit`);
       const doacoesIncompletas: any[] = responseDoacoes.data;
 
       const dadosMapeadosPromises = doacoesIncompletas.map(async (item) => {
@@ -64,8 +56,8 @@ export default function AuditoriaPage() {
           ]);
 
           const todasAcoesDaEmpresa = responseAcoes.data;
-          const dadosDaEmpresa = responseEmpresa.data as companyType;
-          const acaoCompleta = (todasAcoesDaEmpresa as { acaoId: any; nomeOng?: string; nome?: string }[]).find((acao) => acao.acaoId === item.acaoId);
+          const dadosDaEmpresa = responseEmpresa.data;
+          const acaoCompleta = todasAcoesDaEmpresa.find((acao: { acaoId: any; }) => acao.acaoId === item.acaoId);
 
           if (!acaoCompleta) {
             console.warn(`Ação com ID ${item.acaoId} não foi encontrada.`);
@@ -147,7 +139,7 @@ export default function AuditoriaPage() {
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col min-h-screen">
-      <Navbar ativo="logout" companyId={1} />
+      <Navbar variant="logout" onLogout={() => alert("Saindo...")} />
 
       <main className="px-[52px] pb-8 pt-[80px] flex-grow gap-9">
         <div className="max-w-7xl py-8 flex flex-col gap-9">

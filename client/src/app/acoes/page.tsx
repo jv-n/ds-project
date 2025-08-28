@@ -41,7 +41,7 @@ export default function AcoesPage() {
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col min-h-screen items-center pt-[88px]">
-      <Navbar ativo="acoes" companyId={Number(id)} />
+      <Navbar ativo="acoes" />
 
       <div className="mx-auto w-full max-w-2xl p-8 text-left">
         <div className="h-[70px] text-black font-sans text-[32px] font-bold text-center">
