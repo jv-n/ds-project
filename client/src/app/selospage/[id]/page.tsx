@@ -39,14 +39,14 @@ export default function SelosPage() {
   const [seal, setSeal] = useState({} as sealProps);
 
   const fetchSeal = useCallback(async () => {
-    const response = await api.get<sealProps>(`//${id}`);
+    const response = await api.get<sealProps>(`/selo/empresa/${id}`);
     setSeal(response.data);
   }, [id]);
 
   const [company, setCompany] = useState({} as companyProps);
 
   const fetchCompany = useCallback(async () => {
-    const response = await api.get<companyProps>(`//${id}`);
+    const response = await api.get<companyProps>(`/company/${id}`);
     setCompany(response.data);
   }, [id]);
 

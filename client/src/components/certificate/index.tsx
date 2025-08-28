@@ -45,27 +45,40 @@ export interface CertificateProps {
 export default function Certificate(props: CertificateProps) {
 
     function levelColor(): string {
-        if( props.level.toLowerCase() === 'prata') {
+        if( props.level.toLowerCase() === 'silvermedal') {
             return '#C0C0C0';
         }
-        if( props.level.toLowerCase() === 'ouro') {
+        if( props.level.toLowerCase() === 'goldenmedal') {
             return '#FFD700';
         }
-        if( props.level.toLowerCase() === 'bronze') {
+        if( props.level.toLowerCase() === 'bronzemedal') {
             return '#CD7F32';
         } else return '#009FE3';
     }
 
     function getBadge():string {
-        if( props.level.toLowerCase() === 'prata'){
+        if( props.level.toLowerCase() === 'silvermedal'){
             return Prata;
         }
-        if( props.level.toLowerCase() === 'ouro') {
+        if( props.level.toLowerCase() === 'goldenmedal') {
             return Ouro;
         }
-        if( props.level.toLowerCase() === 'bronze') {
+        if( props.level.toLowerCase() === 'bronzemedal') {
             return Bronze;
         } else return Prata;
+    }
+
+    function formatName(): string {
+       if (props.level.toLowerCase() === 'silvermedal') {
+           return 'Prata';
+       }
+       if (props.level.toLowerCase() === 'goldenmedal') {
+           return 'Ouro';
+       }
+       if (props.level.toLowerCase() === 'bronzemedal') {
+           return 'Bronze';
+       }
+       return 'NaN';
     }
 
     return(
@@ -84,10 +97,10 @@ export default function Certificate(props: CertificateProps) {
                         <div className='w-full h-[7rem] bg-[#f9fafb] mt-2 flex flex-col items-center justify-center border-1 border-[#f0f0f0] p-2 rounded-[9px]'>
                             <Image src={getBadge()} alt='Logo' width={54} height={54} className='w-[54px] h-[54px] mb-2' />
                             <div className={segoeUI.className} style={{ fontWeight: '700', fontSize: '12px', color: levelColor() }}>
-                                Nivel {props.level}
+                                Nivel {formatName()}
                             </div>
                         </div>
-                        <div className='w-full mt-4 flex items-center justify-center flex-col gap-2'>
+                        <div className='w-full mt-4 flex items-center justify-center flex-col gap-1'>
                             <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '12px', color: '#4A5565' }}>
                                 Certificamos que a empresa
                             </div>
@@ -98,10 +111,10 @@ export default function Certificate(props: CertificateProps) {
                             </div>
                             <div className='flex items-center justify-center text-center w-3/4'>
                                  <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '12px', color: '#4A5565' }}>
-                                     alcançou o <span className='font-bold' style={{color: levelColor()}}>Nivel {props.level.toUpperCase()}</span> em responsabilidade social empresarial, demonstrando compromisso genuíno com o impacto social e desenvolvimento sustentável da cidade do Recife.
+                                     alcançou o <span className='font-bold' style={{color: levelColor()}}>Nivel {formatName().toUpperCase()}</span> em responsabilidade social empresarial, demonstrando compromisso genuíno com o impacto social e desenvolvimento sustentável da cidade do Recife.
                                 </div>
                             </div>
-                            <div className='flex flex-col mt-2 items-center justify-center text-center w-full h-[81px] mb-0 pb-0'>
+                            <div className='flex flex-col mt-2 items-center justify-center text-center w-full h-[81px] pb-0'>
                                 <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
                                     AUTORIDADES RESPONSAVEIS
                                 </div>
@@ -120,8 +133,8 @@ export default function Certificate(props: CertificateProps) {
                                     </div>
                                 </div>
                             </div>
-                            <div className='w-full static flex flex-row items-center justify-between rounded-[4px] bg-[#f9fafb] border-1 border-[#D1D5DC] p-1 h-1/4 mb-1'>
-                                <div className='w-4/5 flex flex-col items-start justify-center text-center ml-2'>
+                            <div className='w-full static flex flex-row items-center justify-between rounded-[4px] bg-[#f9fafb] border-1 border-[#D1D5DC] p-1 h-1/4'>
+                                <div className='w-4/5 flex flex-col items-start justify-center text-left ml-2'>
                                     <div className={segoeUI.className} style={{ fontWeight: '400', fontSize: '8px', color: '#4A5565' }}>
                                         Certificado pode ser verificado em: <a href='https://portal.boraimpactar.recife.pe.gov.br/verificar' style={{ color: '#4A5565', fontFamily: 'monospace'}}>portal.boraimpactar.recife.pe.gov.br/verificar</a> 
                                     </div>

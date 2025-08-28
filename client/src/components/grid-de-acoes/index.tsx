@@ -87,7 +87,7 @@ export default function GridAcoes({ searchText, odsFilters }: Props) {
         if (debouncedText.trim()) qs.set("search", debouncedText.trim());
         if (odsIds.length) qs.set("ods", odsIds.join(","));
 
-        const url = `${BASE || "http://localhost:3001"}/action-company${
+        const url = `${BASE || "http://localhost:3005"}/action-company${
           qs.toString() ? `?${qs.toString()}` : ""
         }`;
 
