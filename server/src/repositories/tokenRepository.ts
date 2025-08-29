@@ -1,16 +1,18 @@
 import jwt from 'jsonwebtoken';
 
-
 class TokenRepository {
-  
-  generateAccessToken(id: string) {
-    const generatedToken = jwt.sign({ id }, process.env.JWT_ACCESS_SECRET as string,);
+  generateAccessToken(id: string, expiresIn: string) {
+    const generatedToken = jwt.sign({ id }, process.env.JWT_ACCESS_SECRET as string, {
+      expiresIn,
+    });
 
     return generatedToken;
   }
 
-  generateRefreshToken(id: string) {
-    const generatedToken = jwt.sign({ id }, process.env.JWT_REFRESH_SECRET as string);
+  generateRefreshToken(id: string, expiresIn: string) {
+    const generatedToken = jwt.sign({ id }, process.env.JWT_REFRESH_SECRET as string, {
+      expiresIn,
+    });
 
     return generatedToken;
   }

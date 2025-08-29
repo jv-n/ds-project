@@ -29,19 +29,19 @@ async create(data: {
 }
 
 
-  async update(id: number, data: {
+  async update(empresaId: number, data: {
     nivel: string;
     pontuacaoMin: number;
     descricao: string;
   }) {
     return prisma.selo.update({
-      where: { id },
+      where: { empresaId },
       data
     });
   }
 
   async findByEmpresaId(empresaId: number) {
-    return prisma.selo.findMany({
+    return prisma.selo.findUnique({
       where: { empresaId }
     });
   }

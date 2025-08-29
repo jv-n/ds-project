@@ -8,83 +8,90 @@ Table Usuario {
   email String [unique, not null]
   senha String [not null]
   telefone String
-  perfil String [not null, default: 'empresa']
+  ong ONG
   empresa Empresa
+  prefeitura Prefeitura
+}
+
+Table ONG {
+  id Int [pk, increment]
+  ods String
+  usuarioId Int [unique, not null]
+  usuario Usuario [not null]
+  apoiosRecebidos Apoio [not null]
 }
 
 Table Empresa {
   id Int [pk, increment]
   nome String [not null]
-  pontuacao Int [not null, default: 0]
-  numColaboradores Int [not null, default: 0]
   usuarioId Int [unique, not null]
   usuario Usuario [not null]
-  odsId Int[] [not null]
-  acoes AcaoEmpresa [not null]
-  selos Selo [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
+  apoios Apoio [not null]
+  pontos Int [not null, default: 0]
+  criterios Criterio [not null]
 }
 
-Table AcaoEmpresa {
-  acaoId Int [not null]
-  empresaId Int [not null]
+Table Prefeitura {
+  id Int [pk, increment]
   nome String [not null]
-  descricao String [not null]
-  nomeOng String [not null]
-  emailOng String [not null]
-  telefoneOng String [not null]
-  doacoes Doacao [not null]
-  odsAcao Int[] [not null]
-  empresa Empresa [not null]
-
-  indexes {
-    (acaoId, empresaId) [pk]
-  }
+  usuarioId Int [unique, not null]
+  usuario Usuario [not null]
+  apoios Apoio [not null]
 }
 
-Table Doacao {
+Table Apoio {
   id Int [pk, increment]
   data DateTime [not null]
   valor Float [not null]
-  tipo String [not null]
-  documentos Documento [not null]
-  status String [not null, default: 'Pendente']
-  motivoReprovacao String
+  tipoAjuda String [not null]
+  documentacao String [not null]
   empresaId Int [not null]
-  acaoId Int [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  acao AcaoEmpresa [not null]
+  ongId Int [not null]
+  prefeituraId Int
+  empresa Empresa [not null]
+  ong ONG [not null]
+  prefeitura Prefeitura
+}
+
+Table Criterio {
+  id Int [pk, increment]
+  tipo String [not null]
+  pontuacao Int [not null]
+  empresaId Int [not null]
+  seloId Int [not null]
+  empresa Empresa [not null]
+  selo Selo [not null]
 }
 
 Table Selo {
   id Int [pk, increment]
-  nivel String [not null]
-  descricao String [not null]
-  pontuacaoMin Int [not null]
-  createdAt DateTime [default: `now()`, not null]
-  empresaId Int [not null]
-  empresa Empresa [not null]
+  tipo String [not null]
+  tier String [not null]
+  criterios Criterio [not null]
 }
 
-Table Documento {
+Table File {
   id String [pk]
   storedName String [not null]
   mimetype String [not null]
   size Int [not null]
   path String [not null]
+  status String [not null]
   createdAt DateTime [default: `now()`, not null]
-  doacaoId Int
-  doacao Doacao
 }
+
+Ref: ONG.usuarioId - Usuario.id
 
 Ref: Empresa.usuarioId - Usuario.id
 
-Ref: AcaoEmpresa.empresaId > Empresa.id
+Ref: Prefeitura.usuarioId - Usuario.id
 
-Ref: Doacao.(acaoId, empresaId) > AcaoEmpresa.(acaoId, empresaId)
+Ref: Apoio.empresaId > Empresa.id
 
-Ref: Selo.empresaId > Empresa.id
+Ref: Apoio.ongId > ONG.id
 
-Ref: Documento.doacaoId > Doacao.id
+Ref: Apoio.prefeituraId > Prefeitura.id
+
+Ref: Criterio.empresaId > Empresa.id
+
+Ref: Criterio.seloId > Selo.id

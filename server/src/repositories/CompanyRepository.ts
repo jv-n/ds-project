@@ -1,24 +1,14 @@
+import { Empresa, Prisma } from '@prisma/client';
 import prisma from '../database';
 
-interface CreateCompanyDTO {
-  nome: string;
-  usuarioId: number;
-  odsId: number[];
-  numColaboradores: number;
-}
-
-interface UpdateCompanyDTO {
-  pontuacao?: number;
-  odsId?: number[];
-  numColaboradores?: number;
-}
-
-export default class CompanyRepository {
-  async create(data: CreateCompanyDTO) {
+export class CompanyRepository {
+  async create(data: Prisma.EmpresaCreateInput): Promise<Empresa> {
     return prisma.empresa.create({
       data,
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
   }
@@ -26,7 +16,9 @@ export default class CompanyRepository {
   async findAll() {
     return prisma.empresa.findMany({
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
   }
@@ -35,24 +27,30 @@ export default class CompanyRepository {
     return prisma.empresa.findUnique({
       where: { id },
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
   }
 
-  async update(id: number, data: UpdateCompanyDTO) {
-    const prismaData: any = {};
-    if (data.pontuacao !== undefined) prismaData.pontuacao = data.pontuacao;
-    if (data.odsId !== undefined) prismaData.odsId = { set: data.odsId.map(odsId => ({ id: odsId })) };
-    if (data.numColaboradores !== undefined) prismaData.numColaboradores = data.numColaboradores;
 
-    return prisma.empresa.update({
+  async update(id: number, data: Prisma.EmpresaUpdateInput) {
+
+   const company = await prisma.empresa.update({
       where: { id },
-      data: prismaData,
+      data,
       include: {
-        usuario: true
+        usuario: true,
+        criterios: true,
+        apoios: true,
       },
     });
+
+    if (!company) {
+      throw new Error('Company not found');
+    }
+    return company;
   }
 
   async delete(id: number) {

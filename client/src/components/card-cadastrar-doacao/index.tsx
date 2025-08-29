@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { predio, mail, fone, maozinha } from "@/assets";
+import { Dispatch, SetStateAction } from "react";
 
 export interface Cardcontatosprops {
   nomeacao: string;

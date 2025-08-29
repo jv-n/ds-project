@@ -1,4 +1,4 @@
-import { AcaoEmpresa, Doacao } from '@prisma/client';
+import { Empresa, AcaoEmpresa, Doacao } from '@prisma/client';
 import { EmpresaComAcoesEDoacoes } from '../repositories/sealRepository';
 
 type AcaoComDoacoes = AcaoEmpresa & { doacoes: Doacao[] };
@@ -69,10 +69,12 @@ export class SealService {
   calcularPontuacao(empresa: EmpresaComAcoesEDoacoes) {
     const qtdODS = Array.isArray((empresa as any).odsId) ? (empresa as any).odsId.length : 0;
 
-    const acoesComDoacoesAprovadas = empresa.acoes.map(acao => ({
+    const acoesComDoacoesAprovadas = empresa.acoes.map(acao => {
+        return {
             ...acao,
             doacoes: acao.doacoes.filter(doacao => doacao.status === 'aprovado')
-        }));
+        };
+    });
 
     const pontODS = this.pontuacaoPorODS(qtdODS);
     const pontONGs = this.pontuacaoPorONGs(acoesComDoacoesAprovadas);
@@ -81,16 +83,10 @@ export class SealService {
 
     const pontuacaoTotal = pontODS + pontONGs + pontEngajamento + pontValorDoado;
 
-    let nivelSelo: string;
-    if (pontuacaoTotal >= 75) {
-      nivelSelo = 'goldenmedal';
-    } else if (pontuacaoTotal >= 46) {
-      nivelSelo = 'silvermedal';
-    } else if (pontuacaoTotal >= 5) {
-      nivelSelo = 'bronzemedal';
-    } else {
-      nivelSelo = 'bronzemedal';
-    }
+    const nivelSelo =
+      pontuacaoTotal >= 75 ? 'goldenmedal' :
+      pontuacaoTotal >= 46 ? 'silvermedal' :
+      pontuacaoTotal >= 5 ? 'bronzemedal' : 'bronzemedal';
 
     return {
       empresaId: empresa.id,

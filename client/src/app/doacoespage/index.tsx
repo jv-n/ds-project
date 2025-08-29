@@ -1,5 +1,3 @@
-"use client";
-
 import Cardcontatos from "@/components/card-cadastrar-doacao";
 import Cardcadastrado from "@/components/card-acao-cadastrada";
 import CadastroDoacao from "@/components/formulario-doacao";
@@ -9,8 +7,7 @@ import { useState } from "react";
 export default function DoacoesPage() {
   const [ativocontato, setAtivoContato] = useState("acoes");
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [showCadastroDoacaoSidebar, setShowCadastroDoacaoSidebar] =
-    useState(false);
+  const [showCadastroDoacaoSidebar, setShowCadastroDoacaoSidebar] = useState(false);
   const [selectedOngName, setSelectedOngName] = useState("");
   const [selectedActionName, setSelectedActionName] = useState("");
 
@@ -23,7 +20,7 @@ export default function DoacoesPage() {
   }
 
   function handleOpenCadastro(ongName: string, actionName: string) {
-    setSelectedOngName(ongName);
+    setSelectedOngName(ongName); 
     setSelectedActionName(actionName);
     setShowCadastroDoacaoSidebar(true);
   }
@@ -34,15 +31,13 @@ export default function DoacoesPage() {
     setSelectedActionName("");
   }
 
-  const cardGridColsClass = showCadastroDoacaoSidebar
-    ? "lg:grid-cols-2"
-    : "lg:grid-cols-3";
+  const cardGridColsClass = showCadastroDoacaoSidebar ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearch = (term: string) => {
     console.log("Termo de pesquisa recebido:", term);
-    setSearchTerm(term);
+    setSearchTerm(term); 
   };
 
   return (
@@ -55,22 +50,16 @@ export default function DoacoesPage() {
         </p>
 
         {/* Barra de pesquisa */}
-        <div
-          className={`mt-8 mb-8 relative ${
-            showCadastroDoacaoSidebar ? "" : "lg:pr-6"
-          }`}
-        >
+        <div className={`mt-8 mb-8 relative ${showCadastroDoacaoSidebar ? '' : 'lg:pr-6'}`}>
           <SearchBar
             placeholder="Pesquisar..."
-            onSearch={handleSearch}
+            onSearch={handleSearch} 
             initialValue={searchTerm}
-          />
+            />
         </div>
 
         {/* Grid de cards */}
-        <div
-          className={`grid grid-cols-1 md:grid-cols-2 ${cardGridColsClass} gap-x-6 gap-y-8`}
-        >
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${cardGridColsClass} gap-x-6 gap-y-8`}>
           <Cardcontatos
             nomeacao="Campanha Inverno Solidário"
             descricao="Ajude famílias em situação de vulnerabilidade com roupas e cobertores."
@@ -140,20 +129,18 @@ export default function DoacoesPage() {
             nomedaong="ONG Social Brasil"
           />
         </div>
-      </div>
+      </div> 
 
       {/* Sidebar */}
-      <div
-        className={`
+      <div className={`
         flex-shrink-0 bg-white shadow-lg
         transition-all duration-300 ease-in-out
-        ${showCadastroDoacaoSidebar ? "w-[450px] p-3" : "w-0 overflow-hidden"} 
+        ${showCadastroDoacaoSidebar ? 'w-[450px] p-3' : 'w-0 overflow-hidden'} 
         sticky top-0 h-screen self-start hidden lg:block
-      `}
-      >
+      `}>
         {showCadastroDoacaoSidebar && (
-          <div className="h-full w-full overflow-y-auto">
-            <div className="p-4 flex flex-col h-full">
+          <div className="h-full w-full overflow-y-auto"> 
+            <div className="p-4 flex flex-col h-full"> 
               <CadastroDoacao
                 onClose={handleCloseCadastro}
                 ongName={selectedOngName}

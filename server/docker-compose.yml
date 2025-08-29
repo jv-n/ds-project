@@ -28,7 +28,6 @@ services:
             - node_modules/
         - action: rebuild
           path: package.json
-      
 
   db:
     image: postgres:17
