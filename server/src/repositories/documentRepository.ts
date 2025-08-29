@@ -4,8 +4,6 @@ import fs from 'fs';
 import { Documento } from '@prisma/client';
 import prisma from '../database';
 
-
-
 class DocumentRepository {
     // Use a consistent upload folder relative to project root
     private uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
