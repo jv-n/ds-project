@@ -19,13 +19,13 @@ export default class SealController {
       const existente = await sealRepository.findByEmpresaId(companyId);
 
       let text = '';
-      if (resultado.nivelSelo === 'goldenmedal') {
+      if (resultado.nivelSelo === 'Ouro') {
         text = 'Empresa com alto impacto social e engajamento consistente.';
       }
-      if (resultado.nivelSelo === 'silvermedal') {
+      if (resultado.nivelSelo === 'Prata') {
         text = 'Empresa com bom nível de responsabilidade social.';
       }
-      if (resultado.nivelSelo === 'bronzemedal') {
+      if (resultado.nivelSelo === 'Bronze') {
         text = 'Empresa em fase inicial de engajamento social.';
       }
 

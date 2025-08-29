@@ -28,7 +28,7 @@ export class SealService {
   }
   
   private pontuacaoPorEngajamento(acoes: AcaoComDoacoes[], numColaboradores: number): number {
-    const voluntarios = acoes.flatMap(acao => acao.doacoes.filter(d => d.tipo === 'SERVICO')).length;
+    const voluntarios = acoes.flatMap(acao => acao.doacoes.filter(d => d.tipo === 'Serviço')).length;
     const porcentagem = numColaboradores > 0 ? (voluntarios / numColaboradores) * 100 : 0;
 
     if (porcentagem >= 30) return 21;
@@ -49,7 +49,7 @@ export class SealService {
 
   private totalDoadoEmDinheiro(acoes: AcaoComDoacoes[]): number {
     return acoes
-      .flatMap(acao => acao.doacoes.filter(d => d.tipo === 'DINHEIRO'))
+      .flatMap(acao => acao.doacoes.filter(d => d.tipo === 'Dinheiro'))
       .reduce((acc, d) => acc + d.valor, 0);
   }
 
@@ -62,7 +62,7 @@ export class SealService {
   }
 
   private porcentagemEngajados(acoes: AcaoComDoacoes[], numColaboradores: number): number {
-    const voluntarios = acoes.flatMap(acao => acao.doacoes.filter(d => d.tipo === 'SERVICO')).length;
+    const voluntarios = acoes.flatMap(acao => acao.doacoes.filter(d => d.tipo === 'Serviço')).length;
     return numColaboradores > 0 ? (voluntarios / numColaboradores) * 100 : 0;
   }
 
@@ -71,7 +71,7 @@ export class SealService {
 
     const acoesComDoacoesAprovadas = empresa.acoes.map(acao => ({
             ...acao,
-            doacoes: acao.doacoes.filter(doacao => doacao.status === 'aprovado')
+            doacoes: acao.doacoes.filter(doacao => doacao.status === 'Aprovada')
         }));
 
     const pontODS = this.pontuacaoPorODS(qtdODS);
@@ -83,13 +83,13 @@ export class SealService {
 
     let nivelSelo: string;
     if (pontuacaoTotal >= 75) {
-      nivelSelo = 'goldenmedal';
+      nivelSelo = 'Ouro';
     } else if (pontuacaoTotal >= 46) {
-      nivelSelo = 'silvermedal';
+      nivelSelo = 'Prata';
     } else if (pontuacaoTotal >= 5) {
-      nivelSelo = 'bronzemedal';
+      nivelSelo = 'Bronze';
     } else {
-      nivelSelo = 'bronzemedal';
+      nivelSelo = 'Bronze';
     }
 
     return {

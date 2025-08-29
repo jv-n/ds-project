@@ -2,18 +2,18 @@
 import Image from "next/image";
 import { useState } from "react";
 import {
-  goldenmedal,
-  silvermedal,
-  bronzemedal,
+  Ouro,
+  Prata,
+  Bronze,
   setapbaixo,
   setapcima,
-  download
+  Download
 } from "@/assets";
 import ModalCertificado from "../modal-certificado";
 import { CertificateProps } from "../certificate";
 
 export interface propspontos {
-  nivel: "goldenmedal" | "silvermedal" | "bronzemedal";
+  nivel: "Ouro" | "Prata" | "Bronze";
   ptsodsscomatuacao: number;
   ptsongsatingidas: number;
   ptscolaboradoresengajados: number;
@@ -51,30 +51,30 @@ const qtdorcamentodestinado: Record<string, string> = {
 };
 
 const imagensPorNivel = {
-  goldenmedal,
-  silvermedal,
-  bronzemedal,
+  Ouro,
+  Prata,
+  Bronze,
 };
 
 const textonivel = {
-  goldenmedal: "Nível Ouro",
-  silvermedal: "Nível Prata",
-  bronzemedal: "Nível Bronze",
+  Ouro: "Nível Ouro",
+  Prata: "Nível Prata",
+  Bronze: "Nível Bronze",
 };
 
 const descricao = {
-  bronzemedal:
+  Bronze:
     "Empresas em fase inicial ou com nível básico de engajamento social.",
-  silvermedal:
+  Prata:
     "Empresas com bom nível de engajamento e programas sociais consistentes.",
-  goldenmedal:
+  Ouro:
     "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
 };
 
 const coresPorNivel = {
-  goldenmedal: "#F5B800",
-  silvermedal: "#757575",
-  bronzemedal: "#A56424",
+  Ouro: "#F5B800",
+  Prata: "#757575",
+  Bronze: "#A56424",
 };
 
 export default function Cardpontos(props: propspontos) {
@@ -100,7 +100,7 @@ export default function Cardpontos(props: propspontos) {
           <div className="flex items-center w-full mb-4 ml-[935px]">
             <Image src={imagensPorNivel[props.nivel]} alt="" />
             <button onClick={abrirModal} className="w-[170px] h-[40px] bg-[#009FE3] rounded-lg flex items-center justify-center text-white text-[15px] cursor-pointer ml-[300px]">
-              <Image src={download} alt="" className="mr-[5px]" />
+              <Image src={Download} alt="" className="mr-[5px]" />
               Baixar Certificado
             </button>
           </div>

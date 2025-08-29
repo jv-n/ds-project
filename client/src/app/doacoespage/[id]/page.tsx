@@ -24,14 +24,14 @@ interface AcaoData {
     data: string;
     valor: number;
     tipo: string;
-    status: "Pendente" | "Aprovado" | "Rejeitado";
+    status: "Pendente" | "Aprovada" | "Reprovada";
     motivoReprovacao: string | null;
     empresaId: number;
     acaoId: number;
     createdAt: string;
     updatedAt: string;
   }>;
-  statusApoio: "Pendente" | "Aprovado" | "Rejeitado" | null;
+  statusApoio: "Pendente" | "Aprovada" | "Reprovada" | null;
   latestApoioId: number | null;
 }
 

@@ -28,14 +28,23 @@ export { balaopopup };
 import confirma from "./confirma.svg";
 export { confirma };
 
-import goldenmedal from "./goldenmedal.svg";
-export { goldenmedal };
+import Ouro from "./ouro.svg";
+export { Ouro };
 
-import silvermedal from "./silvermedal.svg";
-export { silvermedal };
+import Prata from "./prata.svg";
+export { Prata };
 
-import bronzemedal from "./bronzemedal.svg";
-export { bronzemedal };
+import Bronze from "./bronze.svg";
+export { Bronze };
+
+import Fechar from "./fechar.svg";
+export { Fechar };
+
+import Olho from "./olho.svg";
+export { Olho };
+
+import Download from "./download.svg";
+export { Download };
 
 import xsair from "./xsair.svg";
 export { xsair };
@@ -48,15 +57,6 @@ export { setapbaixo };
 
 import downloadicon from "./downloadicon.svg";
 export { downloadicon };
-
-import Fechar from "./fechar.svg";
-export { Fechar };
-
-import Olho from "./olho.svg";
-export { Olho };
-
-import Download from "./download.svg";
-export { Download };
 
 import paperclip from "./paperclip.svg";
 export { paperclip };
