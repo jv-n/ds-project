@@ -94,3 +94,19 @@ export const sendEmail = async (to: string, subject: string, data: DonationEmail
     throw error;
   }
 };
+
+export const resetPasswordEmail = async (to: string, subject: string, text: string) => {
+  try {
+    const info = await transporter.sendMail({
+      from: '"Sistema Selo de Responsa" <seloderesponsa@gmail.com>',
+      to,
+      subject,
+      text,
+    });
+
+    console.log('Email enviado: %s', info.messageId);
+  } catch (error) {
+    console.error('Erro ao enviar e-mail:', error);
+    throw error;
+  }
+}

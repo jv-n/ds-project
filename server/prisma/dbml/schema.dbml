@@ -8,6 +8,8 @@ Table Usuario {
   email String [unique, not null]
   senha String [not null]
   telefone String
+  resetPasswordToken String
+  resetPasswordExpires DateTime
   perfil String [not null, default: 'empresa']
   empresa Empresa
 }
