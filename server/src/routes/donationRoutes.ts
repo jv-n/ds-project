@@ -1,30 +1,9 @@
 import { Router } from 'express';
-import multer from 'multer';
-import path from 'path';
+import { upload } from '../services/uploadService';
 import { DonationController } from '../controllers/donationController';
-
-
 
 const DonationRouter = Router();
 const controller = new DonationController();
-const uploadFolder = path.resolve(__dirname, '..', 'uploads');
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadFolder);
-    },
-    filename: (req, file, cb) => {
-        const extensaoArquivo = path.extname(file.originalname);
-
-        const dat = Date.now();
-        const dataHora = new Date(dat);
-        const data = `${dataHora.getDate()}-${(dataHora.getMonth()+1).toString()}-${dataHora.getFullYear()}`;
-        const novoNomeArquivo = `${data}--${dataHora.getUTCHours().toString()}-${dataHora.getUTCMinutes().toString()}-${dataHora.getUTCSeconds().toString()}`;
-
-        cb(null, `${novoNomeArquivo}${extensaoArquivo}`)
-    }
-});
-const upload = multer({ storage });
 
 DonationRouter.post('/', upload.array('documents', 5), controller.create);
 

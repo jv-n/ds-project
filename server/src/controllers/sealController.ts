@@ -5,7 +5,7 @@ import { SealService } from '../services/sealService';
 const sealRepository = new SealRepository();
 const sealService = new SealService();
 
-export default class SealController {
+export class SealController {
   async getCompanySeal(req: Request, res: Response, next: NextFunction) {
     try {
       const companyId = Number(req.params.id);
