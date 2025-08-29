@@ -1,6 +1,6 @@
 // src/controllers/company-controller.ts
 import { Request, Response, NextFunction } from 'express';
-import { CompanyRepository } from '../repositories/CompanyRepository';
+import CompanyRepository  from '../repositories/CompanyRepository';
 import { Company, Company_Update } from '../DTOs';
 
 const repository = new CompanyRepository();

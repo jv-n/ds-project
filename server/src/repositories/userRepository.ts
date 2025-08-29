@@ -1,36 +1,50 @@
-import { Prisma, Usuario } from '@prisma/client';
+import { Usuario } from '@prisma/client';
 import prisma from '../database';
 
-class UsuarioRepository {
-  async create(data: Prisma.UsuarioCreateInput): Promise<Usuario> {
-    const usuario = await prisma.usuario.create({ data });
-    return usuario;
+interface CreateUserDTO {
+  cnpj: string;           
+  email: string;           
+  senha: string;      
+  telefone?: string;   
+}
+
+interface UpdateUserDTO {
+  cnpj?: string;
+  email?: string;
+  senha?: string;
+  telefone?: string;
+}
+
+class UserRepository {
+  async create(data: CreateUserDTO): Promise<Usuario> {
+    const user = await prisma.usuario.create({ data });
+    return user;
   }
 
   async findByEmail(email: string): Promise<Usuario | null> {
-    const usuario = await prisma.usuario.findUnique({ where: { email } });
-    return usuario;
+    const user = await prisma.usuario.findUnique({ where: { email } });
+    return user;
   }
 
   async findById(id: number): Promise<Usuario | null> {
-    const usuario = await prisma.usuario.findUnique({ where: { id } });
-    return usuario;
+    const user = await prisma.usuario.findUnique({ where: { id } });
+    return user;
   }
 
-  async update(id: number, data: Prisma.UsuarioUpdateInput): Promise<Usuario> {
-    const usuario = await prisma.usuario.update({ where: { id }, data });
-    return usuario;
+  async update(id: number, data: UpdateUserDTO): Promise<Usuario> {
+    const user = await prisma.usuario.update({ where: { id }, data });
+    return user;
   }
 
   async delete(id: number): Promise<Usuario> {
-    const usuario = await prisma.usuario.delete({ where: { id } });
-    return usuario;
+    const user = await prisma.usuario.delete({ where: { id } });
+    return user;
   }
 
   async findAll(): Promise<Usuario[]> {
-    const usuarios = await prisma.usuario.findMany();
-    return usuarios;
+    const users = await prisma.usuario.findMany();
+    return users;
   }
 }
 
-export default new UsuarioRepository();
+export default new UserRepository();

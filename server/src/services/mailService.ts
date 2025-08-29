@@ -1,4 +1,8 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import nodemailer from 'nodemailer';
+import * as dotenv from 'dotenv'; // Certifique-se de que o caminho está correto
+
+dotenv.config();
 
 interface DonationEmailData {
   empresaNome: string;
@@ -13,9 +17,14 @@ interface DonationEmailData {
 }
 
 export function generateDonationEmailTemplate(data: DonationEmailData): string {
-  const statusColor = data.status === 'Aprovada' ? '#4CAF50' 
-                    : data.status === 'Reprovada' ? '#F44336' 
-                    : '#FF9800'; // laranja para pendente ou outros
+  let statusColor: string;
+  if (data.status === 'Aprovada') {
+    statusColor = '#4CAF50';
+  } else if (data.status === 'Reprovada') {
+    statusColor = '#F44336';
+  } else {
+    statusColor = '#FF9800'; // laranja para pendente ou outros
+  }
 
   return `
 <!DOCTYPE html>
@@ -61,12 +70,12 @@ export function generateDonationEmailTemplate(data: DonationEmailData): string {
   `;
 }
 
-/*
+
 export const transporter = nodemailer.createTransport({
-  service: env("EMAIL_SERVICE"), // Gmail, Outlook, etc.
+  service: process.env.EMAIL_SERVICE, // Gmail, Outlook, etc.
   auth: {
-    user: env("EMAIL_ADDRESS"),         // seu e-mail
-    pass: env("EMAIL_PASSWORD")       // app password (não a senha do Gmail)
+    user: process.env.EMAIL_ADDRESS,         // seu e-mail
+    pass: process.env.EMAIL_PASSWORD       // app password (não a senha do Gmail)
   },
 });
 
@@ -85,12 +94,3 @@ export const sendEmail = async (to: string, subject: string, data: DonationEmail
     throw error;
   }
 };
-
-function env(key: string): string {
-  const value = process.env[key];
-  if (!value) {
-    throw new Error(`Environment variable ${key} is not set.`);
-  }
-  return value;
-}
-*/

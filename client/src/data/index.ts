@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 interface MockFile {
   name: string;
   size: number;
@@ -8,14 +9,27 @@ interface MockFile {
 
 const LOCAL_STORAGE_KEY = 'uploadedFilesMock'; // Chave para o localStorage
 
-// Inicializa uploadedFiles lendo do localStorage, ou com um array vazio
-let uploadedFiles: MockFile[] = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+import { useState, useEffect } from 'react';
 
-const saveToLocalStorage = () => {
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(uploadedFiles));
+const useUploadedFiles = () => {
+  const [uploadedFiles, setUploadedFiles] = useState<MockFile[]>([]);
+
+  useEffect(() => {
+    const storedFiles = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+    setUploadedFiles(storedFiles);
+  }, []);
+
+  const saveToLocalStorage = (files: MockFile[]) => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(files));
+  };
+
+  return { uploadedFiles, setUploadedFiles, saveToLocalStorage };
 };
 
 export const saveFile = (file: File): Promise<{ success: true; fileName: string }> => {
+ 
+  const uploadedFiles = useUploadedFiles().uploadedFiles;
+  const saveToLocalStorage = useUploadedFiles().saveToLocalStorage;
   return new Promise((resolve) => {
     setTimeout(() => {
       uploadedFiles.push({
@@ -25,7 +39,7 @@ export const saveFile = (file: File): Promise<{ success: true; fileName: string 
         lastModified: file.lastModified,
         uploadedAt: new Date().toISOString()
       });
-      saveToLocalStorage(); // Salva os props do arquivo no localStorage 
+      saveToLocalStorage(uploadedFiles); // Salva os props do arquivo no localStorage
       console.log("Arquivo salvo (mock e localStorage):", file.name);
       console.log("Todos os arquivos salvos (mock):", uploadedFiles.map(f => f.name));
       resolve({ success: true, fileName: file.name });
@@ -34,5 +48,6 @@ export const saveFile = (file: File): Promise<{ success: true; fileName: string 
 };
 
 export const getUploadedFiles = (): MockFile[] => {
+  const uploadedFiles = useUploadedFiles().uploadedFiles;
   return [...uploadedFiles];
 };

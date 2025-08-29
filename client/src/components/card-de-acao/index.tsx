@@ -2,12 +2,14 @@ import { predio } from "@/assets";
 import Image from "next/image";
 
 export interface Cardacaoprops {
+  acaoId?: number;
   nomeacao: string;
   descricao: string;
   ods1: string;
   ods2: string;
   ods3: string;
   ods4: string;
+  odsNomes?: string[]; // opcional helper
   nomedaong: string;
   emailong: string;
   numeroong: string;

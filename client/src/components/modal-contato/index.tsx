@@ -1,49 +1,61 @@
-"use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { balao, balaopopup, confirma, emailpopup } from "@/assets";
+import { ODS_NAME_TO_ID } from "@/types/acao";
 
 export interface propspopup {
-  nomedaong: string;
+  acaoId?: number;
   nomeacao: string;
+  descricao?: string;
+  nomedaong: string;
   emailong: string;
   numeroong: string;
+  odsNomes?: string[];
+  odsAcao?: number[]; // ids das ODS (opcional, vindo do grid)
   onEntrarContato: () => void; // usado como 'onClose'
 }
 
-function digitsOnly(s?: string) {
-  return (s ?? "").replace(/\D/g, "");
-}
+// helper: keep only digits
+const digitsOnly = (s?: string) => (s ?? "").toString().replace(/\D/g, "");
 
-function buildWhatsappLink(
-  numero: string,
-  nomedaong: string,
-  nomeacao: string
-) {
-  const raw = digitsOnly(numero);
-  if (!raw) return "#";
-  const withDdi = raw.startsWith("55") ? raw : `55${raw}`;
-  const text = `Olá ${nomedaong || ""}! Vi a ação "${
-    nomeacao || ""
-  }" no Bora Impactar e gostaria de entrar em contato.`;
-  return `https://wa.me/${withDdi}?text=${encodeURIComponent(text)}`;
-}
+// build whatsapp link or "#" se inválido
+const buildWhatsappLink = (
+  number?: string,
+  orgName?: string,
+  actionName?: string
+) => {
+  const n = digitsOnly(number);
+  if (!n) return "#";
+  const text = `Olá ${orgName ?? ""}, quero saber mais sobre "${
+    actionName ?? ""
+  }"`;
+  return `https://wa.me/${n}?text=${encodeURIComponent(text)}`;
+};
 
-function buildGmailLink(email: string, nomedaong: string, nomeacao: string) {
-  if (!email) return "#";
+// build Gmail compose link ou "#" se inválido
+const buildGmailLink = (
+  email?: string,
+  orgName?: string,
+  actionName?: string
+) => {
+  if (!email || !email.includes("@")) return "#";
+  const subject = `Sobre a ação: ${actionName ?? ""}`;
+  const body = `Olá ${orgName ?? ""},
+
+Gostaria de saber mais sobre a ação "${actionName ?? ""}".
+
+Atenciosamente.`;
   const params = new URLSearchParams({
     to: email,
-    su: `Contato sobre: ${nomeacao || ""}`,
-    body: `Olá ${nomedaong || ""},
-
-Vi a ação "${nomeacao || ""}" no Bora Impactar e gostaria de saber mais.
-
-Obrigado(a)!`,
+    su: subject,
+    body: body,
   });
   return `https://mail.google.com/mail/?view=cm&fs=1&${params.toString()}`;
-}
+};
 
 export default function Modalcontatos(props: propspopup) {
+  const [sending, setSending] = useState(false);
+  const [empresaIdFromStorage, setEmpresaIdFromStorage] = useState<number | null>(null);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") props.onEntrarContato();
@@ -51,6 +63,14 @@ export default function Modalcontatos(props: propspopup) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [props]);
+
+  // Load empresaId from localStorage on mount (client-side only)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("empresaId");
+      setEmpresaIdFromStorage(stored ? Number(stored) : null);
+    }
+  }, []);
 
   if (typeof window === "undefined") return null;
 
@@ -68,6 +88,70 @@ export default function Modalcontatos(props: propspopup) {
   const mailDisabled = gmailHref === "#";
   const waDisabled = waHref === "#";
 
+  const API_BASE = (
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001"
+  ).replace(/\/$/, "");
+
+  // envia métrica simples (não falha a UI em caso de erro)
+  const handleConfirmContact = async () => {
+    setSending(true);
+    try {
+      // Normaliza empresaId: primeiro localStorage (dev), depois env NEXT_PUBLIC_DEFAULT_EMPRESA_ID, por fim fallback 1
+      const empresaId =
+        (empresaIdFromStorage as number | null) ||
+        Number(process.env.NEXT_PUBLIC_DEFAULT_EMPRESA_ID || "1");
+
+      // Preferir ids já disponíveis (props.odsAcao). Se não houver, mapear odsNomes -> ids
+      const odsIds =
+        (Array.isArray(props.odsAcao) && props.odsAcao.length
+          ? props.odsAcao
+          : (props.odsNomes ?? [])
+              .map((n) => ODS_NAME_TO_ID[n])
+              .filter((v): v is number => typeof v === "number")) || [];
+
+      const payload: Record<string, any> = {
+        nome: props.nomeacao ?? "",
+        descricao: props.descricao ?? "",
+        nomeOng: props.nomedaong ?? "",
+        emailOng: props.emailong ?? "",
+        telefoneOng: props.numeroong ?? "",
+        empresaId,
+        odsAcao: odsIds,
+      };
+
+      if (props.acaoId != null) {
+        payload.acaoId = Number(props.acaoId);
+      }
+
+      // Somente tenta criar se tiver acaoId
+      if (payload.acaoId) {
+        const url = `${API_BASE}/action-company`;
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text().catch(() => "");
+          console.warn("POST /action-company failed:", resp.status, text);
+        }
+      } else {
+        console.warn(
+          "handleConfirmContact: acaoId ausente — não enviando /action-company"
+        );
+      }
+    } catch (e) {
+      console.warn("Erro em handleConfirmContact:", e);
+    } finally {
+      setSending(false);
+      props.onEntrarContato();
+    }
+  };
+
+  const commonBlockClasses =
+    "flex items-center justify-between p-3 border rounded transition-colors duration-150";
+
   return (
     <div
       className="fixed inset-0 z-[1000] flex items-center justify-center"
@@ -83,73 +167,98 @@ export default function Modalcontatos(props: propspopup) {
 
       {/* content */}
       <div className="relative z-10">
-        <div className="w-[450px] h-[300px] flex flex-col bg-white rounded-lg shadow p-[22px] font-sans text-[#1B2029]">
-          <div className="flex">
-            <Image src={balao} alt="" />
-            <div className="text-[16px] ml-[5px]"> Entrar em contato</div>
+        <div className="w-[450px] max-h-[90vh] overflow-auto flex flex-col bg-white rounded-lg shadow p-[22px] font-sans text-[#1B2029]">
+          {/* Cabeçalho com título e descrição */}
+          <div>
+            <div className="text-[18px] font-bold mb-1">{props.nomeacao}</div>
+            {props.descricao ? (
+              <div className="text-sm text-gray-600 mb-2">
+                {props.descricao}
+              </div>
+            ) : null}
+            <div className="text-sm text-gray-700">
+              ONG: {props.nomedaong || "-"}
+            </div>
           </div>
 
-      <div className="text-[13px] text-[#717182] flex mt-[5px] flex-wrap">
-        <div>Entre em contato com &nbsp;</div>
-        <div className="font-bold">{props.nomedaong}</div>
-        <div>&nbsp; sobre a ação &nbsp;</div>
-        <div className="font-bold">{props.nomeacao}</div>
-      </div>
-
-          {/* CARD DE E-MAIL — VISUAL IDÊNTICO, MAS O CLIQUE ABRE O GMAIL */}
-          <div
-            role="button"
-            tabIndex={0}
-            aria-label="Enviar e-mail"
-            onClick={() => {
-              if (!mailDisabled)
-                window.open(gmailHref, "_blank", "noopener,noreferrer");
-            }}
-            onKeyDown={(e) => {
-              if (!mailDisabled && (e.key === "Enter" || e.key === " ")) {
-                e.preventDefault();
-                window.open(gmailHref, "_blank", "noopener,noreferrer");
-              }
-            }}
-            className={`w-[400px] h-[64px] bg-white flex items-center justify-between border-[1px] mt-[5px] rounded-lg border-gray-200 hover:bg-[#F2F2F2EE] ${
-              mailDisabled ? "pointer-events-none opacity-60" : "cursor-pointer"
-            }`}
-            title={mailDisabled ? "E-mail indisponível" : "Abrir Gmail"}
-          >
-            {/* esquerda: ícone + e-mail */}
-            <div className="flex items-center">
-              <Image src={emailpopup} alt="" className="ml-[10px]" />
-              <div className="flex flex-col ml-[10px]">
-                <div className="text-[12px] font-bold">Enviar e-mail</div>
-                <div className="text-[13px] text-[#6A7282] font-bold">
-                  {props.emailong || "—"}
+          {/* Blocos de contato: Email e WhatsApp */}
+          <div className="mt-4 grid gap-3">
+            {/* Email - container clicável quando houver link */}
+            {!mailDisabled ? (
+              <a
+                href={gmailHref}
+                target="_blank"
+                rel="noreferrer"
+                role="group"
+                aria-label="Contato por email"
+                className={`w-[400px] h-[60px] bg-white flex items-center justify-between border-[1px] mt-[5px] rounded-lg border-gray-200 hover:bg-[#F2F2F2EE] ${
+                  mailDisabled
+                    ? "pointer-events-none opacity-60"
+                    : "cursor-pointer"
+                }`}
+              >
+                <div className="pl-4">
+                  <div className="font-medium">Email</div>
+                  <div className="text-sm text-gray-600">
+                    {props.emailong || "-"}
+                  </div>
+                </div>
+              </a>
+            ) : (
+              <div
+                role="group"
+                aria-label="Contato por email"
+                className={`w-[400px] h-[60px] bg-white flex items-center justify-between border-[1px] mt-[5px] rounded-lg border-gray-200 opacity-50`}
+                aria-disabled
+              >
+                <div className="pl-4">
+                  <div className="font-medium">Email</div>
+                  <div className="text-sm text-gray-600">
+                    {props.emailong || "-"}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* WhatsApp - container clicável quando houver link */}
+            {!waDisabled ? (
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noreferrer"
+                role="group"
+                aria-label="Contato por whatsapp"
+                className={`w-[400px] h-[60px] bg-white flex items-center justify-between border-[1px] mt-[5px] rounded-lg border-gray-200 hover:bg-[#F2F2F2EE] ${
+                  waDisabled
+                    ? "pointer-events-none opacity-60"
+                    : "cursor-pointer"
+                }`}
+              >
+                <div className="pl-4">
+                  <div className="font-medium">WhatsApp</div>
+                  <div className="text-sm text-gray-600">
+                    {props.numeroong || "-"}
+                  </div>
+                </div>
+              </a>
+            ) : (
+              <div
+                role="group"
+                aria-label="Contato por whatsapp"
+                className={`w-[400px] h-[60px] bg-white flex items-center border-[1px] mt-[5px] rounded-lg border-gray-200 opacity-50`}
+                aria-disabled
+              >
+                <div className="pl-4">
+                  <div className="font-medium">WhatsApp</div>
+                  <div className="text-sm text-gray-600">
+                    {props.numeroong || "-"}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* WhatsApp */}
-          <a
-            href={waHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-disabled={waDisabled}
-            className={`w-[400px] h-[64px] bg-white flex items-center border-[1px] mt-[10px] rounded-lg border-gray-200 hover:bg-[#F2F2F2EE] ${
-              waDisabled ? "pointer-events-none opacity-60" : "cursor-pointer"
-            }`}
-            title={waDisabled ? "WhatsApp indisponível" : "Abrir WhatsApp"}
-          >
-            <Image src={balaopopup} alt="" className="ml-[10px]" />
-            <div className="flex flex-col ml-[10px]">
-              <div className="text-[12px] font-bold">Enviar whatsapp</div>
-              <div className="text-[13px] text-[#6A7282] font-bold">
-                {props.numeroong || "—"}
-              </div>
-            </div>
-          </a>
-
-      <div className="bg-gray-200 w-[400px] h-[1px] mt-[14px]"></div>
-
+          {/* Ações - cancelar / confirmar */}
           <div className="flex mt-[12px]">
             <button
               className="h-[40px] w-[190px] border-gray-200 border-[1px] rounded-md flex items-center justify-center text-[16px] cursor-pointer"
@@ -160,11 +269,11 @@ export default function Modalcontatos(props: propspopup) {
 
             <button
               className="h-[40px] w-[190px] ml-[20px] rounded-md flex items-center justify-center bg-[#009FE3] text-[16px] text-white cursor-pointer"
-              onClick={props.onEntrarContato}
-              title="Fechar"
+              onClick={handleConfirmContact}
+              title="Confirmar contato"
+              disabled={sending}
             >
-              <Image src={confirma} alt="" className="mr-[3px]" />
-              Confirmar contato
+              {sending ? "Enviando..." : "Confirmar contato"}
             </button>
           </div>
         </div>
