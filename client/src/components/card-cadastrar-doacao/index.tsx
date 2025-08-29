@@ -9,7 +9,7 @@ interface ActionCardProps {
   telefone: string;
   qtdacoescadastradas: number;
   nomedaong: string;
-  status: "Pendente" | "Aprovado" | "Rejeitado" | null;
+  status: "Pendente" | "Aprovada" | "Rejeitada" | null;
   onCadastrarDoacaoClick: (ongName: string, actionName: string) => void;
 }
 
