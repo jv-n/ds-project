@@ -1,11 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AuthHeader from "@/app/auth/AuthHeader";
 import Input from "@/app/auth/components/ui/Input";
 import Button from "@/app/auth/components/ui/Button";
 import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
 import { BackButton } from "@/app/auth/components/ui/BackButton";
+import axios from "axios";
 
 export default function NewPassword() {
   const [formData, setFormData] = useState({
@@ -15,6 +17,20 @@ export default function NewPassword() {
 
   const [errors, setErrors] = useState({});
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Este código roda apenas no lado do cliente, onde 'window' está disponível
+    const params = new URLSearchParams(window.location.search);
+    const tokenFromUrl = params.get("token");
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    } else {
+      console.error("Token não encontrado na URL");
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,44 +39,54 @@ export default function NewPassword() {
 
   const validate = () => {
     const newErrors = {};
-
     if (!formData.password) {
       newErrors.password = "Senha é obrigatória";
     } else if (formData.password.length < 8) {
       newErrors.password = "A senha deve ter pelo menos 8 caracteres";
     }
-
     if (!formData.comparyPassword) {
       newErrors.comparyPassword = "Confirmação de senha é obrigatória";
     } else if (formData.password !== formData.comparyPassword) {
       newErrors.comparyPassword = "As senhas não coincidem";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validate()) {
-      console.log("Nova senha definida:", formData.password);
-      // Aqui é pra chamar a API
+      if (!token) {
+        setErrors({ general: "Token de redefinição inválido ou ausente." });
+        return;
+      }
 
-      setIsSuccessModalOpen(true);
+      try {
+        await axios.post(`http://localhost:3001/password/reset-password?token=${token}`, {
+          password: formData.password,
+        });
+
+        setIsSuccessModalOpen(true);
+      } catch (error) {
+        console.error("Erro ao redefinir a senha:", error);
+        setErrors({ general: "Token inválido, expirado ou erro no servidor." });
+      }
     }
   };
 
   const handleSuccessModalClose = () => {
     setIsSuccessModalOpen(false);
-    () => window.history.go(-2);
+    router.push("/auth/pages/login-empresas");
   };
 
   return (
-    <div className="min-h-screen bg-blue-100 flex flex-col justify-center py-12 sm:px-40 lg:px-140">
+    // Container principal que centraliza o conteúdo e adiciona padding
+    <div className="min-h-screen bg-blue-100 flex flex-col justify-center items-center p-4">
       <BackButton />
-      <Card variant="elevated" className="py-27">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md px-12 mb-6">
+      {/* Card com largura máxima para boa visualização em telas grandes */}
+      <Card variant="elevated" className="w-full max-w-lg p-6 sm:p-8 md:p-12">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <AuthHeader
             title="Nova senha"
             description="Escolha uma nova senha para acessar sua conta"
@@ -70,8 +96,10 @@ export default function NewPassword() {
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="flex flex-col  items-center gap-6"
+          className="flex flex-col items-center gap-6 mt-8 sm:mx-auto sm:w-full sm:max-w-md"
         >
+          {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
+          {/* Inputs e Button com w-full para preencher o container do formulário */}
           <Input
             label="Nova senha"
             name="password"
@@ -80,9 +108,8 @@ export default function NewPassword() {
             onChange={handleChange}
             value={formData.password}
             error={errors.password}
-            className="py-3 w-95"
+            className="w-full"
           />
-
           <Input
             label="Confirmar senha"
             name="comparyPassword"
@@ -91,20 +118,20 @@ export default function NewPassword() {
             onChange={handleChange}
             value={formData.comparyPassword}
             error={errors.comparyPassword}
-            className="py-3 w-95"
+            className="w-full"
           />
-
           <Button
             type="submit"
             variant="primary"
-            className="w-95 py-3 text-base mt-2"
+            className="w-full py-3 text-base mt-2"
+            disabled={isLoading}
           >
-            Confirmar
+            {isLoading ? 'Salvando...' : 'Confirmar'}
           </Button>
         </form>
 
         <Modal isOpen={isSuccessModalOpen} onClose={handleSuccessModalClose}>
-          <div className="sm:mx-auto px-10 sm:w-full sm:max-w-md">
+          <div className="p-4">
             <AuthHeader
               title="Senha alterada com sucesso!"
               description="Agora você pode fazer login com sua nova senha."
@@ -115,7 +142,7 @@ export default function NewPassword() {
                 onClick={handleSuccessModalClose}
                 className="w-full"
               >
-                Ir ao login
+                Ir para o login
               </Button>
             </div>
           </div>
