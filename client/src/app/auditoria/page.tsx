@@ -45,13 +45,13 @@ export default function AuditoriaPage() {
   const carregarDadosDeAuditoria = useCallback(async () => {
     const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
     try {
-      const responseDoacoes = await axios.get(`${baseURL}/donations/audit`);
+      const responseDoacoes = await axios.get(`${baseURL}/donation/audit`);
       const doacoesIncompletas: any[] = responseDoacoes.data;
 
       const dadosMapeadosPromises = doacoesIncompletas.map(async (item) => {
         try {
           const [responseAcoes, responseEmpresa] = await Promise.all([
-            axios.get(`${baseURL}/actions/company/${item.empresaId}`),
+            axios.get(`${baseURL}/action-company/company/${item.empresaId}`),
             axios.get(`${baseURL}/company/${item.empresaId}`)
           ]);
 
@@ -206,15 +206,6 @@ export default function AuditoriaPage() {
                 <RowAuditoria key={auditoria.id} {...auditoria} onClick={() => openModal(auditoria)} />
               ))}
             </div>
-          </div>
-          <div className="flex flex-col rounded-b-lg shadow">
-            {filteredAuditorias.map((auditoria) => (
-              <RowAuditoria
-                key={auditoria.id}
-                {...auditoria}
-                onClick={() => openModal(auditoria)}
-              />
-            ))}
           </div>
 
         </div>
