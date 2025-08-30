@@ -1,30 +1,41 @@
-// src/components/OdsImages.tsx
 "use client";
 
-import { useState } from "react";
-import React from "react";
+import React, { useState, type ChangeEvent } from "react";
 
-const ODS_DESCRIPTIONS = {
+type OdsImagesProps = {
+  id: string | number;
+  name: string;
+  checked: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  imageUrl: string;
+  label?: string;
+  required?: boolean;
+  disabled?: boolean;
+  className?: string;
+  imageAlt?: string;
+};
+
+const ODS_DESCRIPTIONS: Record<number, string> = {
   1: "Erradicação da Pobreza",
   2: "Fome Zero e Agricultura Sustentável",
-  3: "Saúde e bem-estar",
-  4: "Educação de qualidade",
-  5: "Igualdade de gênero",
-  6: "Água potável e saneamento",
-  7: "Energia limpa e acessível",
-  8: "Trabalho decente e crescimento econômico",
-  9: "Indústria, inovação e infraestrutura",
-  10: "Redução das desigualdades",
-  11: "Cidades e comunidades sustentáveis",
-  12: "Consumo e produção responsáveis",
-  13: "Ação contra a mudança global do clima",
-  14: "Vida na água",
-  15: "Vida na terrestre",
-  16: "Paz, justiça e instituições eficazes",
+  3: "Saúde e Bem-Estar",
+  4: "Educação de Qualidade",
+  5: "Igualdade de Gênero",
+  6: "Água Potável e Saneamento",
+  7: "Energia Limpa e Acessível",
+  8: "Trabalho Decente e Crescimento Econômico",
+  9: "Indústria, Inovação e Infraestrutura",
+  10: "Redução das Desigualdades",
+  11: "Cidades e Comunidades Sustentáveis",
+  12: "Consumo e Produção Responsáveis",
+  13: "Ação Contra a Mudança Global do Clima",
+  14: "Vida na Água",
+  15: "Vida Terrestre",
+  16: "Paz, Justiça e Instituições Eficazes",
   17: "Parcerias e Meios de Implementação",
 };
 
-const OdsImages = ({
+const OdsImages: React.FC<OdsImagesProps> = ({
   id,
   name,
   label,
@@ -37,11 +48,16 @@ const OdsImages = ({
   imageAlt = `ODS ${id}`,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     setTooltipPosition({ x: e.clientX, y: e.clientY });
   };
+
+  const desc = ODS_DESCRIPTIONS[Number(id)] ?? "";
 
   return (
     <div
@@ -51,7 +67,7 @@ const OdsImages = ({
       onMouseMove={handleMouseMove}
     >
       <label
-        htmlFor={id}
+        htmlFor={String(id)}
         className="relative flex flex-col items-center cursor-pointer"
       >
         {/*
@@ -60,7 +76,7 @@ const OdsImages = ({
         */}
         <div className="absolute -top-1 -left-6 z-10">
           <input
-            id={id}
+            id={String(id)}
             name={name}
             type="checkbox"
             checked={checked}
@@ -104,7 +120,7 @@ const OdsImages = ({
           }}
         >
           <h3 className="font-bold text-blue-600 text-sm">ODS {id}</h3>
-          <p className="text-xs text-gray-600">{ODS_DESCRIPTIONS[id]}</p>
+          <p className="text-xs text-gray-600">{desc}</p>
         </div>
       )}
     </div>

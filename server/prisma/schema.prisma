@@ -19,8 +19,11 @@ model Usuario {
   email      String     @unique
   senha      String     @map("password")
   telefone   String?
-  perfil     String @default("empresa") // empresa, prefeitura
 
+  resetPasswordToken    String?
+  resetPasswordExpires  DateTime?
+
+  perfil     String @default("empresa") // empresa, prefeitura
   empresa    Empresa?
 }
 

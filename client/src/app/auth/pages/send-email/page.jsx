@@ -9,6 +9,7 @@ import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
 import { BackButton } from "../../components/ui/BackButton";
 import { validateEmail } from "@/app/auth/utils/emailUtils";
+import api from "@/services/api"; 
 
 export default function SendEmailPage() {
   const [formData, setFormData] = useState({ email: "" });
@@ -22,39 +23,45 @@ export default function SendEmailPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const newErrors = { email: "" };
+    const newErrors = {};
     if (!formData.email.trim()) {
       newErrors.email = "E-mail é obrigatório";
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Formato aceitável: "exemplo@empresa.com"';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Formato aceitável: "exemplo@email.com"';
     }
-    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
-    if (newErrors.email) return;
+    setIsLoading(true);
+    setErrors({});
 
     try {
-      // Verifica se o e-mail existe (não importa o perfil)
-      const checkRes = await fetch(
-        `http://localhost:3001/user/email?value=${encodeURIComponent(formData.email)}`
-      );
-
-      if (checkRes.status === 404) {
-        setErrors({ email: "E-mail não cadastrado", password: "" });
+      const checkRes = await api.get("/user/email", {
+        params: { value: formData.email },
+      });
+      
+      if (checkRes.status === 204 || !checkRes.data) {
+        // caso a API retorne 204 ou não tenha dados
+        setErrors({ email: "E-mail não cadastrado"});
         return;
-      }
-
-      if (!checkRes.ok) throw new Error("Erro ao verificar e-mail");
-
-      // Se o e-mail existe, mostra o modal
+        }
+        
+      // Usando sua lógica com AXIOS
+      await api.post('/password/forgot-password', {
+        email: formData.email,
+      });
       setIsModalOpen(true);
-    } catch (err) {
-      console.error("Erro ao verificar e-mail:", err.message);
-      setErrors({ email: "Erro inesperado ao verificar e-mail", password: "" });
+    } catch (error) {
+      console.error("Erro ao enviar e-mail:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return (
+return (
     <div className="min-h-screen bg-[#CBEFFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-40 relative">
       <BackButton />
 
@@ -106,6 +113,3 @@ export default function SendEmailPage() {
     </div>
   );
 }
-
-
-

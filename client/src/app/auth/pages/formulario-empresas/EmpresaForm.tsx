@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import FloatingInput from "@/components/floating-input";
 import NavbarSecundaria from "@/components/navbar-2";
 import Rodape from "@/components/rodape";
@@ -8,6 +8,24 @@ import OdsImages from "./OdsImages";
 import api from "@/services/api";
 import { useRouter } from "next/navigation";
 
+// Tipagem do formulário
+interface FormData {
+  nomeEmpresa: string;
+  cnpj: string;
+  email: string;
+  nColaboradores: string;
+  telefone: string;
+  senha: string;
+  confirmarSenha: string;
+}
+
+// Tipagem dos erros
+type FormErrors = Partial<Record<keyof FormData | "ods", string>>;
+
+// Tipagem dos ODS
+type SelectedODS = Record<string, boolean>;
+
+// Opções de ODS
 const OdsImageOptions = Array.from({ length: 17 }, (_, i) => ({
   id: String(i + 1),
   name: String(i + 1),
@@ -15,7 +33,7 @@ const OdsImageOptions = Array.from({ length: 17 }, (_, i) => ({
 }));
 
 export default function EmpresaForm() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     nomeEmpresa: "",
     cnpj: "",
     email: "",
@@ -27,80 +45,82 @@ export default function EmpresaForm() {
 
   const router = useRouter();
 
-  const [selectedODS, setSelectedODS] = useState(() => {
-    const initialState = {};
+  // Estado das ODS
+  const [selectedODS, setSelectedODS] = useState<SelectedODS>(() => {
+    const initial: SelectedODS = {};
     for (let i = 1; i <= 17; i++) {
-      initialState[i] = false;
+      initial[String(i)] = false;
     }
-    return initialState;
+    return initial;
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleOdsImagesChange = (e) => {
+  // --- Handlers adaptados para onChange: (v: string) => void ---
+  const handleInputChange = (field: keyof FormData) => (value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCNPJChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, cnpj: formatCNPJ(value) }));
+  };
+
+  const handleTelefoneChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, telefone: formatTelefone(value) }));
+  };
+
+  const handleNumColaboradoresChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, nColaboradores: formatNumColaboradores(value) }));
+  };
+
+  // ODS continua com ChangeEvent
+  const handleOdsImagesChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setSelectedODS((prev) => ({
-      ...prev,
-      [name]: checked,
-    }));
+    setSelectedODS((prev) => ({ ...prev, [name]: checked }));
   };
 
-  const handleCNPJChange = (e) => {
-    const formatted = formatCNPJ(e.target.value);
-    setFormData({ ...formData, cnpj: formatted });
+  // --- Formatadores ---
+  const formatNumColaboradores = (value: string) => {
+    if (!value) return value;
+    return /^[0-9]+$/.test(value) ? value : value.replace(/\D/g, "");
   };
 
-  const handleTelefoneChange = (e) => {
-    const formatted = formatTelefone(e.target.value);
-    setFormData({ ...formData, telefone: formatted });
-  };
-
-  const formatTelefone = (value) => {
+  const formatTelefone = (value: string) => {
     if (!value) return value;
     const nums = value.replace(/\D/g, "");
     if (nums.length <= 2) return `(${nums}`;
     if (nums.length <= 3) return `(${nums.slice(0, 2)})${nums.slice(2)}`;
-    if (nums.length <= 7)
-      return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3)}`;
+    if (nums.length <= 7) return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3)}`;
     if (nums.length <= 11)
-      return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(
-        3,
-        7
-      )}-${nums.slice(7)}`;
-    return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(
-      3,
-      7
-    )}-${nums.slice(7, 11)}`;
+      return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3, 7)}-${nums.slice(7)}`;
+    return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3, 7)}-${nums.slice(7, 11)}`;
   };
 
-  const formatCNPJ = (value) => {
+  const formatCNPJ = (value: string) => {
     if (!value) return value;
     const nums = value.replace(/\D/g, "");
     if (nums.length <= 2) return nums;
     if (nums.length <= 5) return `${nums.slice(0, 2)}.${nums.slice(2)}`;
-    if (nums.length <= 8)
-      return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5)}`;
+    if (nums.length <= 8) return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5)}`;
     if (nums.length <= 12)
-      return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(
-        5,
-        8
-      )}/${nums.slice(8)}`;
-    return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(
-      5,
-      8
-    )}/${nums.slice(8, 12)}-${nums.slice(12, 14)}`;
+      return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5, 8)}/${nums.slice(8)}`;
+    return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5, 8)}/${nums.slice(
+      8,
+      12
+    )}-${nums.slice(12, 14)}`;
   };
 
+  // --- Validação ---
   const validate = () => {
-    const newErrors = {};
+    const newErrors: FormErrors = {};
     const selectCount = Object.values(selectedODS).filter(Boolean).length;
 
-    if (!formData.nomeEmpresa.trim())
-      newErrors.nomeEmpresa = "Nome da empresa é obrigatório";
+    if (!formData.nomeEmpresa.trim()) newErrors.nomeEmpresa = "Nome da empresa é obrigatório";
     if (!formData.cnpj) newErrors.cnpj = "CNPJ é obrigatório";
     if (!formData.email.trim()) newErrors.email = "Email é obrigatório";
     if (!formData.telefone) newErrors.telefone = "Telefone é obrigatório";
+    if (!formData.nColaboradores) newErrors.nColaboradores = "Número de colaboradores é obrigatório";
     if (!formData.senha.trim()) newErrors.senha = "A senha é obrigatória";
     if (formData.senha !== formData.confirmarSenha)
       newErrors.confirmarSenha = "As senhas não coincidem";
@@ -110,74 +130,69 @@ export default function EmpresaForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  // --- Submit ---
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-  if (!validate()) return;
+    setIsSubmitting(true);
 
-  console.log("Opções selecionadas:", selectedODS);
-  setIsSubmitting(true);
+    const userPayload = {
+      email: formData.email,
+      cnpj: formData.cnpj,
+      telefone: formData.telefone,
+      senha: formData.senha,
+    };
 
-  const userPayload = {
-    email: formData.email,
-    cnpj: formData.cnpj,
-    telefone: formData.telefone,
-    senha: formData.senha,
+    const companyPayload = {
+      nome: formData.nomeEmpresa,
+      numColaboradores: parseInt(formData.nColaboradores),
+      odsId: Object.keys(selectedODS)
+        .filter((key) => selectedODS[key])
+        .map((key) => parseInt(key)),
+    };
+
+    try {
+      const [emailRes, cnpjRes] = await Promise.all([
+        api.get("/user/email", { params: { value: userPayload.email } }).catch(() => ({ data: null })),
+        api.get("/user/cnpj", { params: { value: userPayload.cnpj } }).catch(() => ({ data: null })),
+      ]);
+
+      if (emailRes.data) {
+        setErrors((prev) => ({ ...prev, email: "Email já cadastrado" }));
+        return;
+      }
+
+      if (cnpjRes.data) {
+        setErrors((prev) => ({ ...prev, cnpj: "CNPJ já cadastrado" }));
+        return;
+      }
+
+      const { data: userData } = await api.post("/user", userPayload);
+      const usuarioId = userData.id;
+
+      const { data: empresaData } = await api.post("/company", {
+        ...companyPayload,
+        usuarioId,
+      });
+
+      console.log("Usuário criado:", userData);
+      console.log("Empresa criada:", empresaData);
+
+      alert("Cadastro realizado com sucesso!");
+      router.push("/entrar");
+    } catch (error: any) {
+      console.error("Erro no cadastro:", error.response?.data || error.message);
+      alert("Erro ao cadastrar empresa");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const companyPayload = {
-    nome: formData.nomeEmpresa,
-    numColaboradores: parseInt(formData.nColaboradores),
-    odsId: Object.keys(selectedODS)
-      .filter((key) => selectedODS[key])
-      .map((key) => parseInt(key)),
-  };
-
-  try {
-    // --- VERIFICA SE EMAIL OU CNPJ JÁ EXISTEM ---
-    const [emailRes, cnpjRes] = await Promise.all([
-      api.get("/user/email", { params: { value: userPayload.email } }).catch(() => ({ data: null, status: 204 })),
-      api.get("/user/cnpj", { params: { value: userPayload.cnpj } }).catch(() => ({ data: null, status: 204 })),
-    ]);
-
-    if (emailRes.data) {
-      setErrors((prev) => ({ ...prev, email: "Email já cadastrado" }));
-      return;
-    }
-
-    if (cnpjRes.data) {
-      setErrors((prev) => ({ ...prev, cnpj: "CNPJ já cadastrado" }));
-      return;
-    }
-
-    // --- CRIA USUÁRIO ---  
-    const { data: userData } = await api.post("/user", userPayload);
-    const usuarioId = userData.id;
-
-    // --- CRIA EMPRESA VINCULADA ---
-    const { data: empresaData } = await api.post("/company", {
-      ...companyPayload,
-      usuarioId,
-    });
-
-    console.log("Usuário criado:", userData);
-    console.log("Empresa criada:", empresaData);
-
-    alert("Cadastro realizado com sucesso!");
-    router.push("http://localhost:3000/entrar");
-
-  } catch (error) {
-    console.error("Erro no cadastro:", error.response?.data || error.message);
-    alert("Erro ao cadastrar empresa");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-
+  // --- Render ---
   return (
     <div className="pt-[88px] flex flex-col min-h-screen bg-[#F5F5F5]">
-      <NavbarSecundaria ativo="" />
+      <NavbarSecundaria />
 
       <div className="flex flex-grow min-h-screen ml-8">
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -196,9 +211,7 @@ const handleSubmit = async (e) => {
                   label="Nome fantasia da empresa"
                   type="text"
                   value={formData.nomeEmpresa}
-                  onChange={(v) =>
-                    setFormData({ ...formData, nomeEmpresa: v })
-                  }
+                  onChange={handleInputChange("nomeEmpresa")}
                   placeholder="Nome como a empresa é conhecida publicamente"
                   error={errors.nomeEmpresa}
                   labelBgColor="#F5F5F5"
@@ -209,9 +222,7 @@ const handleSubmit = async (e) => {
                   label="CNPJ"
                   type="text"
                   value={formData.cnpj}
-                  onChange={(v) =>
-                    handleCNPJChange({ target: { value: v } })
-                  }
+                  onChange={handleCNPJChange}
                   placeholder="99.999.999/9999-99"
                   error={errors.cnpj}
                   labelBgColor="#F5F5F5"
@@ -226,7 +237,7 @@ const handleSubmit = async (e) => {
                   label="Email corporativo de contato"
                   type="email"
                   value={formData.email}
-                  onChange={(v) => setFormData({ ...formData, email: v })}
+                  onChange={handleInputChange("email")}
                   placeholder="Ex: ana.souza@empresa.com"
                   error={errors.email}
                   labelBgColor="#F5F5F5"
@@ -237,9 +248,7 @@ const handleSubmit = async (e) => {
                   label="Telefone"
                   type="text"
                   value={formData.telefone}
-                  onChange={(v) =>
-                    handleTelefoneChange({ target: { value: v } })
-                  }
+                  onChange={handleTelefoneChange}
                   placeholder="(81)9 9999-9999"
                   error={errors.telefone}
                   labelBgColor="#F5F5F5"
@@ -254,14 +263,7 @@ const handleSubmit = async (e) => {
                   label="Número de colaboradores"
                   type="number"
                   value={formData.nColaboradores}
-                  onChange={(v) => {
-                    if (v === "" || /^[0-9]+$/.test(v)) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        nColaboradores: v,
-                      }));
-                    }
-                  }}
+                  onChange={handleNumColaboradoresChange}
                   placeholder="Ex: 25"
                   error={errors.nColaboradores}
                   labelBgColor="#F5F5F5"
@@ -272,7 +274,7 @@ const handleSubmit = async (e) => {
                   label="Senha"
                   type="password"
                   value={formData.senha}
-                  onChange={(v) => setFormData({ ...formData, senha: v })}
+                  onChange={handleInputChange("senha")}
                   placeholder="Digite sua senha"
                   error={errors.senha}
                   labelBgColor="#F5F5F5"
@@ -283,9 +285,7 @@ const handleSubmit = async (e) => {
                   label="Confirmar senha"
                   type="password"
                   value={formData.confirmarSenha}
-                  onChange={(v) =>
-                    setFormData({ ...formData, confirmarSenha: v })
-                  }
+                  onChange={handleInputChange("confirmarSenha")}
                   placeholder="Digite sua senha novamente"
                   error={errors.confirmarSenha}
                   labelBgColor="#F5F5F5"

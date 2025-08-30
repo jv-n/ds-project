@@ -1,48 +1,36 @@
-"use client";
+import React from "react";
 import Link from "next/link";
-import Navbar from "@/components/navbar";
-import Rodape from "@/components/rodape";
-import { useState } from "react";
+import AuthHeader from "@/app/auth/AuthHeader";
 
-export default function Home() {
-  const [ativo, setAtivo] = useState("acoes");
-  const [ativocontato, setAtivoContato] = useState("acoes");
-  const [mostrarModal, setMostrarModal] = useState(false);
-
-  function abrirModal() {
-    setMostrarModal(true);
-  }
-
-  function fecharModal() {
-    setMostrarModal(false);
-  }
-
+export default function EntrarPage() {
   return (
-    <div className="flex flex-col min-h-screen pt-[88px]">
-      <Navbar ativo="" />
-
-      <div className="flex-grow flex flex-col items-center">
-        <div className="flex flex-col sm:flex-row justify-center mt-6 gap-4 p-4">
-          <Link href="/auth/pages/formulario-empresas">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto text-center">
-              Formulário de Empresas
-            </button>
-          </Link>
-
-          {/* Botão único para entrar */}
-          <Link href="/entrar">
-            <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition w-full sm:w-auto text-center">
-              Entrar
-            </button>
-          </Link>
+    <div className="flex items-center relative">
+      <div className="min-h-screen w-1/2 bg-gray-50 flex flex-col justify-center sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md mb-2">
+          <AuthHeader
+            title=""
+            description="Bem vindo! Por favor, selecione abaixo como deseja acessar o portal."
+          />
         </div>
-        {/* <Cardacao
-      <div className="flex-grow bg-gray-100"> 
 
-        {/* O conteúdo dinâmico da página */}
+        <div className="mt-1 flex sm:mx-auto sm:h-full sm:w-full sm:max-w-md">
+          <div className="py-10 px-4 sm:px-10">
+            <div className="flex gap-4">
+              <Link href="/auth/pages/login-prefeitura">
+                <button className="w-[162px] h-[140px] bg-[#294BB6] text-white p-[10px] rounded-[4px] hover:bg-blue-900 transition font-medium text-lg flex items-center justify-center cursor-pointer">
+                  <div>Auditoria</div>
+                </button>
+              </Link>
+              <Link href="/auth/pages/login-empresas">
+                <button className="w-[162px] h-[140px] bg-white text-[#294BB6] p-[10px] rounded-[4px] border-[2px] border-[#294BB6] hover:bg-gray-100 transition font-medium text-lg flex items-center justify-center cursor-pointer">
+                  <div>Sou uma Empresa </div>
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <Rodape />
+      <div className="w-1/2 bg-[#009FE3] min-h-screen" />
     </div>
   );
 }

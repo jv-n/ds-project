@@ -5,7 +5,9 @@ interface CreateUserDTO {
   cnpj: string;           
   email: string;           
   senha: string;      
-  telefone?: string;   
+  telefone?: string; 
+  resetPasswordToken?: string | null; 
+  resetPasswordExpires?: Date | null;  
 }
 
 interface UpdateUserDTO {
@@ -13,6 +15,8 @@ interface UpdateUserDTO {
   email?: string;
   senha?: string;
   telefone?: string;
+  resetPasswordToken?: string | null; 
+  resetPasswordExpires?: Date | null;
 }
 
 export class UserRepository {
@@ -21,7 +25,7 @@ export class UserRepository {
     return user;
   }
 
-async findByCnpj(cnpj: string, perfil?: string): Promise<Usuario | null> {
+  async findByCnpj(cnpj: string, perfil?: string): Promise<Usuario | null> {
   const user = await prisma.usuario.findFirst({
     where: {
       cnpj,
@@ -60,6 +64,18 @@ async findByCnpj(cnpj: string, perfil?: string): Promise<Usuario | null> {
     const users = await prisma.usuario.findMany();
     return users;
   }
+
+  async findByResetToken(token: string): Promise<Usuario | null> {
+    return prisma.usuario.findFirst({
+      where: {
+        resetPasswordToken: token,
+        resetPasswordExpires: {
+          gte: new Date(), 
+        },
+      },
+    });
+  }
+
 }
 
 export default new UserRepository();

@@ -9,7 +9,7 @@ import ModalRevisao from "@/components/modal-revisao";
 import Navbar from "@/components/navbar";
 import Rodape from "@/components/rodape";
 import { Search } from "lucide-react";
-import axios from 'axios';
+import api from "@/services/api";
 
 type Auditoria = RowAuditoriaProps;
 
@@ -43,16 +43,15 @@ export default function AuditoriaPage() {
   const [dadosAuditoria, setDadosAuditoria] = useState<Auditoria[]>([]);
 
   const carregarDadosDeAuditoria = useCallback(async () => {
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
     try {
-      const responseDoacoes = await axios.get(`${baseURL}/donations/audit`);
+      const responseDoacoes = await api.get(`/donation/audit`);
       const doacoesIncompletas: any[] = responseDoacoes.data;
 
       const dadosMapeadosPromises = doacoesIncompletas.map(async (item) => {
         try {
           const [responseAcoes, responseEmpresa] = await Promise.all([
-            axios.get(`${baseURL}/actions/company/${item.empresaId}`),
-            axios.get(`${baseURL}/company/${item.empresaId}`)
+            api.get(`/action-company/company/${item.empresaId}`),
+            api.get(`/company/${item.empresaId}`)
           ]);
 
           const todasAcoesDaEmpresa = responseAcoes.data;
@@ -206,15 +205,6 @@ export default function AuditoriaPage() {
                 <RowAuditoria key={auditoria.id} {...auditoria} onClick={() => openModal(auditoria)} />
               ))}
             </div>
-          </div>
-          <div className="flex flex-col rounded-b-lg shadow">
-            {filteredAuditorias.map((auditoria) => (
-              <RowAuditoria
-                key={auditoria.id}
-                {...auditoria}
-                onClick={() => openModal(auditoria)}
-              />
-            ))}
           </div>
 
         </div>

@@ -49,11 +49,8 @@ export { Download };
 import xsair from "./xsair.svg";
 export { xsair };
 
-import setapcima from "./setapcima.svg";
-export { setapcima };
-
-import setapbaixo from "./setapbaixo.svg";
-export { setapbaixo };
+import maozona from "./maozona.svg";
+export { maozona };
 
 import downloadicon from "./downloadicon.svg";
 export { downloadicon };
@@ -82,12 +79,14 @@ export { lupa };
 import portasair from "./portasair.svg";
 export { portasair };
 
-import maozona from "./maozona.svg";
-export { maozona };
+import bronzemedal from "./bronzemedal.svg";
+export { bronzemedal };
 
-import check from "./check.svg";
-export { check };
+import setapbaixo from "./setapbaixo.svg";
+export { setapbaixo };
 
-import backbutton from "./backbutton.svg";
-export { backbutton };
+import setapcima from "./setapcima.svg";
+export { setapcima };
 
+import download from "./download.svg";
+export { download };

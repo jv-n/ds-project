@@ -1,22 +1,36 @@
 "use client";
-
-import React, { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AuthHeader from "@/app/auth/AuthHeader";
 import FloatingInput from "@/components/floating-input";
 import Button from "@/app/auth/components/ui/Button";
 import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
-import { BackButton } from "../../components/ui/BackButton";
+import { BackButton } from "@/app/auth/components/ui/BackButton";
 import api from "@/services/api"; 
 
-export default function NewPasswordPage() {
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("id"); // pega o id da query string
+export default function NewPassword() {
+  const [formData, setFormData] = useState({
+    password: "",
+    comparyPassword: "",
+  });
 
-  const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
-  const [errors, setErrors] = useState({ password: "", confirmPassword: "" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errors, setErrors] = useState({ password: "", comparyPassword: "" });
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Este código roda apenas no lado do cliente, onde 'window' está disponível
+    const params = new URLSearchParams(window.location.search);
+    const tokenFromUrl = params.get("token");
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    } else {
+      console.error("Token não encontrado na URL");
+    }
+  }, []);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -35,11 +49,11 @@ export default function NewPasswordPage() {
       isValid = false;
     }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Confirmação de senha é obrigatória";
+    if (!formData.comparyPassword) {
+      newErrors.comparyPassword = "Confirmação de senha é obrigatória";
       isValid = false;
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "As senhas não coincidem";
+    } else if (formData.password !== formData.comparyPassword) {
+      newErrors.comparyPassword = "As senhas não coincidem";
       isValid = false;
     }
 
@@ -48,33 +62,31 @@ export default function NewPasswordPage() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validate()) return;
+    if (validate()) {
+      if (!token) {
+        setErrors({ general: "Token de redefinição inválido ou ausente." });
+        return;
+      }
 
-  if (!userId) {
-    setErrors(prev => ({ ...prev, password: "ID do usuário não encontrado" }));
-    return;
-  }
+      try {
+        await api.post(`/password/reset-password?token=${token}`, {
+          password: formData.password,
+        });
 
-  try {
-    const res = await fetch(`http://localhost:3001/user/${userId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ senha: formData.password })
-    });
-
-    if (!res.ok) {
-      throw new Error("Erro ao atualizar senha");
+        setIsSuccessModalOpen(true);
+      } catch (error) {
+        console.error("Erro ao redefinir a senha:", error);
+        setErrors({ general: "Token inválido, expirado ou erro no servidor." });
+      }
     }
+  };
 
-    setIsModalOpen(true); // mostra modal de sucesso
-  } catch (err) {
-    console.error("Erro ao atualizar senha:", err);
-    setErrors(prev => ({ ...prev, password: "Erro inesperado ao alterar a senha" }));
-  }
-};
-
+  const handleSuccessModalClose = () => {
+    setIsSuccessModalOpen(false);
+    router.push("/auth/pages/login-empresas");
+  };
 
   return (
     <div className="min-h-screen bg-[#CBEFFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-40 relative">
@@ -89,11 +101,12 @@ export default function NewPasswordPage() {
             />
           </div>
 
-          <form
+        <form
             onSubmit={handleSubmit}
             noValidate
             className="flex flex-col items-center gap-6 mt-6 w-full"
-          >
+        >
+
             <FloatingInput
               label="Nova senha"
               value={formData.password}
@@ -113,23 +126,35 @@ export default function NewPasswordPage() {
               type="password"
               className="w-full"
             />
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full py-3 text-base mt-2"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Salvando...' : 'Confirmar'}
+          </Button>
+        </form>
 
-            <Button type="submit" variant="primary" className="w-full py-3 text-base">
-              Alterar senha
-            </Button>
-          </form>
-
-          <Modal isOpen={isModalOpen}>
-            <div className="sm:mx-auto px-6 sm:w-full sm:max-w-md">
-              <AuthHeader
-                title="Senha alterada com sucesso!"
-                description="Agora você pode usar a nova senha para acessar sua conta."
-              />
+        <Modal isOpen={isSuccessModalOpen} onClose={handleSuccessModalClose}>
+          <div className="p-4">
+            <AuthHeader
+              title="Senha alterada com sucesso!"
+              description="Agora você pode fazer login com sua nova senha."
+            />
+            <div className="mt-4 flex justify-center">
+              <Button
+                variant="primary"
+                onClick={handleSuccessModalClose}
+                className="w-full"
+              >
+                Ir para o login
+              </Button>
             </div>
-          </Modal>
-        </Card>
-      </div>
+          </div>
+        </Modal>
+      </Card>
     </div>
+  </div>
   );
 }
-

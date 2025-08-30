@@ -29,8 +29,8 @@ const LoginFormEmpresa = () => {
     if (!formData.password) {
       newErrors.password = "Senha é obrigatória";
       isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Senha deve ter pelo menos 6 caracteres";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Senha deve ter pelo menos 8 caracteres";
       isValid = false;
     }
 

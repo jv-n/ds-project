@@ -1,9 +1,9 @@
-// src/controllers/userController.ts
-import { Request, Response } from 'express';
-import { UserRepository } from '../repositories/userRepository';
+import { Request, Response, NextFunction } from "express";
 import bcrypt from 'bcryptjs';
+import { UserRepository } from "../repositories/userRepository";
+import { UpdateUser } from "../DTOs";
 
- class UserController {
+class UserController {
   private repository: UserRepository;
 
   constructor() {
@@ -39,144 +39,165 @@ import bcrypt from 'bcryptjs';
     }
   };
 
-  getAll = async (_req: Request, res: Response) => {
+  getAll = async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const users = await this.repository.findAll();
-      res.json(users);
+
+      res.locals = {
+        status: 200,
+        data: users,
+      };
+
+      return next();
     } catch (error) {
-      console.error('Error fetching users:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 
-  getById = async (req: Request, res: Response) => {
+  getById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const user = await this.repository.findById(Number(id));
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return next({
+          status: 404,
+          message: "User not found",
+        });
       }
 
-      res.json(user);
+      res.locals = {
+        status: 200,
+        data: user,
+      };
+
+      return next();
     } catch (error) {
-      console.error('Error fetching user:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 
   getByCnpj = async (req: Request, res: Response) => {
     try {
       const cnpj = req.query.value as string;
-      const perfil = req.query.perfil as string | undefined; // perfil opcional
+      const perfil = req.query.perfil as string | undefined;
 
       if (!cnpj) {
-        return res.status(400).json({ error: "CNPJ não fornecido" });
+        return res.status(400).json({ message: 'CNPJ não fornecido' });
       }
 
-      // Busca pelo CNPJ e, se informado, pelo perfil
+      // Usa apenas findByCnpj, sem chamar findById
       const user = await this.repository.findByCnpj(cnpj, perfil);
 
       if (!user) {
-        return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este CNPJ` : "User not found" });
+        return res.status(404).json({
+          message: perfil
+            ? `Nenhum usuário do tipo ${perfil} encontrado com este CNPJ`
+            : 'Usuário não encontrado',
+        });
       }
 
-      res.json(user);
+      return res.status(200).json({ data: user });
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ error: "Internal server error" });
+      console.error(error);
+      return res.status(500).json({ message: 'Erro interno do servidor' });
     }
   };
-
 
   getByEmail = async (req: Request, res: Response) => {
     try {
       const email = req.query.value as string;
-      const perfil = req.query.perfil as string | undefined; // perfil opcional
+      const perfil = req.query.perfil as string | undefined;
 
       if (!email) {
-        return res.status(400).json({ error: "Email não fornecido" });
+        return res.status(400).json({ message: 'Email não fornecido' });
       }
 
-      // Busca pelo email e, se informado, pelo perfil
+      // Usa apenas findByEmail
       const user = await this.repository.findByEmail(email, perfil);
 
       if (!user) {
-        return res.status(404).json({ error: perfil ? `Nenhum usuário do tipo ${perfil} encontrado com este email` : "User not found" });
+        return res.status(404).json({
+          message: perfil
+            ? `Nenhum usuário do tipo ${perfil} encontrado com este email`
+            : 'Usuário não encontrado',
+        });
       }
 
-      res.json(user);
+      return res.status(200).json({ data: user });
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ error: "Internal server error" });
+      console.error(error);
+      return res.status(500).json({ message: 'Erro interno do servidor' });
     }
   };
 
-  read = async (req: Request, res: Response) => {
-      try {
-        const { userId } = req.params;
-
-        const id = Number(userId);
-
-        const user = await this.repository.findById(Number(id));
-
-        if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.locals = {
-          status: 200,
-          data: user,
-        };
-
-        return;
-      } catch (error) {
-        console.error('Error reading user:', error);
-        res.status(500).json({ error: 'Internal server error' });
-      }
-    }
-
-  update = async (req: Request, res: Response) => {
+  read = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
-      const { senha, ...rest } = req.body;
+      const { userId } = req.params;
+      const id = Number(userId);
 
-      const existingUser = await this.repository.findById(Number(id));
-      if (!existingUser) {
-        return res.status(404).json({ error: 'User not found' });
+      const user = await this.repository.findById(id);
+
+      if (!user) {
+        return next({
+          status: 404,
+          message: "User not found",
+        });
       }
 
-      const updateData = { ...rest } as any;
+      res.locals = {
+        status: 200,
+        data: user,
+      };
 
-      if (senha) {
-        const hashedPassword = await bcrypt.hash(senha, 10);
-        updateData.senha = hashedPassword;
-      }
-
-      const updatedUser = await this.repository.update(Number(id), updateData);
-      res.json(updatedUser);
+      return next();
     } catch (error) {
-      console.error('Error updating user:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 
-  delete = async (req: Request, res: Response) => {
+  update = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
+      const userData = UpdateUser.parse(req.body); // validação DTO
 
-      const existingUser = await this.repository.findById(Number(id));
-      if (!existingUser) {
-        return res.status(404).json({ error: 'User not found' });
+      // se tiver senha no update → faz hash
+      let updateData = { ...userData };
+      if (userData.senha) {
+        updateData.senha = await hash(userData.senha, 10);
       }
+
+      const user = await this.repository.update(Number(id), updateData);
+
+      res.locals = {
+        status: 200,
+        data: user,
+        message: "User updated",
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
 
       await this.repository.delete(Number(id));
-      res.status(204).send();
+
+      res.locals = {
+        status: 200,
+        message: "User deleted",
+      };
+
+      return next();
     } catch (error) {
-      console.error('Error deleting user:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   };
 }
 
 export default new UserController();
+

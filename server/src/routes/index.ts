@@ -6,9 +6,11 @@ import DonationRouter from './donationRoutes';
 import CompanyRouter from './CompanyRoutes';
 import ActionCompanyRouter from './actionCompanyRoutes';
 import sealRoutes from './sealRoutes';
+import resetPasswordRouter from './resetPasswordRoutes';
 
 const router = Router();
 
+router.use('/password', resetPasswordRouter)
 router.use('/selo', sealRoutes);
 router.use('/user', UserRouter);
 router.use('/sessions', AuthRouter);
