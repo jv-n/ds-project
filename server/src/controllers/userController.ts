@@ -146,7 +146,7 @@ import bcrypt from 'bcryptjs';
         return res.status(404).json({ error: 'User not found' });
       }
 
-      let updateData = { ...rest } as any;
+      const updateData = { ...rest } as any;
 
       if (senha) {
         const hashedPassword = await bcrypt.hash(senha, 10);
