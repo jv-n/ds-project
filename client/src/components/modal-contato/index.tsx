@@ -1,3 +1,4 @@
+// ...existing code...
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { ODS_NAME_TO_ID } from "@/types/acao";
@@ -54,7 +55,9 @@ Atenciosamente.`;
 
 export default function Modalcontatos(props: propspopup) {
   const [sending, setSending] = useState(false);
-  const [empresaIdFromStorage, setEmpresaIdFromStorage] = useState<number | null>(null);
+  const [empresaIdFromStorage, setEmpresaIdFromStorage] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -67,7 +70,9 @@ export default function Modalcontatos(props: propspopup) {
   // Load empresaId from localStorage on mount (client-side only)
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("empresaId");
+      // tenta duas chaves comuns para compatibilidade
+      const stored =
+        localStorage.getItem("companyId") ?? localStorage.getItem("empresaId");
       setEmpresaIdFromStorage(stored ? Number(stored) : null);
     }
   }, []);
@@ -96,10 +101,18 @@ export default function Modalcontatos(props: propspopup) {
   const handleConfirmContact = async () => {
     setSending(true);
     try {
-      // Normaliza empresaId: primeiro localStorage (dev), depois env NEXT_PUBLIC_DEFAULT_EMPRESA_ID, por fim fallback 1
+      // Usa somente o id presente no localStorage (sem fallback para variáveis de ambiente)
       const empresaId =
-        (empresaIdFromStorage as number | null) ||
-        Number(process.env.NEXT_PUBLIC_DEFAULT_EMPRESA_ID || "1");
+        typeof empresaIdFromStorage === "number" &&
+        !Number.isNaN(empresaIdFromStorage)
+          ? empresaIdFromStorage
+          : null;
+
+      if (empresaId === null) {
+        console.warn(
+          "empresaId não encontrado no localStorage — envio sem empresaId no payload"
+        );
+      }
 
       // Preferir ids já disponíveis (props.odsAcao). Se não houver, mapear odsNomes -> ids
       const odsIds =
@@ -115,9 +128,12 @@ export default function Modalcontatos(props: propspopup) {
         nomeOng: props.nomedaong ?? "",
         emailOng: props.emailong ?? "",
         telefoneOng: props.numeroong ?? "",
-        empresaId,
         odsAcao: odsIds,
       };
+
+      if (empresaId !== null) {
+        payload.empresaId = empresaId;
+      }
 
       if (props.acaoId != null) {
         payload.acaoId = Number(props.acaoId);
@@ -281,3 +297,4 @@ export default function Modalcontatos(props: propspopup) {
     </div>
   );
 }
+// ...existing code...

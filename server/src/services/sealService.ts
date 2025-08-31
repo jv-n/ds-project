@@ -67,12 +67,17 @@ export class SealService {
   }
 
   calcularPontuacao(empresa: EmpresaComAcoesEDoacoes) {
-    const qtdODS = Array.isArray((empresa as any).odsId) ? (empresa as any).odsId.length : 0;
-
     const acoesComDoacoesAprovadas = empresa.acoes.map(acao => ({
             ...acao,
             doacoes: acao.doacoes.filter(doacao => doacao.status === 'Aprovada')
         }));
+
+    const todosOdsIds = acoesComDoacoesAprovadas
+      .filter(acao => acao.doacoes.length > 0)
+      .flatMap(acao => acao.odsAcao);
+
+    const odsIdsUnicos = new Set(todosOdsIds);
+    const qtdODS = odsIdsUnicos.size;
 
     const pontODS = this.pontuacaoPorODS(qtdODS);
     const pontONGs = this.pontuacaoPorONGs(acoesComDoacoesAprovadas);
@@ -86,8 +91,6 @@ export class SealService {
       nivelSelo = 'Ouro';
     } else if (pontuacaoTotal >= 46) {
       nivelSelo = 'Prata';
-    } else if (pontuacaoTotal >= 5) {
-      nivelSelo = 'Bronze';
     } else {
       nivelSelo = 'Bronze';
     }
@@ -106,3 +109,4 @@ export class SealService {
     };
   }
 }
+

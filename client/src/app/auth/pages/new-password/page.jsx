@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthHeader from "@/app/auth/AuthHeader";
-import FloatingInput from "@/components/floating-input";
+import Input from "@/app/auth/components/ui/Input";
 import Button from "@/app/auth/components/ui/Button";
 import Modal from "@/app/auth/components/ui/Modal";
 import { Card } from "@/app/auth/components/ui/Card";
 import { BackButton } from "@/app/auth/components/ui/BackButton";
-import api from "@/services/api"; 
+import axios from "axios";
 
 export default function NewPassword() {
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ export default function NewPassword() {
     comparyPassword: "",
   });
 
-  const [errors, setErrors] = useState({ password: "", comparyPassword: "" });
+  const [errors, setErrors] = useState({});
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(null);
@@ -32,33 +32,25 @@ export default function NewPassword() {
     }
   }, []);
 
-  const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setErrors(prev => ({ ...prev, [field]: "" }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validate = () => {
-    const newErrors = { password: "", confirmPassword: "" };
-    let isValid = true;
-
+    const newErrors = {};
     if (!formData.password) {
       newErrors.password = "Senha é obrigatória";
-      isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Senha deve ter pelo menos 6 caracteres";
-      isValid = false;
+    } else if (formData.password.length < 8) {
+      newErrors.password = "A senha deve ter pelo menos 8 caracteres";
     }
-
     if (!formData.comparyPassword) {
       newErrors.comparyPassword = "Confirmação de senha é obrigatória";
-      isValid = false;
     } else if (formData.password !== formData.comparyPassword) {
       newErrors.comparyPassword = "As senhas não coincidem";
-      isValid = false;
     }
-
     setErrors(newErrors);
-    return isValid;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -71,7 +63,7 @@ export default function NewPassword() {
       }
 
       try {
-        await api.post(`/password/reset-password?token=${token}`, {
+        await axios.post(`http://localhost:3001/password/reset-password?token=${token}`, {
           password: formData.password,
         });
 
@@ -89,43 +81,45 @@ export default function NewPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-[#CBEFFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-40 relative">
+    // Container principal que centraliza o conteúdo e adiciona padding
+    <div className="min-h-screen bg-blue-100 flex flex-col justify-center items-center p-4">
       <BackButton />
-
-      <div className="w-full flex justify-center">
-        <Card variant="elevated" className="w-full max-w-md py-10 px-6 sm:py-12 sm:px-8">
-          <div className="mx-auto w-full">
-            <AuthHeader
-              title="Nova Senha"
-              description="Preencha os campos abaixo para definir sua nova senha"
-            />
-          </div>
+      {/* Card com largura máxima para boa visualização em telas grandes */}
+      <Card variant="elevated" className="w-full max-w-lg p-6 sm:p-8 md:p-12">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <AuthHeader
+            title="Nova senha"
+            description="Escolha uma nova senha para acessar sua conta"
+          />
+        </div>
 
         <form
-            onSubmit={handleSubmit}
-            noValidate
-            className="flex flex-col items-center gap-6 mt-6 w-full"
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col items-center gap-6 mt-8 sm:mx-auto sm:w-full sm:max-w-md"
         >
-
-            <FloatingInput
-              label="Nova senha"
-              value={formData.password}
-              onChange={(v) => handleChange("password", v)}
-              placeholder="Digite sua nova senha"
-              error={errors.password}
-              type="password"
-              className="w-full"
-            />
-
-            <FloatingInput
-              label="Confirme a senha"
-              value={formData.confirmPassword}
-              onChange={(v) => handleChange("confirmPassword", v)}
-              placeholder="Confirme sua senha"
-              error={errors.confirmPassword}
-              type="password"
-              className="w-full"
-            />
+          {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
+          {/* Inputs e Button com w-full para preencher o container do formulário */}
+          <Input
+            label="Nova senha"
+            name="password"
+            type="password"
+            placeholder="Digite uma senha de 8 ou mais dígitos"
+            onChange={handleChange}
+            value={formData.password}
+            error={errors.password}
+            className="w-full"
+          />
+          <Input
+            label="Confirmar senha"
+            name="comparyPassword"
+            type="password"
+            placeholder="Repita a senha"
+            onChange={handleChange}
+            value={formData.comparyPassword}
+            error={errors.comparyPassword}
+            className="w-full"
+          />
           <Button
             type="submit"
             variant="primary"
@@ -155,6 +149,5 @@ export default function NewPassword() {
         </Modal>
       </Card>
     </div>
-  </div>
   );
 }

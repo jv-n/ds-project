@@ -2,7 +2,9 @@ import { Empresa, AcaoEmpresa, Doacao } from '@prisma/client';
 import prisma from '../database';
 
 export type EmpresaComAcoesEDoacoes = Empresa & {
-  acoes: (AcaoEmpresa & { doacoes: Doacao[] })[];
+  acoes: (AcaoEmpresa & { 
+    doacoes: Doacao[]
+  })[];
 };
 
 export class SealRepository {
@@ -13,7 +15,7 @@ export class SealRepository {
       include: {
         acoes: {
           include: {
-            doacoes: true
+            doacoes: true,
           }
         }
       }
@@ -47,3 +49,4 @@ export class SealRepository {
      return selos.length > 0 ? selos[0] : null; 
   }
 }
+
