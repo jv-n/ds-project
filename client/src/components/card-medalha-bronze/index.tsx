@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { bronzemedal } from "@/assets";
+import { Bronze } from "@/assets";
 
 export interface CardMedalhaBronzeProps {
   abrirModal: (nivel: string) => void;
@@ -10,7 +10,7 @@ export default function CardMedalhaBronze(props: CardMedalhaBronzeProps) {
   return (
     <div className="w-[308px] h-[250.25px] flex flex-col bg-[#FDF5E6] rounded-xl shadow p-4 font-sans items-center ml-8">
       <div className="flex justify-center">
-        <Image src={bronzemedal} alt="Ícone medalha de bronze" />
+        <Image src={Bronze} alt="Ícone medalha de bronze" />
       </div>
 
       <div className="text-[15.8px] text-[#A56424] font-bold mt-[10px]">

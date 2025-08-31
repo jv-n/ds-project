@@ -5,6 +5,7 @@ import { X, File, Download, CheckCircle2, XCircle } from 'lucide-react';
 import { type RowAuditoriaProps } from '@/components/row-auditoria';
 import Button from '@/components/button';
 import Chip from '@/components/chip-status'
+import api from '@/services/api';
 
 interface ModalRevisaoProps {
   isOpen: boolean;
@@ -43,57 +44,48 @@ export default function ModalRevisao({ isOpen, onClose, auditoria, onSuccess }: 
   };
 
   const handleApprove = async () => {
-    if (!auditoria) return;
-    setIsSubmitting(true);
-    try {
-      const numericId = auditoria.id.replace('aud-', '');
-      const response = await fetch(`${getBaseURL()}/donation/${numericId}/audit/approve/`, {
-        method: 'PATCH',
-      });
+  if (!auditoria) return;
+  setIsSubmitting(true);
+  try {
+    const numericId = auditoria.id.replace('aud-', '');
+    await api.patch(`/donation/${numericId}/audit/approve/`);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Falha ao aprovar a doação');
-      }
-      onSuccess('aprovada');
-      handleClose();
-    } catch (error) {
-      console.error("Erro ao aprovar:", error);
-      alert(`Ocorreu um erro ao aprovar a doação: ${error instanceof Error ? error.message : 'Tente novamente.'}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    onSuccess('aprovada');
+    handleClose();
+  } catch (error: any) {
+    console.error("Erro ao aprovar:", error);
+    alert(
+      `Ocorreu um erro ao aprovar a doação: ${
+        error.response?.data?.error || error.message
+      }`
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-  const handleReject = async () => {
-    if (!auditoria || !rejectionReason.trim()) {
-      alert("Por favor, descreva o motivo da reprovação.");
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const numericId = auditoria.id.replace('aud-', '');
-      const response = await fetch(`${getBaseURL()}/donation/${numericId}/audit/reject/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ motivo: rejectionReason }),
-      });
+const handleReject = async () => {
+  if (!auditoria) return;
+  setIsSubmitting(true);
+  try {
+    const numericId = auditoria.id.replace('aud-', '');
+    await api.patch(`/donation/${numericId}/audit/reject/`, {
+      motivo: rejectionReason,
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Falha ao reprovar a doação');
-      }
-      onSuccess('reprovada');
-      handleClose();
-    } catch (error) {
-      console.error("Erro ao reprovar:", error);
-      alert(`Ocorreu um erro ao reprovar a doação: ${error instanceof Error ? error.message : 'Tente novamente.'}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    onSuccess('reprovada');
+    handleClose();
+  } catch (error: any) {
+    console.error("Erro ao rejeitar:", error);
+    alert(
+      `Ocorreu um erro ao rejeitar a doação: ${
+        error.response?.data?.error || error.message
+      }`
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const renderDetailsAndDocuments = () => (
     <>

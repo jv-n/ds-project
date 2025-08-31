@@ -46,6 +46,15 @@ export { Olho };
 import Download from "./download.svg";
 export { Download };
 
+import xsair from "./xsair.svg";
+export { xsair };
+
+import maozona from "./maozona.svg";
+export { maozona };
+
+import downloadicon from "./downloadicon.svg";
+export { downloadicon };
+
 import paperclip from "./paperclip.svg";
 export { paperclip };
 
@@ -67,11 +76,8 @@ export { close };
 import lupa from "./lupa.svg";
 export { lupa };
 
-import goldenmedal from "./goldenmedal.svg";
-export { goldenmedal };
-
-import silvermedal from "./silvermedal.svg";
-export { silvermedal };
+import portasair from "./portasair.svg";
+export { portasair };
 
 import bronzemedal from "./bronzemedal.svg";
 export { bronzemedal };

@@ -9,6 +9,16 @@ userRouter.route('/')
     UserController.create,
   );
 
+userRouter.route('/cnpj')
+  .get(
+    UserController.getByCnpj,
+  );
+
+userRouter.route('/email')
+  .get(
+    UserController.getByEmail,
+  );
+
 userRouter.route('/:userId')
   .get(
     UserController.read,

@@ -5,16 +5,20 @@ import { BackButton } from "@/app/auth/components/ui/BackButton";
 
 export default function LoginEmpresaPage() {
   return (
-    <div className="min-h-screen bg-blue-100 flex flex-col justify-center py-12 sm:px-40 lg:px-140 relative">
-      <Card variant="elevated" className="py-27">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <AuthHeader title="Entrar" />
-        </div>
+    <div className="min-h-screen bg-[#CBEFFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-40 relative">
+      <BackButton />
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <LoginFormEmpresa />
-        </div>
-      </Card>
+      <div className="w-full flex justify-center">
+        <Card variant="elevated" className="w-full max-w-md py-8 sm:py-12">
+          <div className="mx-auto w-full">
+            <AuthHeader title="Entrar" />
+          </div>
+
+          <div className="mt-6 mx-auto w-full">
+            <LoginFormEmpresa />
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

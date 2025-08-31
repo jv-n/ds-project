@@ -19,14 +19,29 @@ interface UpdateUserDTO {
   resetPasswordExpires?: Date | null;
 }
 
-class UserRepository {
+export class UserRepository {
   async create(data: CreateUserDTO): Promise<Usuario> {
     const user = await prisma.usuario.create({ data });
     return user;
   }
 
-  async findByEmail(email: string): Promise<Usuario | null> {
-    const user = await prisma.usuario.findUnique({ where: { email } });
+  async findByCnpj(cnpj: string, perfil?: string): Promise<Usuario | null> {
+  const user = await prisma.usuario.findFirst({
+    where: {
+      cnpj,
+      ...(perfil && { perfil }), // só adiciona perfil se fornecido
+    },
+  });
+  return user;
+}
+
+  async findByEmail(email: string, perfil?: string): Promise<Usuario | null> {
+    const user = await prisma.usuario.findFirst({
+      where: {
+        email,
+        ...(perfil && { perfil }), // só adiciona perfil se fornecido
+      },
+    });
     return user;
   }
 

@@ -6,6 +6,7 @@ export type EmpresaComAcoesEDoacoes = Empresa & {
 };
 
 export class SealRepository {
+
   async getEmpresaComAcoesEDoacoes(id: number): Promise<EmpresaComAcoesEDoacoes | null> {
     return prisma.empresa.findUnique({
       where: { id },
@@ -19,30 +20,30 @@ export class SealRepository {
     }) as Promise<EmpresaComAcoesEDoacoes | null>;
   }
 
-async create(data: {
-  empresaId: number;
-  nivel: string;
-  pontuacaoMin: number;
-  descricao: string;
-}) {
-  return prisma.selo.create({ data });
-}
-
-
-  async update(id: number, data: {
+  async create(data: {
+    empresaId: number;
     nivel: string;
     pontuacaoMin: number;
     descricao: string;
   }) {
-    return prisma.selo.update({
-      where: { id },
+    return prisma.selo.create({ data });
+  }
+
+  async update(empresaId: number, data: {
+    nivel: string;
+    pontuacaoMin: number;
+    descricao: string;
+  }) {
+    return prisma.selo.updateMany({
+      where: { empresaId },
       data
     });
   }
 
   async findByEmpresaId(empresaId: number) {
-    return prisma.selo.findMany({
+    const selos = await prisma.selo.findMany({
       where: { empresaId }
     });
+     return selos.length > 0 ? selos[0] : null; 
   }
 }

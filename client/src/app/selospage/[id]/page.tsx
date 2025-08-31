@@ -1,11 +1,11 @@
 "use client";
 import Rodape from "@/components/rodape";
-import { useCallback, useEffect, useState /*, useEffect*/ } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Modalcriterios from "@/components/modal-criterios";
 import CardMedalhaBronze from "@/components/card-medalha-bronze";
 import CardMedalhaOuro from "@/components/card-medalha-ouro";
 import CardMedalhaPrata from "@/components/card-medalha-prata";
-import Cardpontos from "@/components/pontos-esmpresa";
+import Cardpontos from "@/components/pontos-empresa";
 import Navbar from "@/components/navbar";
 import api from "@/services/api";
 import { CertificateProps } from "@/components/certificate";
@@ -14,39 +14,43 @@ import { useParams } from "next/navigation";
 export default function SelosPage() {
 
   const [mostrarcriterios, Setcriterios] = useState("off");
+  const [id, setCompanyId] = useState<number | null>(null);
+
+  // Ler companyId do localStorage
+    useEffect(() => {
+      const storedId = localStorage.getItem("companyId");
+      if (storedId) setCompanyId(Number(storedId));
+    }, [])
 
     interface companyProps {
     nome: string;
-    pontos: number;
+    pontuacao: number;
     selo_nivel: string;
     usuario: {
         id: string;
-        nome: string;
         cnpj: string;
     }
   }
 
-    const { id } = useParams();
-
     interface sealProps {
-        nivel: string;
-        ptsodsscomatuacao: string;
-        ptsongsatingidas: string;
-        ptscolaboradoresengajados: string;
-        ptsorcamentodestinado: string;
+        nivel: "Ouro" | "Prata" | "Bronze";
+        ptsodsscomatuacao: number;
+        ptsongsatingidas: number;
+        ptscolaboradoresengajados: number;
+        ptsorcamentodestinado: number;
     }
 
   const [seal, setSeal] = useState({} as sealProps);
 
   const fetchSeal = useCallback(async () => {
-    const response = await api.get<sealProps>(`//${id}`);
+    const response = await api.get<sealProps>(`selo/empresa/${id}`);
     setSeal(response.data);
   }, [id]);
 
-  const [company, setCompany] = useState({} as companyProps);
+  const [empresa, setCompany] = useState({} as companyProps);
 
   const fetchCompany = useCallback(async () => {
-    const response = await api.get<companyProps>(`//${id}`);
+    const response = await api.get<companyProps>(`/company/${id}`);
     setCompany(response.data);
   }, [id]);
 
@@ -57,15 +61,15 @@ export default function SelosPage() {
 
 
   const certificado: CertificateProps = {
-      id: id as string,
+      id: id ? String(id) : "",
       level: seal.nivel,
       data_emissao: new Date().toISOString(),
-      empresa: company.nome,
+      empresa: empresa.nome,
     };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F5] w-screen pt-[88px]">
-      <Navbar ativo="selos" />
+      <Navbar ativo="selos" companyId={Number(id)}/>
 
       <div className="font-sans font-bold text-[32px] text-black mt-[25px] flex justify-center mr-[620px]">
         <div>Selo de Impacto Social</div>
@@ -104,21 +108,21 @@ export default function SelosPage() {
 
       <div>
         <div className="flex-grow flex justify-center items-center">
-          {mostrarcriterios == "bronzemedal" && (
+          {mostrarcriterios == "Bronze" && (
             <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
-              <Modalcriterios nivel="bronzemedal" fecharmodal={Setcriterios} />
+              <Modalcriterios nivel="Bronze" fecharmodal={Setcriterios} />
             </div>
           )}
 
-          {mostrarcriterios == "goldenmedal" && (
+          {mostrarcriterios == "Ouro" && (
             <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
-              <Modalcriterios nivel="goldenmedal" fecharmodal={Setcriterios} />
+              <Modalcriterios nivel="Ouro" fecharmodal={Setcriterios} />
             </div>
           )}
 
-          {mostrarcriterios == "silvermedal" && (
+          {mostrarcriterios == "Prata" && (
             <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] transition-opacity duration-300 flex justify-center items-center z-50 ">
-              <Modalcriterios nivel="silvermedal" fecharmodal={Setcriterios} />
+              <Modalcriterios nivel="Prata" fecharmodal={Setcriterios} />
             </div>
           )}
         </div>

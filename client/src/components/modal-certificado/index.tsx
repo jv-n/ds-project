@@ -70,7 +70,7 @@ export default function ModalCertificado({ certificado, isOpen, onClose }: Modal
                                     <div className='flex flex-row items-center justify-between w-full mb-2'>
                                         <div className='flex flex-row items-center justify-start gap-2'>
                                             <Image src={Olho} alt='olho' width={21} height={21} />
-                                            <h1 className="text-[16px]">Vizualização do Certificado</h1>
+                                            <h1 className="text-[16px]">Visualização do Certificado</h1>
                                         </div>
                                         <button
                                             className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:cursor-pointer"

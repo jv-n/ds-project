@@ -6,10 +6,10 @@ import RowAuditoria, {
   type RowAuditoriaProps,
 } from "@/components/row-auditoria";
 import ModalRevisao from "@/components/modal-revisao";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/navbar-3";
 import Rodape from "@/components/rodape";
 import { Search } from "lucide-react";
-import axios from 'axios';
+import api from "@/services/api";
 
 type Auditoria = RowAuditoriaProps;
 
@@ -43,16 +43,15 @@ export default function AuditoriaPage() {
   const [dadosAuditoria, setDadosAuditoria] = useState<Auditoria[]>([]);
 
   const carregarDadosDeAuditoria = useCallback(async () => {
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
     try {
-      const responseDoacoes = await axios.get(`${baseURL}/donation/audit`);
+      const responseDoacoes = await api.get(`/donation/audit`);
       const doacoesIncompletas: any[] = responseDoacoes.data;
 
       const dadosMapeadosPromises = doacoesIncompletas.map(async (item) => {
         try {
           const [responseAcoes, responseEmpresa] = await Promise.all([
-            axios.get(`${baseURL}/action-company/company/${item.empresaId}`),
-            axios.get(`${baseURL}/company/${item.empresaId}`)
+            api.get(`/action-company/company/${item.empresaId}`),
+            api.get(`/company/${item.empresaId}`)
           ]);
 
           const todasAcoesDaEmpresa = responseAcoes.data;
@@ -139,8 +138,7 @@ export default function AuditoriaPage() {
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col min-h-screen">
-      <Navbar variant="logout" onLogout={() => alert("Saindo...")} />
-
+      <Navbar ativo="" />
       <main className="px-[52px] pb-8 pt-[80px] flex-grow gap-9">
         <div className="max-w-7xl py-8 flex flex-col gap-9">
           <div>
