@@ -47,7 +47,7 @@ export function generateDonationEmailTemplate(data: DonationEmailData): string {
     <div class="header">
       <h2>Selo de Responsa</h2>
     </div>
-    <div class="content" text-color[#fffff]>
+    <div class="content">
       <p>Olá <strong>${data.empresaNome}</strong>,</p>
       <p>Gostaríamos de informar que a sua doação cadastrada no Sistema Selo de Responsa foi <span class="status">${data.status.toUpperCase()}</span>.</p>
       <p>Confira os detalhes da doação:</p>
@@ -58,7 +58,13 @@ export function generateDonationEmailTemplate(data: DonationEmailData): string {
       <p><strong>Destino:</strong> ${data.nomeOng}</p>
       <p><strong>Contato da ONG:</strong> ${data.emailOng} | ${data.telefoneOng}</p>
       <p>Agradecemos pela sua contribuição!</p>
-      <p>Para mais informações, acesse o <a href="https://www.seloderesponsa.com.br" class="button">Sistema Selo de Responsa</a>.</p>
+      <p>
+        Para mais informações, acesse o
+        <a href="https://www.seloderesponsa.com.br"
+          style="display:inline-block;padding:10px 15px;background-color:rgb(0,90,150);color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;">
+          Sistema Selo de Responsa
+        </a>.
+      </p>
     </div>
     <div class="footer">
       <p>Prefeitura do Recife - Sistema Selo de Responsa</p>

@@ -146,7 +146,7 @@ export class DonationController {
       throw new Error('Donation not found');
     }
 
-    const actionCompany = await this.actionCompanyRepository.findById(donation.acaoId, donation.empresaId);
+    const actionCompany = await this.actionCompanyRepository.findById(donation.empresaId, donation.acaoId);
 
     // Buscar email da empresa associada
     const company = await this.companyRepository.findById(donation.empresaId);
