@@ -1,7 +1,7 @@
-import axios from 'axios';
-const urls = [`http://localhost:${process.env.SERVER_PORT || 3001}`, 'http://67.205.174.99:3001/'];
+import axios from "axios";
+
 const api = axios.create({
-  baseURL: urls[0]
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3005",
 });
 
 export default api;

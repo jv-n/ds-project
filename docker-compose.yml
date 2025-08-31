@@ -28,10 +28,10 @@ services:
     env_file:
       - ./client/.env
     environment:
-      - PORT=5005
+      - PORT=8005
       - NEXT_PUBLIC_API_BASE=/api
     expose:
-      - "5005"
+      - "8005"
     depends_on:
       server:
         condition: service_healthy

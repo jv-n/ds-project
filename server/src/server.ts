@@ -4,7 +4,10 @@ import './env';
 import app from './app';
 
 const url = process.env.DATABASE_URL || 'N/A';
-console.log('DATABASE_URL at runtime:', url.replace(/:(\/\/[^:]+:)[^@]+@/, '://***:***@'));
+console.log(
+  'DATABASE_URL at runtime:',
+  url.replace(/:(\/\/[^:]+:)[^@]+@/, '://***:***@'),
+);
 
 const PORT = process.env.SERVER_PORT || 3005;
 

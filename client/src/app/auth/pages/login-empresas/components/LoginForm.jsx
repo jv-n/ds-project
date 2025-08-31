@@ -8,7 +8,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import api from "@/services/api";
 
-
 const LoginFormEmpresa = () => {
   const [formData, setFormData] = useState({ cnpj: "", password: "" });
   const [errors, setErrors] = useState({ cnpj: "", password: "" });
@@ -72,7 +71,7 @@ const LoginFormEmpresa = () => {
       localStorage.setItem("userId", data.user.id);
 
       // redirecionar para a dashboard da empresa
-      router.push("http://localhost:3000/acoes");
+      router.push("http://localhost:8005/acoes");
     } catch (err) {
       if (err.response?.status === 404) {
         setErrors({ cnpj: "CNPJ não cadastrado como Empresa", password: "" });
@@ -84,7 +83,6 @@ const LoginFormEmpresa = () => {
       }
     }
   };
-
 
   const handleCNPJChange = (value) => {
     const formatted = formatCNPJ(value);
