@@ -4,11 +4,11 @@ import { logoprefeitura, portasair } from "@/assets";
 import Image from "next/image";
 
 type NavbarProps = {
-  ativo: string; // "acoes", "minhas doacoes" ou "selos" ou "sair"
-  companyId: number; // 🔹 id da empresa logada
+  ativo: string; // "sair"
+  userId?: number; // 🔹 id da auditoria logada
 };
 
-export default function Navbar({ ativo, companyId }: NavbarProps) {
+export default function Navbar({ ativo }: NavbarProps) {
   const router = useRouter();
 
   return (
@@ -29,35 +29,6 @@ export default function Navbar({ ativo, companyId }: NavbarProps) {
           </div>
         ) : (
           <>
-            <div
-              className="relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200"
-              onClick={() => router.push("/acoes")}
-            >
-              Ações
-              {ativo === "acoes" && (
-                <div className="absolute bottom-0 left-0 h-[2px] w-full bg-white" />
-              )}
-            </div>
-
-            <div
-              className="relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200"
-              onClick={() => router.push(`/doacoespage/${companyId}`)}
-            >
-              Minhas doações
-              {ativo === "minhas doacoes" && (
-                <div className="absolute bottom-0 left-0 h-[2px] w-full bg-white" />
-              )}
-            </div>
-
-            <div
-              className="relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200"
-              onClick={() => router.push(`/selospage/${companyId}`)}
-            >
-              Selos
-              {ativo === "selos" && (
-                <div className="absolute bottom-0 left-0 h-[2px] w-full bg-white" />
-              )}
-            </div>
 
             <div
               className="relative cursor-pointer font-bold pb-1 border-b-2 border-transparent hover:border-white transition-colors duration-200"
@@ -77,4 +48,3 @@ export default function Navbar({ ativo, companyId }: NavbarProps) {
     </div>
   );
 }
-

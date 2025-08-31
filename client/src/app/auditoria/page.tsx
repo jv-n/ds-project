@@ -6,7 +6,7 @@ import RowAuditoria, {
   type RowAuditoriaProps,
 } from "@/components/row-auditoria";
 import ModalRevisao from "@/components/modal-revisao";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/navbar-3";
 import Rodape from "@/components/rodape";
 import { Search } from "lucide-react";
 import api from "@/services/api";
@@ -138,7 +138,7 @@ export default function AuditoriaPage() {
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col min-h-screen">
-      <Navbar variant="logout" onLogout={() => alert("Saindo...")} />
+      <Navbar ativo=""/>
 
       <main className="px-[52px] pb-8 pt-[80px] flex-grow gap-9">
         <div className="max-w-7xl py-8 flex flex-col gap-9">
