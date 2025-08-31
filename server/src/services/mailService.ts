@@ -47,7 +47,7 @@ export function generateDonationEmailTemplate(data: DonationEmailData): string {
     <div class="header">
       <h2>Selo de Responsa</h2>
     </div>
-    <div class="content">
+    <div class="content" text-color[#fffff]>
       <p>Olá <strong>${data.empresaNome}</strong>,</p>
       <p>Gostaríamos de informar que a sua doação cadastrada no Sistema Selo de Responsa foi <span class="status">${data.status.toUpperCase()}</span>.</p>
       <p>Confira os detalhes da doação:</p>

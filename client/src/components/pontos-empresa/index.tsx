@@ -21,6 +21,12 @@ export interface propspontos {
   certificado: CertificateProps;
 }
 
+const nomenovo = {
+  Bronze: "Empresa Aderente à Causa Social",
+  Prata: "Empresa Socialmente Engajada",
+  Ouro: "Empresa de Alto Impacto Social",
+};
+
 const qtdodsscomatuacao: Record<string, string> = {
   "33": "Mais de 9 ODSs",
   "25": "7 a 8 ODSs",
@@ -104,8 +110,8 @@ export default function Cardpontos(props: propspontos) {
               Baixar Certificado
             </button>
           </div>
-          <div className="text-[22px] text-[#757575] font-bold">
-            {textonivel[props.nivel]}
+          <div className="text-[22px]  font-bold" style={{color:coresPorNivel[props.nivel]}}>
+            {nomenovo[props.nivel]}
           </div>
           <div className="font-sans text-[18px] text-black mt-[15px] mb-[5px]">
             Pontuação Atual: {total} pontos

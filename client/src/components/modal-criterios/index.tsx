@@ -38,37 +38,36 @@ const descricao = {
   Ouro: "Empresas líderes em responsabilidade social, com impacto significativo e cultura de engajamento enraizada.",
 };
 
-export default function Modalcriterios(props: Criteriosprops) {
+const nomenovo = {
+  Bronze: "Empresa Aderente à Causa Social",
+  Prata: "Empresa Socialmente Engajada",
+  Ouro: "Empresa de Alto Impacto Social",
+};
 
-  const porNivel = () =>{
-    if(props.nivel == "Ouro" )
-      return "Ouro";
-    else if(props.nivel == "Prata" )
-      return "Prata";
-    else
-      return "Bronze";
-  }
+export default function Modalcriterios(props: Criteriosprops) {
+  const porNivel = () => {
+    if (props.nivel == "Ouro") return "Ouro";
+    else if (props.nivel == "Prata") return "Prata";
+    else return "Bronze";
+  };
 
   return (
     <div className="w-[700px] flex flex-col bg-white rounded-xl shadow p-4 font-sans">
       <div className="mr-auto flex">
-        <Image
-          src={imagensPorNivel[porNivel()]}
-          alt={`Selo ${props.nivel}`}
-        />
+        <Image src={imagensPorNivel[porNivel()]} alt={`Selo ${props.nivel}`} />
         <div className="ml-[5px]">
           <div className="flex">
             <div
               style={{ color: coresPorNivel[porNivel()] }}
-              className="font-bold text-[20px]"
+              className="font-bold text-[20px] w-[350px]"
             >
-              Nível {porNivel()}
+              {nomenovo[porNivel()]}
             </div>
             <Image
               onClick={() => props.fecharmodal("off")}
               src={close}
               alt=""
-              className="ml-[485px] cursor-pointer"
+              className="ml-[275px] cursor-pointer"
             />
           </div>
           <div className="text-[#4A5565] mt-[-5px]">
@@ -78,14 +77,16 @@ export default function Modalcriterios(props: Criteriosprops) {
       </div>
 
       <div className="text-[#717182] mt-[3px]">
-        Critérios e faixas de pontuação para o Nível {props.nivel}
+        Critérios e faixas de pontuação para {nomenovo[porNivel()]}
       </div>
 
       <div
         className="flex w-[640px] text-[#364153] rounded-xl items-center pd-[5px] mt-[10px]"
         style={{ backgroundColor: cordescricaopornivel[porNivel()] }}
       >
-        <div className="ml-[10px] mt-[10px] mb-[10px]">{descricao[porNivel()]}</div>
+        <div className="ml-[10px] mt-[10px] mb-[10px]">
+          {descricao[porNivel()]}
+        </div>
       </div>
 
       <div className="text-[16px] text-black font-bold mt-[10px]">
@@ -93,7 +94,6 @@ export default function Modalcriterios(props: Criteriosprops) {
       </div>
 
       <div className="overflow-y-auto h-[400px] mr-[-16px]">
-
         {/* ODSs com atuação */}
         <Criterio
           titulo="Quantidade de ODSs com Atuação da Empresa"
@@ -156,7 +156,7 @@ function Criterio({
   titulo,
   max,
   faixas,
-  justificativa
+  justificativa,
 }: {
   titulo: string;
   max: string;
@@ -191,7 +191,9 @@ function Criterio({
 
         <div className="bg-[#EFF6FF] w-[650px] flex flex-col rounded-xl mt-[8px] mb-[15px]">
           <div className="mt-[13px] mb-[13px] ml-[20px]">
-            <div className="text-[16px] text-black font-bold">Justificativa:</div>
+            <div className="text-[16px] text-black font-bold">
+              Justificativa:
+            </div>
             <div className="flex-wrap mt-[10px]">{justificativa}</div>
           </div>
         </div>
