@@ -68,11 +68,8 @@ const LoginFormPrefeitura = () => {
 
       const data = res.data;
       console.log("Login Prefeitura realizado com sucesso:", data);
-
       localStorage.setItem("userId", data.user.id);
-
-      // TODO: redirecionar para o fluxo da auditoria
-      // router.push("/auditoria");
+      router.push("/auditoria");
     } catch (err) {
       console.error("Erro login Prefeitura:", err.response?.data || err.message);
 
