@@ -4,7 +4,6 @@
 
 1. Assegure-se de ter o **docker/docker-compose**, bem como o gerenciador de pacotes **pnpm** instalados em sua máquina.
 
-
 2. Instale as dependências:
 
 ```bash
@@ -18,7 +17,7 @@ pnpm install
 PROJECT_NAME=dessoft
 
 # ###### SERVER SETTINGS #######
-SERVER_PORT=3001
+SERVER_PORT=3005
 NODE_ENV=development
 
 # ###### DATABASE SETTINGS #######
