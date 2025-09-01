@@ -53,14 +53,18 @@ export function generateDonationEmailTemplate(data: DonationEmailData): string {
       <p>Confira os detalhes da doação:</p>
       <p><strong>Descrição da doação:</strong> ${data.descricao}</p>
       <p><strong>Tipo:</strong> ${data.tipo}</p>
-      <p><strong>Valor:</strong> R$ ${data.valor.toFixed(2).replace('.', ',')}</p>
+      <p><strong>Valor:</strong> R$ ${data.valor
+        .toFixed(2)
+        .replace('.', ',')}</p>
       <p><strong>Data da doação:</strong> ${data.data}</p>
       <p><strong>Destino:</strong> ${data.nomeOng}</p>
-      <p><strong>Contato da ONG:</strong> ${data.emailOng} | ${data.telefoneOng}</p>
+      <p><strong>Contato da ONG:</strong> ${data.emailOng} | ${
+    data.telefoneOng
+  }</p>
       <p>Agradecemos pela sua contribuição!</p>
       <p>
         Para mais informações, acesse o
-        <a href="https://www.seloderesponsa.com.br"
+        <a href="http://vm-cinboraimpactar2.cin.ufpe.br/seloresponsa"
           style="display:inline-block;padding:10px 15px;background-color:rgb(0,90,150);color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;">
           Sistema Selo de Responsa
         </a>.
@@ -76,16 +80,19 @@ export function generateDonationEmailTemplate(data: DonationEmailData): string {
   `;
 }
 
-
 export const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE, // Gmail, Outlook, etc.
   auth: {
-    user: process.env.EMAIL_ADDRESS,         // seu e-mail
-    pass: process.env.EMAIL_PASSWORD       // app password (não a senha do Gmail)
+    user: process.env.EMAIL_ADDRESS, // seu e-mail
+    pass: process.env.EMAIL_PASSWORD, // app password (não a senha do Gmail)
   },
 });
 
-export const sendEmail = async (to: string, subject: string, data: DonationEmailData) => {
+export const sendEmail = async (
+  to: string,
+  subject: string,
+  data: DonationEmailData,
+) => {
   try {
     const info = await transporter.sendMail({
       from: '"Sistema Selo de Responsa" <seloderesponsa@gmail.com>',
@@ -101,7 +108,11 @@ export const sendEmail = async (to: string, subject: string, data: DonationEmail
   }
 };
 
-export const resetPasswordEmail = async (to: string, subject: string, text: string) => {
+export const resetPasswordEmail = async (
+  to: string,
+  subject: string,
+  text: string,
+) => {
   try {
     const info = await transporter.sendMail({
       from: '"Sistema Selo de Responsa" <seloderesponsa@gmail.com>',
@@ -115,4 +126,4 @@ export const resetPasswordEmail = async (to: string, subject: string, text: stri
     console.error('Erro ao enviar e-mail:', error);
     throw error;
   }
-}
+};
