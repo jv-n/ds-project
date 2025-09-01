@@ -43,8 +43,8 @@ JWT_REFRESH_SECRET=92fba49f6912d14733332bb9ebaac1562f51ee685594acf103d71f685f708
 
 # ###### EMAIL SETTINGS #######
 EMAIL_SERVICE=gmail
-EMAIL_ADDRESS=seloderesponsa@gmail.com
-EMAIL_PASSWORD=twcm ygno tvuo etra
+EMAIL_ADDRESS= emailexemplo@email.com
+EMAIL_PASSWORD=passwordexample
 
 ```
 
