@@ -1,12 +1,10 @@
 import Link from "next/link";
 import AuthHeader from "@/app/auth/AuthHeader";
-import { BackButton } from "../auth/components/ui/BackButton"; // remover quando esta tela for a primeira tela quando o site abrir
 
 export default function EntrarPage() {
   return (
     <div className="flex items-center relative">
       <div className="min-h-screen w-1/2 bg-[#FFFFFF] flex flex-col justify-center sm:px-6 lg:px-8">
-        <BackButton />
         <div className="sm:mx-auto sm:w-full sm:max-w-md mb-2">
           <AuthHeader
             title=""
