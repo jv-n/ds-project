@@ -330,7 +330,7 @@ export default function EmpresaForm() {
                     key={option.id}
                     id={option.id}
                     name={option.name}
-                    imageUrl={`/images/SDG-${option.name}.svg`}
+                    imageUrl={`/seloresponsa/images/SDG-${option.name}.svg`}
                     checked={selectedODS[option.name]}
                     onChange={handleOdsImagesChange}
                     disabled={

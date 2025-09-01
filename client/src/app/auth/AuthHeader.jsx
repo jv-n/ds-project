@@ -7,7 +7,7 @@ const AuthHeader = ({ title, description, logo = true }) => {
       {logo && (
         <div className="flex justify-center mb-8">
           <Image 
-            src="/images/Group 5.svg" 
+            src="/seloresponsa/images/Group 5.svg" 
             alt="Logo Recife do Bem" 
             width={120} 
             height={120}
