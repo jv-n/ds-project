@@ -21,7 +21,7 @@ export default function CadastroDoacao({ onClose, ongName, actionName, onSubmitD
   const [errors, setErrors] = useState<{ tipo?: string; valor?: string }>({});
   const [forceFileError, setForceFileError] = useState<string | null>(null);
 
-  const donationTypesOptions = ["Dinheiro", "Alimento", "Serviço"];
+  const donationTypesOptions = ["Dinheiro", "Serviço"];
 
   const handleDocumentosAttached = useCallback((files: File[]) => {
     setDocumentosComprobatorios(files);
