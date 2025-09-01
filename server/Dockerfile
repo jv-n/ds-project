@@ -41,6 +41,9 @@ COPY --from=builder /home/node/app/dist /home/node/app/dist
 
 COPY --from=builder /home/node/app/prisma /home/node/app/prisma
 
+# Create uploads directory and set permissions
+RUN mkdir -p /home/node/app/dist/src/uploads && chown -R node:node /home/node/app/
+
 RUN chown -R node:node /home/node/app/prisma/
 
 USER node

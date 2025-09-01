@@ -12,6 +12,8 @@ services:
       - PORT=3005
     expose:
       - "3005"
+    volumes:
+      - uploads_data:/home/node/app/dist/src/uploads
     networks: 
       - boraimpactar2
 
@@ -44,3 +46,6 @@ services:
 networks:
   boraimpactar2:
     external: true
+
+volumes:
+  uploads_data:
