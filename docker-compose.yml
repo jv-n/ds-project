@@ -5,37 +5,30 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: repo-server
+    container_name: seloserver
     env_file:
       - ./server/.env
     environment:
       - PORT=3005
     expose:
       - "3005"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:3005/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 10
-      start_period: 20s
-    networks: [appnet]
+    networks: 
+      - boraimpactar2
 
   client:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: repo-client
+    container_name: seloclient
     env_file:
       - ./client/.env
     environment:
       - PORT=8005
-      - NEXT_PUBLIC_API_BASE=/api
+      - NEXT_PUBLIC_API_BASE=/seloresponsaback
     expose:
       - "8005"
-    depends_on:
-      server:
-        condition: service_healthy
-    networks: [appnet]
+    networks: 
+      - boraimpactar2
 
   # nginx:
   #   image: nginx:1.27-alpine
@@ -49,5 +42,5 @@ services:
   #   networks: [appnet]
 
 networks:
-  appnet:
-    driver: bridge
+  boraimpactar2:
+    external: true
