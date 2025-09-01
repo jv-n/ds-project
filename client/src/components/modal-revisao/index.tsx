@@ -141,7 +141,7 @@ export default function ModalRevisao({
         <div className="flex flex-col gap-2.5 h-full overflow-y-auto pr-4">
           {auditoria.documentos.map((doc) => {
             // ================== CORREÇÃO APLICADA AQUI ==================
-            const docUrl = `http://localhost:3005/donation/${auditoria.id}/audit/documents/${doc.id}`;
+            const docUrl = `http://vm-cinboraimpactar2.cin.ufpe.br/seloresponsaback/donation/${auditoria.id}/audit/documents/${doc.id}`;
 
             return (
               <div
