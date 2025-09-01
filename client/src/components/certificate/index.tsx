@@ -165,7 +165,7 @@ export default function Certificate(props: CertificateProps) {
                 <div className="w-full h-[81px] flex flex-row items-center justify-between gap-6 p-8">
                   <div className="flex flex-col items-center justify-center w-1/3 ">
                     <Image
-                      src="/images/signature.png"
+                      src="seloresponsa/images/signature.png"
                       alt="signature"
                       width={41}
                       height={15}
@@ -178,7 +178,7 @@ export default function Certificate(props: CertificateProps) {
                   </div>
                   <div className="flex flex-col items-center justify-center w-1/3">
                     <Image
-                      src="/images/signature.png"
+                      src="seloresponsa/images/signature.png"
                       alt="signature"
                       width={41}
                       height={15}
@@ -191,7 +191,7 @@ export default function Certificate(props: CertificateProps) {
                   </div>
                   <div className="flex flex-col items-center justify-center w-1/3">
                     <Image
-                      src="/images/signature.png"
+                      src="seloresponsa/images/signature.png"
                       alt="signature"
                       width={41}
                       height={15}

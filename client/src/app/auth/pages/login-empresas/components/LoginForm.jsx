@@ -71,7 +71,7 @@ const LoginFormEmpresa = () => {
       localStorage.setItem("userId", data.user.id);
 
       // redirecionar para a dashboard da empresa
-      router.push("http://localhost:8005/acoes");
+      router.push("/acoes");
     } catch (err) {
       if (err.response?.status === 404) {
         setErrors({ cnpj: "CNPJ não cadastrado como Empresa", password: "" });
