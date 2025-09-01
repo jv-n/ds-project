@@ -5,7 +5,7 @@ import Image from "next/image";
 
 type NavbarProps = {
   ativo: string; // "acoes", "minhas doacoes" ou "selos" ou "sair"
-  companyId: number; // 🔹 id da empresa logada
+  companyId?: number; // 🔹 id da empresa logada
 };
 
 export default function Navbar({ ativo, companyId }: NavbarProps) {
