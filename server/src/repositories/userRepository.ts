@@ -2,12 +2,13 @@ import { Usuario } from '@prisma/client';
 import prisma from '../database';
 
 interface CreateUserDTO {
-  cnpj: string;           
-  email: string;           
-  senha: string;      
-  telefone?: string; 
-  resetPasswordToken?: string | null; 
-  resetPasswordExpires?: Date | null;  
+  cnpj: string;
+  email: string;
+  senha: string;
+  telefone?: string;
+  perfil: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpires?: Date | null;
 }
 
 interface UpdateUserDTO {

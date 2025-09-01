@@ -4,9 +4,12 @@ import React, { useState } from "react";
 import FloatingInput from "@/components/floating-input";
 import Button from "@/app/auth/components/ui/Button";
 import { validateEmail } from "@/app/auth/utils/emailUtils";
-import api from "@/services/api"; 
+import api from "@/services/api";
+import { useRouter } from "next/navigation";
 
 const LoginFormPrefeitura = () => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -51,7 +54,10 @@ const LoginFormPrefeitura = () => {
       });
 
       if (checkRes.status === 404) {
-        setErrors({ email: "Email não cadastrado como Prefeitura", password: "" });
+        setErrors({
+          email: "Email não cadastrado como Prefeitura",
+          password: "",
+        });
         return;
       }
 
@@ -62,7 +68,7 @@ const LoginFormPrefeitura = () => {
         perfil: "prefeitura",
       };
 
-      const res = await api.post("/auth/prefeitura", userPayload, {
+      const res = await api.post("/sessions/prefeitura", userPayload, {
         withCredentials: true,
       });
 
@@ -72,20 +78,28 @@ const LoginFormPrefeitura = () => {
       localStorage.setItem("userId", data.user.id);
 
       // TODO: redirecionar para o fluxo da auditoria
-      // router.push("/auditoria");
+      router.push("/auditoria");
     } catch (err) {
-      console.error("Erro login Prefeitura:", err.response?.data || err.message);
+      console.error(
+        "Erro login Prefeitura:",
+        err.response?.data || err.message
+      );
 
       if (err.response?.status === 401) {
         setErrors({ email: "", password: "Senha incorreta" });
       } else if (err.response?.status === 404) {
-        setErrors({ email: "Email não cadastrado como Prefeitura", password: "" });
+        setErrors({
+          email: "Email não cadastrado como Prefeitura",
+          password: "",
+        });
       } else {
-        setErrors({ email: "Erro inesperado ao verificar email", password: "" });
+        setErrors({
+          email: "Erro inesperado ao verificar email",
+          password: "",
+        });
       }
     }
   };
-
 
   const handleEmailChange = (value) => {
     setFormData((prev) => ({ ...prev, email: value }));
@@ -138,5 +152,3 @@ const LoginFormPrefeitura = () => {
 };
 
 export default LoginFormPrefeitura;
-
-

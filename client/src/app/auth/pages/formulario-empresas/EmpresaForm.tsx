@@ -71,7 +71,10 @@ export default function EmpresaForm() {
   };
 
   const handleNumColaboradoresChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, nColaboradores: formatNumColaboradores(value) }));
+    setFormData((prev) => ({
+      ...prev,
+      nColaboradores: formatNumColaboradores(value),
+    }));
   };
 
   // ODS continua com ChangeEvent
@@ -91,10 +94,17 @@ export default function EmpresaForm() {
     const nums = value.replace(/\D/g, "");
     if (nums.length <= 2) return `(${nums}`;
     if (nums.length <= 3) return `(${nums.slice(0, 2)})${nums.slice(2)}`;
-    if (nums.length <= 7) return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3)}`;
+    if (nums.length <= 7)
+      return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3)}`;
     if (nums.length <= 11)
-      return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3, 7)}-${nums.slice(7)}`;
-    return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(3, 7)}-${nums.slice(7, 11)}`;
+      return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(
+        3,
+        7
+      )}-${nums.slice(7)}`;
+    return `(${nums.slice(0, 2)})${nums.slice(2, 3)} ${nums.slice(
+      3,
+      7
+    )}-${nums.slice(7, 11)}`;
   };
 
   const formatCNPJ = (value: string) => {
@@ -102,13 +112,17 @@ export default function EmpresaForm() {
     const nums = value.replace(/\D/g, "");
     if (nums.length <= 2) return nums;
     if (nums.length <= 5) return `${nums.slice(0, 2)}.${nums.slice(2)}`;
-    if (nums.length <= 8) return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5)}`;
+    if (nums.length <= 8)
+      return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5)}`;
     if (nums.length <= 12)
-      return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5, 8)}/${nums.slice(8)}`;
-    return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(5, 8)}/${nums.slice(
-      8,
-      12
-    )}-${nums.slice(12, 14)}`;
+      return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(
+        5,
+        8
+      )}/${nums.slice(8)}`;
+    return `${nums.slice(0, 2)}.${nums.slice(2, 5)}.${nums.slice(
+      5,
+      8
+    )}/${nums.slice(8, 12)}-${nums.slice(12, 14)}`;
   };
 
   // --- Validação ---
@@ -116,11 +130,13 @@ export default function EmpresaForm() {
     const newErrors: FormErrors = {};
     const selectCount = Object.values(selectedODS).filter(Boolean).length;
 
-    if (!formData.nomeEmpresa.trim()) newErrors.nomeEmpresa = "Nome da empresa é obrigatório";
+    if (!formData.nomeEmpresa.trim())
+      newErrors.nomeEmpresa = "Nome da empresa é obrigatório";
     if (!formData.cnpj) newErrors.cnpj = "CNPJ é obrigatório";
     if (!formData.email.trim()) newErrors.email = "Email é obrigatório";
     if (!formData.telefone) newErrors.telefone = "Telefone é obrigatório";
-    if (!formData.nColaboradores) newErrors.nColaboradores = "Número de colaboradores é obrigatório";
+    if (!formData.nColaboradores)
+      newErrors.nColaboradores = "Número de colaboradores é obrigatório";
     if (!formData.senha.trim()) newErrors.senha = "A senha é obrigatória";
     if (formData.senha !== formData.confirmarSenha)
       newErrors.confirmarSenha = "As senhas não coincidem";
@@ -142,6 +158,7 @@ export default function EmpresaForm() {
       cnpj: formData.cnpj,
       telefone: formData.telefone,
       senha: formData.senha,
+      perfil: "empresa",
     };
 
     const companyPayload = {
@@ -154,8 +171,12 @@ export default function EmpresaForm() {
 
     try {
       const [emailRes, cnpjRes] = await Promise.all([
-        api.get("/user/email", { params: { value: userPayload.email } }).catch(() => ({ data: null })),
-        api.get("/user/cnpj", { params: { value: userPayload.cnpj } }).catch(() => ({ data: null })),
+        api
+          .get("/user/email", { params: { value: userPayload.email } })
+          .catch(() => ({ data: null })),
+        api
+          .get("/user/cnpj", { params: { value: userPayload.cnpj } })
+          .catch(() => ({ data: null })),
       ]);
 
       if (emailRes.data) {

@@ -11,32 +11,33 @@ class UserController {
   }
 
   create = async (req: Request, res: Response) => {
-    try {
-      const { cnpj, email, senha, telefone } = req.body;
+      try {
+        const { cnpj, email, senha, telefone, perfil } = req.body;
 
-      if (!cnpj || !email || !senha) {
-        return res.status(400).json({ error: 'CNPJ, email and password are required' });
+        if (!cnpj || !email || !senha || !perfil) {
+          return res.status(400).json({ error: 'CNPJ, email, password and perfil are required' });
+        }
+
+        const existingUser = await this.repository.findByCnpj(cnpj);
+        if (existingUser) {
+          return res.status(409).json({ error: 'CNPJ already registered' });
+        }
+
+        const hashedPassword = await bcrypt.hash(senha, 10);
+
+        const user = await this.repository.create({
+          cnpj,
+          email,
+          senha: hashedPassword,
+          telefone,
+          perfil
+        });
+
+        res.status(201).json(user);
+      } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).json({ error: 'Internal server error' });
       }
-
-      const existingUser = await this.repository.findByCnpj(cnpj);
-      if (existingUser) {
-        return res.status(409).json({ error: 'CNPJ already registered' });
-      }
-
-      const hashedPassword = await bcrypt.hash(senha, 10);
-
-      const user = await this.repository.create({
-        cnpj,
-        email,
-        senha: hashedPassword,
-        telefone
-      });
-
-      res.status(201).json(user);
-    } catch (error) {
-      console.error('Error creating user:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
   };
 
   getAll = async (_req: Request, res: Response, next: NextFunction) => {
